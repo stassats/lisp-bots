@@ -21,6 +21,7 @@
    '(vector t)))
 
 (defun match-prefix (prefix)
-  (lambda (x)
-    (eql 0
-         (search prefix (script-name x)))))
+  (let ((regex (ppcre:create-scanner
+                (format nil "^~a(/.*)?$" (string-right-trim "/" prefix)))))
+   (lambda (x)
+     (ppcre:scan regex (script-name x)))))

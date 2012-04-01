@@ -6,7 +6,8 @@
 (in-package :cl-user)
 
 (defpackage :lisppaste
-  (:use :cl #+sbcl :sb-bsd-sockets :html-encode :hunchentoot
+  (:use :cl #+sbcl :sb-bsd-sockets :html-encode
+        :hunchentoot :cl-who
         :ironclad :split-sequence
         :webutils)
   (:shadowing-import-from cl null)
