@@ -9,12 +9,6 @@
 
 (defclass lisppaste-basic-handler (handler lisppaste-basic-behavior) ())
 
-(defclass list-paste-handler (lisppaste-basic-handler) ())
-
-
-
-(defclass short-paste-handler (lisppaste-basic-handler) ())
-
 (defclass rss-handler (lisppaste-basic-handler) ())
 
 (defclass rss-full-handler (lisppaste-basic-handler) ())
@@ -24,8 +18,6 @@
 (defclass stats-handler (lisppaste-basic-handler) ())
 
 (defclass email-redirect-handler (lisppaste-basic-handler) ())
-
-(defclass channel-select-handler (lisppaste-basic-handler) ())
 
 (defclass 404-handler (handler) ())
 
@@ -319,7 +311,7 @@ IRC."
 
 (defun parse-new-paste-channel ()
   (ppcre:register-groups-bind (channel)
-      (#.(format nil "~a/(\.+)" *new-paste-url*) (script-name*))
+      (#.(format nil "^~a/(\.+)" *new-paste-url*) (script-name*))
     channel))
 
 (define-easy-handler (new-paste :uri (match-prefix *new-paste-url*))
@@ -451,10 +443,8 @@ with your favorite RSS reader."
 				     "None"
 				     (subseq channel 1)))))
 
-(defmethod handle-request-response ((handler channel-select-handler) method request)
-  
-  (xml-output-to-stream
-   (request-stream request)
+(define-easy-handler (channelselect :uri *channel-select-url*) ()
+  (xml-to-string
    (lisppaste-wrap-page
     (format nil "~A channel list" *paste-site-name*)
     (<table width="100%" border="0" cellpadding="2">
@@ -1263,8 +1253,8 @@ with your favorite RSS reader."
 
 (defun parse-paste-number (script-name)
   (ppcre:register-groups-bind (integer)
-      (#.(format nil "~a(\\d+)" *display-paste-url*) script-name)
-    (quick-parse-junk-integer integer)))
+      (#.(format nil "^~a(\\d+)" *display-paste-url*) script-name)
+    (parse-integer integer)))
 
 (define-easy-handler (display :uri (match-prefix *display-paste-url*))
     (colorize linenumbers type)
@@ -1438,38 +1428,28 @@ with your favorite RSS reader."
 	(lisppaste-wrap-page
 	 (format nil "Invalid paste number ~A!" paste-number)))))))
 
-(defmethod handle-request-response ((handler short-paste-handler) method request)
-  
-  (let ((paste-string (request-unhandled-part request)))
-    (multiple-value-bind (number junk)
-       (quick-parse-junk-integer paste-string :radix 36)
-     (let* ((paste (find-paste number))
-	    (possibly-annotation
-	     (if (and (< (1+ junk) (length paste-string))
-		      (eql (elt paste-string junk) #\/))
-		 (quick-parse-junk-integer (subseq paste-string (1+ junk))
-					   :radix 36)))
-	    (url (and paste
-		      (if possibly-annotation
-			  (concatenate 'string (paste-display-url paste)
-				       (format nil "#~A" possibly-annotation))
-			  (paste-display-url paste)))))
-       (cond
-	 (paste
-	  (request-send-headers
-	   request
-	   :location url
-	   :expires "Fri, 30 Oct 1998 14:19:41 GMT"
-	   :pragma "no-cache"
-	   :response-code 302 :response-text "Redirected")
-	  (lisppaste-wrap-page "Redirected"))
-	 (t
-	  (lisppaste-send-headers-for-html request :response-code 404
-					   :response-text "Not Found")
-	  (xml-output-to-stream
-	   (request-stream request)
-	   (lisppaste-wrap-page
-	    (format nil "Invalid paste number ~A!" number)))))))))
+(defun parse-short-paste-number (script-name)
+  (ppcre:register-groups-bind (paste annotation)
+      ("^/\\+/(\\w+)/?(\\w*)" script-name)
+    (values
+     (parse-integer paste :junk-allowed t :radix 36)
+     (and annotation
+          (parse-integer annotation :junk-allowed t :radix 36)))))
+
+(define-easy-handler (short-paste :uri (match-prefix *short-paste-url*)) ()
+  (multiple-value-bind (paste-number annotation)
+      (parse-short-paste-number (script-name*))
+    (let* ((paste (find-paste paste-number))
+           (url (and paste
+                     (format nil "~a~@[#~A~]" (paste-display-url paste) annotation))))
+      (cond
+        (paste
+         (redirect url))
+        (t
+         (setf (return-code*) 404)
+         (xml-to-string
+          (lisppaste-wrap-page
+           (format nil "Invalid paste number ~A!" paste-number))))))))
 
 (defmethod handle-request-response ((handler email-redirect-handler) method request)
   (let ((email-url (concatenate 'string "mailto:" *owner-email* "?subject=")))
