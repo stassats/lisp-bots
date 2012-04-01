@@ -493,23 +493,19 @@ with your favorite RSS reader."
             if (eql (- i page) 5)
             collect "... "))))
 
-(define-easy-handler (list-all-pastes :uri *list-paste-url*) (channel)
-  (let* ((discriminate-channel
-           (or channel
-               (if (not (string-equal channel ""))
-                   (or (and *no-channel-pastes*
-                            (string-equal channel "/none")
-                            "None")
-                       (and *no-channel-pastes*
-                            (string-equal channel "/some")
-                            "Some")
-                       (substitute #\# #\/ channel
-                                   :test #'char=)))))
+(defun parse-list-channel ()
+  (ppcre:register-groups-bind (channel)
+      (#.(format nil "^~a/(\.+)" *list-paste-url*) (script-name*))
+    channel))
+
+(define-easy-handler (list-all-pastes :uri (match-prefix *list-paste-url*)) (channel)
+  (let* ((discriminate-channel (or channel (parse-list-channel)))
          (discriminate-channel
-           (if (string-equal discriminate-channel "allchannels")
-               nil discriminate-channel))
-         (page (or ;; (when others
-                   ;;   (quick-parse-junk-integer (car others)))
+           (unless (equalp discriminate-channel "allchannels")
+             discriminate-channel))
+         (page-parameter (single-get-parameter))
+         (page (or (and page-parameter
+                        (parse-integer page-parameter :junk-allowed t))
                    0))
          (discriminated-pastes
            (list-pastes :in-channel (if (equal discriminate-channel "Some")
@@ -602,27 +598,24 @@ with your favorite RSS reader."
        (<table class="controls">
                (<tr> (<td> "Page: " page-links))))))))
 
-(defun parse-rss-channel-name ()
+(defun single-get-parameter ()
   (ppcre:scan-to-strings "(?<=\\?).+$" (request-uri*)))
 
 (defun handle-rss-request (&key full)
   (setf (content-type*) "application/rss+xml")
-  (let* ((channel (parse-rss-channel-name))
-         (discriminate-channel (unless (or (null channel)
-                                           (equalp channel "none"))
-                                 channel)))
+  (let* ((channel (single-get-parameter)))
     (who:with-html-output-to-string (*standard-output*)
       (format t "<?xml version=\"1.0\" encoding=\"UTF-8\"?>~C~C" #\Return #\Linefeed)
       (:rss :version "2.0"
             (:channel
-             (:title "Lisppaste pastes")
-             (when discriminate-channel
-               (fmt " for channel ~A" discriminate-channel))
+             (:title "Lisppaste pastes"
+                     (when channel
+                       (fmt " for channel ~A" channel)))
              (:link (str *list-paste-url*))
              (:description "Pastes in this pastebot")
-             (when discriminate-channel
-               (fmt " on channel ~A" discriminate-channel))
-             (loop for paste in (list-pastes :in-channel discriminate-channel
+             (when channel
+               (fmt " on channel ~A" channel))
+             (loop for paste in (list-pastes :in-channel channel
                                              :limit 20)
                    do
                    (htm
