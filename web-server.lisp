@@ -9,11 +9,6 @@
 
 (defclass lisppaste-basic-handler (handler lisppaste-basic-behavior) ())
 
-
-(defclass recent-handler (lisppaste-basic-handler) ())
-
-
-
 (defclass list-paste-handler (lisppaste-basic-handler) ())
 
 
@@ -231,14 +226,6 @@ table.webutils-form th { text-align: left; }
          (<tr> (<td colspan="3">
                     (<center> (<b> (<a href=?*list-paste-url*>
                                        "More recent pastes..."))))))))
-
-(defmethod handle-request-response ((handler recent-handler) method request)
-  
-  (xml-output-to-stream
-   (request-stream request)
-   (lisppaste-wrap-page
-    "Recent Pastes"
-    (recent-paste-list-div :count 20))))
 
 (defun xml-to-string (xml)
   (with-output-to-string (stream)

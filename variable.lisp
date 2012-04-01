@@ -180,8 +180,6 @@
 
 (defparameter *css-url* "/lisppaste.css")
 
-(defparameter *recent-url* "/recent")
-
 (defparameter *email-redirect-url* "/email")
 
 (defparameter *channel-select-url* "/channels")
