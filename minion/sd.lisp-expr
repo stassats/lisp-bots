@@ -1,0 +1,665 @@
+(:SD "f00f"
+ . "The small bot that was replaced when the cliki-bot gained small-definition functionality.")
+(:SD "term" . "Try replacing \"term\" with your actual search term :-)")
+(:SD "g10"
+ . "Greenspun's Tenth Law: Any sufficiently complicated C or Fortran program contains an ad-hoc, informally-specified bug-ridden slow implementation of half of Common Lisp.")
+(:SD "apostrophe"
+ . "See http://www.angryflower.com/bobsqu.gif and http://www.angryflower.com/itsits.gif - THWAP!")
+(:SD "sl"
+ . "Successful Lisp. An online Lisp tutorial book written by David B. Lamkins. http://psg.com/~dlamkins/")
+(:SD "hyperspec"
+ . "The Common Lisp HyperSpec can be found at http://www.lispworks.com/reference/HyperSpec/ - or go to the contents at http://www.lispworks.com/reference/HyperSpec/Front/Contents.htm")
+(:SD "logs"
+ . "#lisp logs are available at http://tunes.org/~nef/logs/ (prettified at http://tunes.org/~coreyr/ ) and http://irc-logs.b9.com/lisp/")
+(:SD "chant" . "MORE CODE! MORE CODE!")
+(:SD "fetch me coffee" . "do you want it black")
+(:SD "lisp interpreter"
+ . "COMPILER! It's in the standard ferchrissake -- though so implementations provide an interpeter as well. REPL does not imply interpreter.")
+(:SD "lisp interpreter"
+ . "COMPILER! It's in the standard ferchrissake. REPL does not imply interpreter.")
+(:SD "what you say" . "It's you!!!!!!!")
+(:SD "logs"
+ . "#lisp logs are available at http://tunes.org/~nef/logs/ (prettified at http://tunes.org/~coreyr/ ) and http://irc-logs.b9.com/")
+(:SD "logs"
+ . "#lisp logs are available at(prettified at http://tunes.org/~coreyr/ ) and http://cmeme.b9.com/")
+(:SD "logs"
+ . "#lisp logs are available at http://tunes.org/~nef/logs/, prettified at http://tunes.org/~coreyr/, and webapp browser at http://cmeme.b9.com")
+(:SD "AMOP"
+ . "The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO.")
+(:SD "AMOP"
+ . "The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO. See the sepcification of MOP at http://www.lisp.org/mop/")
+(:SD "logs"
+ . "#lisp logs are available at http://meme.b9.com/ (searchable,customizable filtering & highlighting); http://tunes.org/~nef/logs/ (text), and http://tunes.org/~coreyr/ (prettified version of ~nef)")
+(:SD "logs"
+ . "#lisp logs are available at http://meme.b9.com/ (searchable,customizable filtering & highlighting); http://tunes.org/~nef/logs/ (text); and http://tunes.org/~coreyr/ (prettified version of ~nef)")
+(:SD "nchant" . "MORE ASIDES! MORE ASIDES!")
+(:SD "rchant" . "MORE RESTRAINT! MORE RESTRAINT!")
+(:SD "badger" . "http://www.badgerbadgerbadger.com/")
+(:SD "lisp500"
+ . "A 500-line implementation of a basic Lisp, available at http://www.s2.org/~chery/projects/lisp500/lisp500.c")
+(:SD "clhs"
+ . "A bot that will return a URL to the CLHS section for the given term.")
+(:SD "clhs"
+ . "To look up a symbol in the HyperSpec, try saying \"clhs symbol\". For more information on the HyperSpec see http://www.cliki.net/CLHS .")
+(:SD "dchat" . "MORE DOCUMENTATION! MORE DOCUMENTATION!")
+(:SD "dchant" . "MORE DOCUMENTATION! MORE DOCUMENTATION!")
+(:SD "bots"
+ . "there are four bots (including me) on #lisp: lisppaste, which announces new pastes from the web form; cmeme, which provides a log of this channel on the web; clhs, which does HyperSpec lookups. I answer queries for definitions and search the cliki.")
+(:SD "pchant" . "MORE PUBLICITY! MORE PUBLICITY!")
+(:SD "rchant" . "#1=(MORE . #1#)")
+(:SD "pcl-book"
+ . "\"Practical Common Lisp\", a Common Lisp introduction work-in-progress by Peter Seibel, http://www.gigamonkeys.com/book/")
+(:SD "lisp500"
+ . "A 500-line-or-less implementation of a basic Lisp, available at http://www.modeemi.fi/~chery/lisp500/lisp500.c")
+(:SD "graham crackers"
+ . "http://www.cs.northwestern.edu/academics/courses/325/readings/graham/graham-notes.html")
+(:SD "lisp500"
+ . "A 500-line-or-less implementation of a basic Lisp, available at http://www.modeemi.fi/~chery/lisp500/")
+(:SD "orkut" . "A favorite way to waste time, instead of making MORE CODE.")
+(:SD "chant" . "MORE CAPATALISM! MORE CAPATALISM!")
+(:SD "chant" . "MORE CODE! MORE CODE!")
+(:SD "chant" . "MORE CAPATALISM! MORE CAPATALISM!")
+(:SD "chant" . "MORE CODE! MORE CODE!")
+(:SD "benchmarks"
+ . "sbcl benchmark graphs can be found at http://sbcl.boinkor.net/benchmark/.")
+(:SD "sicm"
+ . "Structure and Interpretation of Classical Mechanics.Dedicated to the principle of least action.")
+(:SD "evil" . "I am the evil minion.Muhaha.")
+(:SD "perl6" . "http://leech.dk/p6_cover.gif")
+(:SD "perl6" . "http://bleaklow.com/blog/images/p6_cover_big.gif")
+(:SD "sicp in pdf" . "http://www.cs.indiana.edu/~bmastenb/misc/sicp.pdf")
+(:SD "AFDB" . "http://zapatopi.net/afdb.html")
+(:SD "sicp"
+ . "Structure and Interpretation of Computer Programs, a textbook in CS using Scheme. Get the PDF at http://www.cs.indiana.edu/~bmastenb/misc/sicp.pdf , the HTML at http://mitpress.mit.edu/sicp/ , or the texinfo at http://www.neilvandyke.org/sicp-texi/ .")
+(:SD "P40" . "Proposed ANSI Revisions and Clarifications (a page on CLiki)")
+(:SD "P40" . "see P40s")
+(:SD "undirected question" . "\"My program dont work! Why does lisp suck?!\"")
+(:SD "sbcl-internals"
+ . "the sbcl internals cliki, at http://sbcl-internals.cliki.net/")
+(:SD "according to"
+ . "a short introduction to setting up SBCL and SLIME for new CL users: http://ww.telent.net/lisp/according_to/")
+(:SD "Leimy" . "cool")
+(:SD "c++filt" . "The sexy thing that goes both ways.")
+(:SD "term DarwinPorts" . "An excercise in futility.")
+(:SD "DarwinPorts" . "an excercise in futility.")
+(:SD "Leimy" . "fucking cool yo!")
+(:SD "mww" . "mww")
+(:SD "woot" . "woot!")
+(:SD "cbarrett" . "a person who thinks he is joseph stalin")
+(:SD "jkh" . "Jordlan Klay Hublard")
+(:SD "cbarrett" . "just ignore him")
+(:SD "startingwithcl"
+ . "http://www.iddqd.org/~chandler/documents/startingwithcl.html")
+(:SD "startingwithcl"
+ . "A quick guide to getting set up to learn Common Lisp, the #lisp way: http://www.iddqd.org/~chandler/documents/startingwithcl.html")
+(:SD "medley" . "http://www2.parc.com/istl/groups/nltt/medley/")
+(:SD "medley"
+ . "The software emulator for the InterLisp system, available for non-commercial use at: http://www2.parc.com/istl/groups/nltt/medley/")
+(:SD "chandler.emacs" . "http://www.cs.indiana.edu/~bmastenb/dotfiles/emacs")
+(:SD "raymond" . "another toy")
+(:SD "pxref"
+ . "The new name for Mark Kantrowitz's XREF http://www-cgi.cs.cmu.edu/afs/cs/project/ai-repository/ai/lang/lisp/code/tools/xref/0.html")
+(:SD "vilisp" . "http://vim.sourceforge.net/scripts/script.php?script_id=221")
+(:SD "vilisp"
+ . "vlisp.vim at http://vim.sourceforge.net/scripts/script.php?script_id=221, tips for vi/lisp at http://www.lisp-p.org/15-vim/")
+(:SD "asl" . "One, neither, right here.")
+(:SD "advice entries"
+ . "http://groups.google.com/groups?selm=a6ukat%24a4b%241%40plover.com&output=gplain")
+(:SD "unlambda"
+ . "Your Functional Programming Language Nightmares Come True: http://www.eleves.ens.fr:8080/home/madore/programs/unlambda/")
+(:SD "axiom"
+ . "Axiom is a general purpose Computer Algebra system released under the modified BSD license. It defines a strongly typed, mathematically correct type hierarchy. http://www.nongnu.org/axiom/")
+(:SD "testterm" . "the definition")
+(:SD "testterm" . "the other definition")
+(:SD "dolphin" . "tasty")
+(:SD "TLF" . "Top Level Form")
+(:SD "startingwithcl"
+ . "A quick guide to getting set up to learn Common Lisp, the #lisp way: http://www.unmutual.info/startingwithcl.html")
+(:SD "aima"
+ . "AIMA is Artificial Intelligence: A Modern Approach, http://aima.cs.berkeley.edu")
+(:SD "lisppaste"
+ . "lisppaste is an IRC bot that runs under the nickname \"lisppaste\" and can be used (only for the #lisp IRC channel!) at http://paste.lisp.org/new/lisp - or http://paste.lisp.org/ for other destinations")
+(:SD "pcl-book"
+ . "\"Practical Common Lisp\", a Common Lisp introduction work-in-progress by Peter Seibel, http://www.gigamonkeys.com/book/ (Temporarily available at http://boar.he.net/~seibel/book/ while gigamonkeys gets moved.)")
+(:SD "pcl-book"
+ . "\"\"Practical Common Lisp\", a Common Lisp introduction work-in-progress by Peter Seibel, http://www.gigamonkeys.com/book/\"")
+(:SD "pcl-book"
+ . "Practical Common Lisp\", a Common Lisp introduction work-in-progress by Peter Seibel, http://www.gigamonkeys.com/book/")
+(:SD "pcl-book"
+ . "\"Practical Common Lisp\", a Common Lisp introduction work-in-progress by Peter Seibel, http://www.gigamonkeys.com/book/")
+(:SD "newbiedump" . "See http://www.cliki.net/IRC for some typical links")
+(:SD "OAOOM" . "Once And Only Once More")
+(:SD "OAOOM" . "abbreviation of Once And Only Once More")
+(:SD "bots"
+ . "there are five bots (including me) on #lisp: lisppaste, which announces new pastes from the web form; cmeme and clog, which provide logs of this channel on the web; specbot, which does HyperSpec lookups. I answer queries for definitions and search the cliki.")
+(:SD "DTRT"
+ . "Do The Right Thing. This is the opposite of \"Worse is Better\".")
+(:SD "OAOO" . "Once And Only Once")
+(:SD "fsvo" . "For Some Values Of")
+(:SD "specbot" . "clhs loop")
+(:SD "copy-array" . "http://lemonodor.com/archives/000100.html")
+(:SD "HTDP"
+ . "How To Design Programs, an online textbook in introductory CS using PLT Scheme, available at http://www.htdp.org/")
+(:SD "SICP"
+ . "Structure and Interpretation of Computer Programs, a textbook in CS using Scheme. Get the PDF at http://www.cs.indiana.edu/~bmastenb/misc/sicp.pdf , the HTML at http://mitpress.mit.edu/sicp/ , the texinfo at http://www.neilvandyke.org/sicp-texi/ , or the video at http://swiss.csail.mit.edu/classes/6.001/abelson-sussman-lectures/ .")
+(:SD "pcl-book"
+ . "\"Practical Common Lisp\", an introduction to Common Lisp by Peter Seibel, available at http://www.gigamonkeys.com/book/ and in dead-tree form from Apress (as of 11 April 2005).")
+(:SD "your author" . "chandler is my creator.")
+(:SD "your creator" . "chandler is my creator.")
+(:SD "creator" . "chandler is my creator.")
+(:SD "author" . "chandler is my creator.")
+(:SD "cargo cult"
+ . "\"They're doing everything right. The form is perfect. It looks exactly the way it looked before. But it doesn't work.\" http://www.physics.brocku.ca/etc/cargo_cult_science.html")
+(:SD "benchmarks"
+ . "sbcl benchmark graphs can be found at <http://sbcl.boinkor.net/benchmark/>")
+(:SD "benchmarks"
+ . "sbcl benchmark graphs can be found at <http://sbcl.boinkor.net/bench/>")
+(:SD "M$" . "http://img.penny-arcade.com/2002/20020722l.gif")
+(:SD "goldberg"
+ . "What Every Computer Scientist Should Know About Floating-Point Arithmetic. http://docs.sun.com/source/806-3568/ncg_goldberg.html")
+(:SD "NIH"
+ . "Not Invented Here, the force which drives hackers to reinvent the wheel, sometimes better")
+(:SD "OHCSOAP" . "One HTML Coder Short Of A Project")
+(:SD "\"evolution of lisp\":"
+ . "ftp://ftp.cs.indiana.edu/pub/scheme-repository/doc/pubs/Evolution-of-Lisp.ps.gz")
+(:SD "evolution of lisp"
+ . "paper by Richard Gabriel and Guy L. Steele, available at ftp://ftp.cs.indiana.edu/pub/scheme-repository/doc/pubs/Evolution-of-Lisp.ps.gz")
+(:SD "itsits" . "http://www.angryflower.com/itsits.gif")
+(:SD "thwap"
+ . "THWAP! http://www.angryflower.com/bobsqu.gif and http://www.angryflower.com/itsits.gif")
+(:SD "john mccarthy"
+ . "John McCarthy is a computer scientist, now retired. He invented LISP and contributed in many fields of AI.")
+(:SD "R5RS"
+ . "The Revised^5 Report on Scheme, the most recent revision of the Scheme standard (but see also IEEE-1178), at <http://www.schemers.org/Documents/Standards/R5RS/>; to search its index for an entry, try saying \"r5rs entry\".")
+(:SD "scheme48.el"
+ . "an Emacs major mode for Scheme48 source files providing integration with the module system, a replacement for cmuscheme48.el; see <http://www.emacswiki.org/cgi-bin/wiki/Scheme48mode> for further details")
+(:SD "scheme48.el"
+ . "an Emacs major mode for Scheme48 source files providing integration with the module system, a replacement for cmuscheme48.el; see <http://www.emacswiki.org/cgi-bin/wiki/Scheme48Mode> for further details")
+(:SD "cow-orker" . "\"Orking cows is illegal in the state of Utah.\"")
+(:SD "csw" . "Community Scheme Wiki - http://community.schemewiki.org/")
+(:SD "oop" . "http://community.schemewiki.org/?object-oriented-programming")
+(:SD "prometheus"
+ . "A prototype-based object system for Scheme - http://www.forcix.cx/software/prometheus.html")
+(:SD "why lisp"
+ . "The first chapter of Practical Common Lisp: http://www.gigamonkeys.com/book/introduction-why-lisp.html")
+(:SD "jas-match"
+ . "a simple pattern matcher written with SYNTAX-RULES, by Jens Axel Soegaard, at <http://www.bloodandcoffee.net/campbell/jas-match.scm> (temporary link)")
+(:SD "packages"
+ . "http://www.gigamonkeys.com/book/programming-in-the-large-packages-and-symbols.html")
+(:SD "away" . "plz read http://sackheads.org/~bnaylor/spew/away_msgs.html")
+(:SD "morning" . "The time after waking up")
+(:SD "sicp"
+ . "Structure and Interpretation of Computer Programs, a textbook in CS using Scheme. Get the PDF at http://www.unmutual.info/documentation/sicp.pdf , the HTML at http://mitpress.mit.edu/sicp/ , the texinfo at http://www.neilvandyke.org/sicp-texi/ , or the video at http://swiss.csail.mit.edu/classes/6.001/abelson-sussman-lectures/")
+(:SD "\"Bob\""
+ . "http://www.subgenius.com/bigfist/pics11/ARTEMIA_SALINA/images/realisto-bob.jpg")
+(:SD "Alan Greenspan" . "http://rdwarf.com/~kioh/")
+(:SD "FSM" . "http://www.venganza.org/images/FSF_200.jpg")
+(:SD "paredit.el"
+ . "a set of Emacs commands, with a minor mode for conveniently enabling them, for pseudo-structurally editing Lisp code, designed to roughly mimic Interlisp's SEdit as conveniently as is possible in Emacs, at <http://mumble.net/~campbell/emacs/paredit.el>")
+(:SD "naggum on haskell"
+ . "http://groups.google.com/group/comp.lang.lisp/msg/28cb9d4217fe6dc3")
+(:SD "naggum on cars"
+ . "http://groups.google.com/group/comp.lang.lisp/msg/a5d5c10f811b81e8")
+(:SD "loop"
+ . "you might want to look at this: http://www.gigamonkeys.com/book/loop-for-black-belts.html")
+(:SD "loop"
+ . "LOOP for Black Belts: http://www.gigamonkeys.com/book/loop-for-black-belts.html")
+(:SD "mzc" . "butt")
+(:SD "the house" . "http://protonradio.com")
+(:SD "Greenspun"
+ . ": \"Any sufficiently complicated C or Fortran program contains an ad-hoc, informally-specified bug-ridden slow implementation of half of Common Lisp.\"")
+(:SD "Greenspun"
+ . ": Greenspun's Tenth Rule of Programming: \"Any sufficiently complicated C or Fortran program contains an ad-hoc, informally-specified bug-ridden slow implementation of half of Common Lisp.\"")
+(:SD "oop" . "http://community.schemewiki.org/?object-oriented-programming")
+(:SD "time cube" . "http://TIMECUBE.COM")
+(:SD "Destroy.Hot.Action" . "http://destroyhotaction.com/")
+(:SD "ignorance" . "strength")
+(:SD "ignorance" . "is strength")
+(:SD "ignorance" . "strength")
+(:SD "war" . "peace")
+(:SD "freedom" . "slavery")
+(:SD "quack"
+ . "an Emacs package written by Neil van Dyke for conveniences in Scheme editing such as documentation referencing, font-lock customization, cosmetic hacks such as pretty-lambdas & definition styles & bracket insertion; at <http://www.neilvandyke.org/quack/>; *not* a Scheme interaction mode -- see cmuscheme.el")
+(:SD "SLIME48"
+ . "a Scheme48 back end for SLIME, written by Riastradh (Taylor Campbell); Darcs repository at <http://mumble.net/~campbell/darcs/slime48/>; self-contained tarball, including all requisite Scheme and Emacs Lisp from the SLIME CVS repository, at <http://mumble.net/~campbell/scheme/slime48.tar.gz>")
+(:SD "The Dream Factory" . "http://radio.hbr1.com:19720")
+(:SD "lambda" . "the ultimate eigenvalue")
+(:SD "determinant"
+ . "the unique antisymmetric multilinear map d from the free R-module of rank n to a commutative ring R satisfying d(I) = 1")
+(:SD "Catfive" . "sarahbot's hubby")
+(:SD "blog.txt"
+ . "Riastradh's 'blog,' at <http://mumble.net/~campbell/blog.txt>")
+(:SD "Euroclassic Notturno"
+ . "http://www.bbc.co.uk/radio3/euroclassicnotturno/")
+(:SD "Chicken"
+ . "The Chicken Scheme->C Compiler - http://www.call-with-current-continuation.org/")
+(:SD "all your base" . "are belong to us")
+(:SD "Stalin"
+ . "an aggressive whole-program optimizing batch Scheme compiler written by Jeffrey Mark Siskind: http://www.ece.purdue.edu/%7Eqobi/software.html")
+(:SD "slay" . "http://www.slayradio.org/")
+(:SD "googlethwap" . "\"google\" is not a real answer to a question")
+(:SD "Shivers' loop"
+ . "a language for expressing control-flow graphs, a toolkit for building loops on top of that, and a high-level LOOP macro on top of that, by Olin Shivers; see <http://www-static.cc.gatech.edu/~shivers/papers/loop.pdf>")
+(:SD "magic" . "http://magic.xmog.com/")
+(:SD "axolotl" . "http://axolotl.terpri.org/")
+(:SD "Scheme48"
+ . "a portable, very R5RS-compliant Scheme implementation oriented toward simplicity and cleanliness of design, based on a byte code compiler and virtual machine for it written in a subset of Scheme, tied together with an advanced module system integrated with the development environment, and written by Jonathan Rees and Richard Kelsey")
+(:SD "BLOAT" . "RFC 3252 - Binary Lexical Octet Ad-hoc Transport")
+(:SD "unicode" . "DINGBAT CIRCLED SANS-SERIF DIGIT FIVE")
+(:SD "the time" . "4:20")
+(:SD "the chill" . "http://216.127.90.38:8002")
+(:SD "T"
+ . "a Scheme dialect and its implementation; see <http://mumble.net/~jar/tproject/> and <http://mumble.net/~campbell/t/t.html>")
+(:SD "CML"
+ . "Originally \"Concurrent ML\", an extension to SML implementing an event-based algebra. The basic features are \"events\" on which threads synchronize (\"rendezvous\"). These can be used to implement higher levels of concurrency abstraction. See Reppy, J.: Concurrent Programming in ML")
+(:SD "the bass" . "http://aol.streams.bassdrive.com:8012")
+(:SD "prescheme"
+ . "a statically typed, low-level dialect of Scheme for systems programming; see <http://mumble.net/~campbell/s48-refman/html/Pre_002dScheme.html>")
+(:SD "the jungle" . "http://stream1.jungletrain.net:8000")
+(:SD "circe"
+ . "an Emacs IRC client, written by Jorgen Schaefer, simpler than ERC but feature-rich than rcirc, at <http://savannah.nongnu.org/projects/circe/>")
+(:SD "circe"
+ . "an Emacs IRC client, written by Jorgen Schaefer, simpler than ERC but more featureful than rcirc, at <http://savannah.nongnu.org/projects/circe/>")
+(:SD "the psytrance" . "http://85.214.35.42:8000")
+(:SD "thwap"
+ . "THWAP! http://www.angryflower.com/bobsqu.gif and http://www.angryflower.com/itsits.gif (see also: http://www.unmutual.info/misc/sb_itsits.mp3 )")
+(:SD "cl-vs-clisp"
+ . "CL is the preferred abbreviation for Common Lisp, the language. CLISP is a specific implementation of Common Lisp: there are many others (eg. SBCL, CMUCL, OpenMCL, ABCL, GCL, ECL -- not to mention to the commercial ones!)")
+(:SD "botloop"
+ . "eval (for-each display '(\"minion: tell sar\" \"ahbot about botloop\"))")
+(:SD "eval" . "(display \"minion: tell me about eval\")")
+(:SD "eval" . "(begin (display \"min\") (display \"ion: tell me about eval\"))")
+(:SD "eval" . "(begin (display \"minion: te\") (display \"ll me about eval\"))")
+(:SD "eval" . "(begin (display \"minion: te\") (display \"ll me about eval\"))")
+(:SD "LISP"
+ . "\"Lisp In Small Piece\", is a book about interpreters and languages (dialects of Lisp). It is about 500 pages with 11 interpreters and 2 compliers. This book also exists in French, published by InterÉditions, under title Les Langages Lisp. http://www-spi.lip6.fr/~queinnec/WWW/LiSP.html Queinnec delves into all the dirty dark corners of Lisp and its variants, exposing in the process both the shape of the Lisp design")
+(:SD "gentle"
+ . "\"Common Lisp: A Gentle Introduction to Symbolic Computation\" is a smoother introduction to lisp programming. http://www.cs.cmu.edu/~dst/LispBook/")
+(:SD "paredit"
+ . "a set of Emacs commands, with a minor mode for convenient access to them, for editing balanced S-expressions and a number of higher-level operations on S-expressions, at <http://mumble.net/~campbell/emacs/paredit.el>; see also the #paredit channel")
+(:SD "Riastradh"
+ . "a set of Emacs commands, with a minor mode for convenient access to them, for writing Scheme implementations")
+(:SD "SINO"
+ . "\"Scheme In Name Only\". The name given a Scheme implementation which isn't really Scheme, like SIOD")
+(:SD "lisp-1"
+ . "is at http://www.nhplace.com/kent/Papers/Technical-Issues.html")
+(:SD "lisp-2"
+ . "is at http://www.nhplace.com/kent/Papers/Technical-Issues.html")
+(:SD "lisp-1 vs. lisp-2"
+ . "see http://www.nhplace.com/kent/Papers/Technical-Issues.html")
+(:SD "meaning of life" . "42")
+(:SD "Essence"
+ . "an LR parser generator for Scheme based on partial evaluation, at <http://www.informatik.uni-freiburg.de/proglang/software/essence/>")
+(:SD "slim-vim" . "slime for vim/erc at http://wiki.alu.org/Slim-Vim")
+(:SD "LiSP"
+ . "\"Lisp In Small Pieces\", is a book about interpreters and languages (dialects of Lisp). It is about 500 pages with 11 interpreters and 2 compliers. This book also exists in French, published by InterÉditions, under title Les Langages Lisp. http://www-spi.lip6.fr/~queinnec/WWW/LiSP.html Queinnec delves into all the dirty dark corners of Lisp and its variants, exposing in the process both the sh")
+(:SD "LiSP"
+ . "\"Lisp In Small Pieces\", is a book about interpreters and languages (dialects of Lisp). It is about 500 pages with 11 interpreters and 2 compliers. This book also exists in French, published by InterÉditions, under title Les Langages Lisp. http://www-spi.lip6.fr/~queinnec/WWW/LiSP.html Queinnec delves into all the dirty dark corners of Lisp and its variants, exposing in the process both the shape of the Lisp design")
+(:SD "LiSP"
+ . "\"Lisp In Small Pieces\", is a book about interpreters and languages (dialects of Lisp). It is about 500 pages with 11 interpreters and 2 compliers. This book also exists in French, published by InterÉditions, under title Les Langages Lisp. http://www-spi.lip6.fr/~queinnec/WWW/LiSP.html Queinnec delves into all the dirty dark corners of Lisp and its variants, exposing in the process both the shape of the Lisp design.")
+(:SD "LiSP"
+ . "\"Lisp In Small Pieces\", is a book about interpreters and languages (dialects of Lisp). It is about 500 pages with 11 interpreters and 2 compliers. This book also exists in French, published by InterÉditions, under title Les Langages Lisp. http://www-spi.lip6.fr/~queinnec/WWW/LiSP.html Queinnec delves into all the dirty dark corners of Lisp and its variants, exposing in the process both the shape of the Lisp design and a spectrum of")
+(:SD "LiSP"
+ . "\"Lisp in Small Pieces\". This book covers Lisp, Scheme and other related dialects, their interpretation, semantics and compilation. To sum it up in a few figures: 500 pages, 11 chapters, 11 interpreters and 2 compilers. <http://www-spi.lip6.fr/~queinnec/WWW/LiSP.html>")
+(:SD "bad analogy"
+ . "http://www.dilbert.com/comics/dilbert/archive/images/dilbert2006183241026.gif")
+(:SD "sarahbot" . "eval (display \"minion: sarahbot\")")
+(:SD "SICP"
+ . "Structure and Interpretation of Computer Programs, a CS textbook using Scheme. Available gratis from http://mitpress.mit.edu/sicp/ (HTML), http://www.neilvandyke.org/sicp-texi/ (texinfo) and http://twb.ath.cx/~twb/typeset/sicp/ (XHTML, PDF). Accompanying video lectures are available gratis at http://swiss.csail.mit.edu/classes/6.001/abelson-sussman-lectures/")
+(:SD "sicp"
+ . "Structure and Interpretation of Computer Programs, a CS textbook using Scheme. Available gratis from <http://mitpress.mit.edu/sicp/> (HTML), <http://www.neilvandyke.org/sicp-texi/> (texinfo) and <http://twb.ath.cx/~twb/canon/sicp/> (XHTML, PDF). Accompanying video lectures are available gratis at <http://swiss.csail.mit.edu/classes/6.001/abelson-sussman-lectures/>")
+(:SD "emacs-cl"
+ . "Emacs Common Lisp is an implementation of Common Lisp written in Emacs Lisp. http://www.lisp.se/emacs-cl/")
+(:SD "TAOUP" . "The Art of Unix Programming, at http://www.faqs.org/docs/artu/")
+(:SD "TCOTE" . "The Craft of Text Editing at http://www.finseth.com/craft/")
+(:SD "scheme-lookup"
+ . "an Emacs library for looking up entries in Scheme references, at <http://twb.ath.cx/~twb/canon/scheme-lookup/>, written by Trent W. Buck")
+(:SD "exhaustive-list"
+ . "http://developers.slashdot.org/comments.pl?sid=23357&cid=2543265 - \"[...]please don't assume Lisp is only useful for Animation and Graphics, AI, Bioinformatics, B2B and Ecommerce, [...] just because these are the only things they happened to list.\"")
+(:SD "ping" . "pong")
+(:SD "logs"
+ . "#lisp logs are available at http://ircbrowse.com/ (searchable,customizable filtering & highlighting); http://tunes.org/~nef/logs/ (text); and http://tunes.org/~coreyr/ (prettified version of ~nef)")
+(:SD "logs"
+ . "#lisp logs are available at http://ircbrowse.com/ (searchable,customizable filtering & highlighting); http://tunes.org/~nef/logs/ (text)")
+(:SD "pawht" . "\"Whatever.\"")
+(:SD "deep copy"
+ . "Please see the Kent Pitman article on the subject of generic DEEP-COPY and DEEP-EQUAL routines, at <http://www.nhplace.com/kent/PS/EQUAL.html>")
+(:SD "gambit"
+ . "Gambit-C includes a Scheme interpreter and a Scheme compiler which can be used to build standalone executables. http://www.iro.umontreal.ca/~gambit/")
+(:SD "termite"
+ . "Termite is an Erlang-like distributed programming system written in Scheme. http://toute.ca/")
+(:SD "Bush"
+ . "Bush is a puppet manipulated by Dick Cheney, a dangerous war criminal")
+(:SD "eggs"
+ . "eggs are Chicken Scheme extensions: http://chicken.wiki.br/Eggs%20Unlimited")
+(:SD "paf" . "Are you talking to me")
+(:SD "paf" . "|-__-|")
+(:SD "paf" . "is here from time to time")
+(:SD "paf" . ".:.:.:.:|:.:.:.:")
+(:SD "yome" . "http://toute.ca")
+(:SD "yome" . "http://toute.ca")
+(:SD "yome" . "\"http://toute.ca\"")
+(:SD "Descartes" . "Don't go putting Descartes before Deshorse")
+(:SD "Descartes" . "the first emo kid")
+(:SD "parscheme" . "<http://mumble.net/~campbell/darcs/parscheme/>")
+(:SD "optibot" . "the first ophthalmic surgeon written entirely in Scheme")
+(:SD "GLS" . "the initials of Guy L. Steele")
+(:SD "mad-sibyl" . "prophesy")
+(:SD "GJS" . "the initials of Gerald Jay Sussman")
+(:SD "logs"
+ . "#lisp logs are available at http://ircbrowse.com/channel/lisp/ (searchable,customizable filtering & highlighting); http://tunes.org/~nef/logs/lisp/ (text)")
+(:SD "Larceny"
+ . "a simple, efficient multiplatform implementation of Scheme that supports R5RS, ERR5RS and R6RS; located at http://www.ccs.neu.edu/home/will/Larceny/")
+(:SD "dijkstra-on-analogies"
+ . "One of [the Middle Age's] characteristics was that \"reasoning by analogy\" was rampant; another characteristic was almost total intellectual stagnation, and we now see why the two go together. (EWD1036)")
+(:SD "dijkstra-on-analogies"
+ . "One of [the Middle Ages'] characteristics was that \"reasoning by analogy\" was rampant; another characteristic was almost total intellectual stagnation, and we now see why the two go together. (EWD1036)")
+(:SD "lisp survey"
+ . "http://www.common-lisp.net/~dlw/LispSurvey.html A survey by Daniel Weinreb comparing Common Lisp implementations, both commercial and open-source, that were active as of late 2007. It also has a useful links to learning Resources at the end")
+(:SD "lisp survey"
+ . "http://www.common-lisp.net/~dlw/LispSurvey.html A survey by Daniel Weinreb comparing Common Lisp implementations, both commercial and open-source, that were active as of late 2007. It also has useful links to learning resources at the end")
+(:SD "cl-opengl-thomas"
+ . "http://common-lisp.net/~loliveira/darcs/cl-opengl-thomas/ a branch of cl-opengl that has better autogenerated low-level bindings and is the only one that works with current CFFI")
+(:SD "pcl oo"
+ . "\"You might want to look at http://www.gigamonkeys.com/book/object-reorientation-generic-functions.html and http://www.gigamonkeys.com/book/object-reorientation-classes.html for an overview of OO in Common Lisp.\"")
+(:SD "pcl oo"
+ . "\"http://www.gigamonkeys.com/book/object-reorientation-generic-functions.html and http://www.gigamonkeys.com/book/object-reorientation-classes.html\"")
+(:SD "pcl conditions"
+ . "\"http://www.gigamonkeys.com/book/beyond-exception-handling-conditions-and-restarts.html\"")
+(:SD "pcl loop"
+ . "\"http://www.gigamonkeys.com/book/loop-for-black-belts.html\"")
+(:SD "xach-asdf"
+ . "Xach's article \"Making a small Common Lisp project\" can be found at http://xach.livejournal.com/130040.html")
+(:SD "seen zbigniew" . "yes")
+(:SD "seen offby1" . "no")
+(:SD "seen j85wilson"
+ . "I last saw j85wilson on January 15, 2008 at 04:28 UTC, saying \"minion: when are you going to support seen?\"")
+(:SD "seen minion" . "what do you think")
+(:SD "matchable"
+ . "A fully portable hygienic pattern matcher backwards compatible with Andrew Wright's MATCH syntax, at http://synthcode.com/scheme/")
+(:SD "cl-opengl-thomas"
+ . "http://common-lisp.net/~loliveira/darcs/cl-opengl-thomas/ was a development branch of cl-opengl. It was merged into cl-opengl on 2008-2-19")
+(:SD "cl-opengl-thomas"
+ . "http://common-lisp.net/~loliveira/darcs/cl-opengl-thomas/ was a development branch of cl-opengl. It was merged into cl-opengl on 2008-2-19. See cl-opengl")
+(:SD "AGISC"
+ . "Common Lisp: A Gentle Introduction to Symbolic Computation by David S. Touretzky available at http://www.cs.cmu.edu/~dst/LispBook")
+(:SD "els"
+ . "1st European Lisp Symposium (ELS'08) in Bordeaux, France, May 22-23, 2008 LaBRI, Université Bordeaux 1. http://prog.vub.ac.be/~pcostanza/els08/index.html")
+(:SD "viper-mode" . "\"http://www.emacswiki.org/cgi-bin/wiki/ViperMode\"")
+(:SD "foof-loop"
+ . "Taylor R. Campbell's extensible looping macros, at <http://mumble.net/~campbell/scheme/foof-loop.scm>, documented at <http://mumble.net/~campbell/scheme/foof-loop.txt>")
+(:SD "we" . "are the goto in return")
+(:SD "tls" . "The Little Schemer, <http://www.ccs.neu.edu/home/matthias/BTLS/>")
+(:SD "CCPT"
+ . "is the Dragon Book \"Compiler Principles Techniques and Tools\", Aho et al. http://dragonbook.stanford.edu/")
+(:SD "CPTT"
+ . "is the Dragon Book \"Compiler Principles Techniques and Tools\", Aho et al. http://dragonbook.stanford.edu/")
+(:SD "dragon book"
+ . "is the Dragon Book \"Compiler Principles Techniques and Tools\", Aho et al. http://dragonbook.stanford.edu/")
+(:SD "bakery" . "giving sarahbot botsnack")
+(:SD "sarahbot" . "botsnack")
+(:SD "sicp+"
+ . "Structure and Interpretation of Computer Programs, a CS textbook. Online HTML: <http://mitpress.mit.edu/sicp/>, texinfo: <http://www.neilvandyke.org/sicp-texi/>, XHTML, PDF: <http://twb.ath.cx/~twb/canon/sicp/>. Code in CL at <http://eli.thegreenplace.net/category/programming/lisp/sicp/>, in other languages at <http://www.codepoetics.com/wiki/index.php?title=Topics:SICP_in_other_languages>. Videos at")
+(:SD "sicp+"
+ . "Structure and Interpretation of Computer Programs. HTML: <http://mitpress.mit.edu/sicp/>, texinfo: <http://www.neilvandyke.org/sicp-texi/>, XHTML, PDF: <http://twb.ath.cx/~twb/canon/sicp/>. Code in CL at <http://eli.thegreenplace.net/category/programming/lisp/sicp/>, in other languages at <http://www.codepoetics.com/wiki/index.php?title=Topics:SICP_in_other_languages>. Videos at")
+(:SD "sicp+"
+ . "Structure and Interpretation of Computer Programs. HTML: <http://mitpress.mit.edu/sicp/>, PDF: <http://twb.ath.cx/~twb/canon/sicp/>. Code in CL at <http://eli.thegreenplace.net/category/programming/lisp/sicp/>, in other languages at <http://www.codepoetics.com/wiki/index.php?title=Topics:SICP_in_other_languages>. Videos at <http://swiss.csail.mit.edu/classes/6.001/abelson-sussman-lectures/>")
+(:SD "brucio"
+ . "A prolific blogger and Lisp user, who now uses Arc: http://brucio.blogspot.com/")
+(:SD "book acronyms" . "http://mbishop.esoteriq.org/stuff/books.txt")
+(:SD "acronyms" . "http://mbishop.esoteriq.org/stuff/books.txt")
+(:SD "ibcl"
+ . "An Image Based Development environment sketch. http://www.informatimago.com/develop/lisp/small-cl-pgms/ibcl/")
+(:SD "logs"
+ . "#lisp logs are available at http://ccl.clozure.com/irc-logs/lisp/ ; older logs may be available at http://tunes.org/~nef/logs/lisp/ (down as of 2008/09/24)")
+(:SD "pound"
+ . "is a reverse-proxy, a load balancer, a SSL wrapper, a HTTP/HTTPS sanitizer, a fail over-server and a request redirector. At http://www.apsis.ch/pound/")
+(:SD "saving lives"
+ . "``So if you make it boot ten seconds faster, you've saved a dozen lives. That's really worth it, don't you think?'' http://folklore.org/StoryView.py?project=Macintosh&story=Saving_Lives.txt")
+(:SD "UUI" . "Universal User Interface")
+(:SD "clqr"
+ . "The Common Lisp Quick Reference is as free booklet with short descriptions of the symbols defined in the ANSI standard: http://clqr.berlios.de/")
+(:SD "clqr"
+ . "The Common Lisp Quick Reference is a booklet with short descriptions of the symbols defined in the ANSI standard: http://clqr.berlios.de/")
+(:SD "lisppaste.el" . "is an Emacs interaface to the lisppaste bot running")
+(:SD "lisppaste.el"
+ . "is an Emacs interaface to the lisppaste bot running on the Freenode IRC network (http://www.ph.ed.ac.uk/~s0198183/lisppaste.el)")
+(:SD "features of common lisp"
+ . "Features of Common Lisp, a one-page summary of what makes Common Lisp unique: http://abhishek.geek.nz/docs/features-of-common-lisp")
+(:SD "arm port log"
+ . "http://www.lisphacker.com/projects/sbcl-arm/port-log.txt")
+(:SD "FORTRAN" . "as FORTRAN does")
+(:SD "FORTRAN" . "is as FORTRAN does")
+(:SD "FORTRAN" . "is as FORTRAN does")
+(:SD "spels"
+ . "Casting SPELs in Lisp, an introduction to macros, is at http://www.lisperati.com/casting.html")
+(:SD "botsnack" . "thanks")
+(:SD "equal"
+ . "eq, eql, equal, equalp and copying is explained at http://www.nhplace.com/kent/PS/EQUAL.html")
+(:SD "typing"
+ . "http://steve-yegge.blogspot.com/2008/09/programmings-dirtiest-little-secret.html")
+(:SD "speed"
+ . "\"How to make Lisp go faster than C\" is at http://www.lrde.epita.fr/~didier/research/verna.06.imecs.pdf")
+(:SD "logs"
+ . "#lisp logs are available at http://ccl.clozure.com/irc-logs/lisp/ ; older logs are available at http://tunes.org/~nef/logs/lisp/")
+(:SD "logs"
+ . "#lisp logs are available at http://ccl.clozure.com/irc-logs/lisp/ (since 2008-09) and http://tunes.org/~nef/logs/lisp/ (since 2000)")
+(:SD "Malkovich"
+ . "Malkovich Malkovich Malkovich; Malkovich Malkovich, Malkovich")
+(:SD "incubot" . "http://home.att.net/~tom.brodhead/wonka.htm")
+(:SD "succesful lisp" . "http://www.psg.com/~dlamkins/sl/contents.html")
+(:SD "commonqt" . "a Common Lisp binding to the smoke library for Qt")
+(:SD "commonqt"
+ . "a Common Lisp binding to the smoke library for Qt. http://common-lisp.net/project/commonqt/")
+(:SD "KT"
+ . "at: http://video.google.fr/videosearch?q=kenny%20tilton%20on%20lisp&oe=utf-8&rls=org.mozilla:en-US:official&client=firefox-a&um=1&ie=UTF-8&sa=N&hl=en&tab=wv#")
+(:SD "KT" . "Kenny Tilton http://smuglispweeny.blogspot.com/")
+(:SD "KT"
+ . "Kenny Tilton http://smuglispweeny.blogspot.com/ http://video.google.fr/videosearch?q=kenny%20tilton%20on%20lisp&oe=utf-8&rls=org.mozilla:en-US:official&client=firefox-a&um=1&ie=UTF-8&sa=N&hl=en&tab=wv#")
+(:SD "http://xach.livejournal.com/130040.html?thread=221432"
+ . "xach's asdf tutorial")
+(:SD "pseudo"
+ . "Pseudo-Scheme is a R4RS scheme implementation written in CL. ftp://ftp.cs.indiana.edu/pub/scheme-repository/imp/pseudo212.tar.gz")
+(:SD "LiSP"
+ . "\"Lisp in Small Pieces\". This book covers Lisp, Scheme and other related dialects, their interpretation, semantics and compilation. To sum it up in a few figures: 500 pages, 11 chapters, 11 interpreters and 2 compilers. <http://pagesperso-systeme.lip6.fr/Christian.Queinnec/WWW/LiSP.html>")
+(:SD "r6rs"
+ . "R6RS is \"Revised^6 Report on the Algorithmic Language Scheme\", see http://www.r6rs.org/")
+(:SD "xcb"
+ . "It has been discussed over and over, and the conclusion is always \"it's not worth the trouble\"")
+(:SD "floating-point"
+ . "What Every Computer Scientist Should Know About Floating-Point Arithmetic http://docs-pdf.sun.com/800-7895/800-7895.pdf http://portal.acm.org/citation.cfm?id=103163 http://focus.hut.fi/docs/WorkShop/common/ug/goldberg1.doc.html")
+(:SD "ssc" . "Sufficiently Smart Compiler")
+(:SD "slime-fancy"
+ . "Do you have 'slime-fancy in your slime config, like: (slime-setup '(slime-fancy)) or at least slime-repl? without those, you'll get a bare-ones SLIME, without REPL")
+(:SD "slime.mov"
+ . "\"using SLIME\" video by Marco Baringer, http://common-lisp.net/project/movies/movies/slime.mov")
+(:SD "sciener"
+ . "Sciener Common Lisp is a commercial implementation featuring support for Symmetric multiprocessing on a range of Linux, Solaris and HP-UX platforms. at http://en.wikipedia.org/wiki/Scieneer_Common_Lisp")
+(:SD "onlisp"
+ . "An advanced textbook on Common Lisp, with special focus on macros. at http://www.cliki.net/On%20Lisp")
+(:SD "casting"
+ . "Casting Spells in Lisp is a tutorial about macros, at http://www.lisperati.com/casting.html")
+(:SD "successful-lisp"
+ . "Successful Lisp is a book providing an all-around summary of Common Lisp, available online at http://www.psg.com/~dlamkins/sl/")
+(:SD "success" . "http://franz.com/success/")
+(:SD "good"
+ . "What is Lisp good for? answers at http://www.ai.sri.com/~delacaze/alu-site/alu/table/good.htm")
+(:SD "success"
+ . "A list of success stories by Franz's customers at http://franz.com/success/")
+(:SD "lisp cheat sheet"
+ . "The Common Lisp Quick Reference is a booklet with short descriptions of the symbols defined in the ANSI standard: http://clqr.berlios.de/")
+(:SD "BB"
+ . "search for macro \"BB\" in http://www.flownet.com/ron/lisp/rg-utils.lisp")
+(:SD "format-control"
+ . "The syntax of format control strings is explained in detail at this page in the hyperspec: http://www.lispworks.com/documentation/HyperSpec/Body/22_c.htm")
+(:SD "aim8"
+ . "at http://www.informatimago.com/develop/lisp/small-cl-pgms/aim-8/")
+(:SD "aim8"
+ . "at http://www.informatimago.com/develop/lisp/small-cl-pgms/aim-8/")
+(:SD "aim-8"
+ . "at http://www.informatimago.com/develop/lisp/small-cl-pgms/aim-8/")
+(:SD "before"
+ . "Before you start learning Lisp and fixing all the wrongs in it, read this: http://abhishek.geek.nz/docs/lisp-answers/ . It will save you, and us, much frustration")
+(:SD
+ "graham-crackers as: An critique of Paul Graham's coding style, specifically"
+ . "found in his book \"ANSI Common Lisp\", available here: http://www.cs.northwestern.edu/academics/courses/325/readings/graham/graham-notes.html")
+(:SD "graham-crackers"
+ . "An critique of Paul Graham's coding style, specifically as found in his book \"ANSI Common Lisp\", available here: http://www.cs.northwestern.edu/academics/courses/325/readings/graham/graham-notes.html")
+(:SD "C@W"
+ . "Coders at Work, a book of interviews with notable programers by Peter Seibel, author of Practical Common Lisp. http://www.codersatwork.com")
+(:SD "sicp"
+ . "The Structure and Interpretation of Computer Programs, a CS textbook using Scheme. Available under the CC-BY-NC Licence at <http://mitpress.mit.edu/sicp/> (HTML), <http://www.neilvandyke.org/sicp-texi/> (Texinfo), and <http://twb.ath.cx/ebooks/sicp.pdf> (PDF). Video lectures are available under the CC-BY-SA licence at <http://swiss.csail.mit.edu/classes/6.001/abelson-sussman-lectures/>")
+(:SD "schintro"
+ . "http://google.com/search?q=%22Scheme%3A+A+Small+But+Powerful+Language%22")
+(:SD "tth"
+ . "Tiger Tree Hash http://en.wikipedia.org/wiki/Hash_tree#Tiger_tree_hash")
+(:SD "GSLL"
+ . "GSLL is the Gnu Scientific Library for Lisp http://common-lisp.net/project/gsll")
+(:SD "GSLL"
+ . "the Gnu Scientific Library for Lisp http://common-lisp.net/project/gsll")
+(:SD "copying"
+ . "identity, equality (eq, eql, equal, equalp) and copying are explained at http://www.nhplace.com/kent/PS/EQUAL.html and in http://home.pipeline.com/~hbaker1/ObjectIdentity.html")
+(:SD "equal"
+ . "identity, equality (eq, eql, equal, equalp) and copying are explained at http://www.nhplace.com/kent/PS/EQUAL.html and in http://home.pipeline.com/~hbaker1/ObjectIdentity.html")
+(:SD "c.l.l"
+ . "comp.lang.lisp is a Lisp-related Usenet group, available spam-free from individual.net, eternal-september.org, or a university or ISP near you")
+(:SD "asdf on windows" . "http://bit.ly/win32-lisps-howto")
+(:SD "packages"
+ . "http://www.gigamonkeys.com/book/programming-in-the-large-packages-and-symbols.html ; http://flownet.com/ron/packages.pdf")
+(:SD "RDNZL" . "http://weitz.de/rdnzl/")
+(:SD "style" . "http://mumble.net/~campbell/scheme/style.txt")
+(:SD "dylan" . "dylan is an infix Lisp developed by Apple research")
+(:SD "sbcl10"
+ . "SBCL's 10th Anniversary Workshop. For more information and materials from the workshop see http://sbcl10.sbcl.org")
+(:SD "21 days"
+ . "\"Teach Yourself Programming in Ten Years\", an essay by Peter Norvig, available at http://norvig.com/21-days.html")
+(:SD "10 years"
+ . "\"Teach Yourself Programming in Ten Years\", an essay by Peter Norvig, available at http://norvig.com/21-days.html")
+(:SD "packages"
+ . "http://weitz.de/packages.html http://www.gigamonkeys.com/book/programming-in-the-large-packages-and-symbols.html http://flownet.com/ron/packages.pdf")
+(:SD "EOPL"
+ . "\"Essentials of Programming Languages\", 2nd ed. Daniel P. Friedman, Mitchell Wand, Christopher T. Haynes; MIT Press, ISBN 0-262-06217 http://www.cs.indiana.edu/eopl/")
+(:SD "EOPL"
+ . "Essentials of Programming Languages, 3rd ed. Daniel P. Friedman and Mitchell Wand; ISBN: 978-0-262-06279-4; http://MITPress.MIT.Edu/0262062798/ http://WWW.EoPL3.Com/")
+(:SD "a programmer" . "is a device to turn coffee into code")
+(:SD "programmer" . "is a device to turn coffee into code")
+(:SD "luv-slides"
+ . "luv-slides is a slide show by Kent Pitman and Peter Norvig discussing good programming style in Lisp and more generally. See <http://norvig.com/luv-slides.ps>")
+(:SD "linux-quickstart"
+ . "Linux Common Lisp Quickstart (Emacs, SLIME and SBCL + clbuild): http://unya.wordpress.com/2009/06/07/linux-common-lisp-quickstart/")
+(:SD "incubot" . "(begin \"minion: chant\")")
+(:SD "rudybot" . "rudybotloop")
+(:SD "rudybotloop" . "rudybotloop")
+(:SD "rudybot" . "rudybot")
+(:SD "BLM"
+ . "Boston Lisp Meeting http://fare.livejournal.com/tag/boston-lisp-meeting")
+(:SD "DSL" . "Domain Specific Language")
+(:SD "preflex" . "preflex is mauke's creature")
+(:SD "car"
+ . "CAR and CDR are excellent mnemonics, if only because they (i) are short in length; (ii) are of the same length; (iii) are lexically similar but moderately distinguishable; (iv) have convenient pronunciation; (v) are naturally extendable (e.g., CAAR/CDAR/CDDR, which is useful for top-level hacks). They're also not completely arbitrary, and they're got a history")
+(:SD "GEB"
+ . "the book \"Goedel, Escher, Bach: An Eternal Golden Braid\" by Douglas R. Hofstadter")
+(:SD "minion-sources" . "http://www.cliki.net/minion")
+(:SD "structure-slots"
+ . "Introspecting structure slots requires some previous bookkeeping. Have a look at: http://groups.google.com/group/comp.lang.lisp/msg/8e06a7470724aa38 http://groups.google.com/group/comp.lang.lisp/msg/f687db3424753775 http://groups.google.com/group/comp.lang.lisp/msg/34681fc951fb42b2")
+(:SD "lisp-paste"
+ . "lisppaste is the recommanded paste service in this channel. http://paste.lisp.org/new")
+(:SD "gof" . "is the Gang of Four, the four authors of \"Design Patterns\"")
+(:SD "undefined"
+ . "\"Just because the standard provides a cliff in front of you, you are not necessarily required to jump off it.\"")
+(:SD "CLAIA"
+ . "is the book \"COMMON LISP: An Interactive Approach\" by Stuart C. Shapiro: http://www.cse.buffalo.edu/~shapiro/Commonlisp/")
+(:SD "sicp-cl"
+ . "SICP exercices done in other languages including Common Lisp: http://www.codepoetics.com/wiki/index.php?title=Topics:SICP_in_other_languages http://eli.thegreenplace.net/category/programming/lisp/sicp/")
+(:SD "term \"bug reporting\""
+ . "How to Report Bugs Effectively is explained at http://www.chiark.greenend.org.uk/~sgtatham/bugs.html")
+(:SD "herep" . "T")
+(:SD "amop"
+ . "The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO. See the specification of MOP at http://www.lisp.org/mop/")
+(:SD "blt"
+ . "\"Basic Lisp Techniques\", Cooper - 2003 Franz, Inc. at http://www.franz.com/resources/educational_resources/cooper.book.pdf")
+(:SD "Loopless"
+ . "Intends to obsolete LOOP with just a few straightforward utilities. Most of these utilities are straightforward to learn and use, and are consistent in style with other standard Common Lisp constructs. All of them are easily composable with the rest of the language, unlike LOOP's monolithic approach.")
+(:SD "Loopless"
+ . "Intends to obsolete LOOP with just a few straightforward utilities. Most of these utilities are straightforward to learn and use, and are consistent in style with other standard Common Lisp constructs. All of them are easily composable with the rest of the language, unlike LOOP's monolithic approach. http://www.loopless.org/")
+(:SD "lol" . "Land of Lisp - http://landoflisp.com")
+(:SD "get-emacs"
+ . "emacs is five minutes away with: wget ftp://ftp.gnu.org/gnu/emacs/emacs-23.2.tar.gz && tar zxvf emacs-23.2.tar.gz && cd emacs-23.2 && configure && make && make install")
+(:ALIAS "according to..." . "according to")
+(:ALIAS "sbcli" . "sbcl-internals")
+(:ALIAS "books" . "Lisp Books")
+(:ALIAS "implementations" . "Common Lisp Implementation")
+(:ALIAS "ABL" . "Armed Bear Lisp")
+(:ALIAS "books" . "Lisp Books")
+(:ALIAS "books" . "araneida")
+(:ALIAS "books" . "Lisp Books")
+(:ALIAS "Xophe" . "Krystof")
+(:ALIAS "dan_b" . "dan-b")
+(:ALIAS "dan_b" . "dan`b")
+(:ALIAS "chavatar" . "chandler")
+(:ALIAS "w00t" . "woot")
+(:ALIAS "chavatar" . "chandler")
+(:ALIAS "Krystof" . "Xophe")
+(:ALIAS "rtoyw" . "rtoy")
+(:ALIAS "p40s" . "Proposed ANSI Revisions and Clarifications")
+(:ALIAS "rtoym" . "rtoy")
+(:ALIAS "uncommon web" . "ucw")
+(:ALIAS "uncommonweb" . "ucw")
+(:ALIAS "pfdietz_work" . "pfdietz")
+(:ALIAS "cliki" . "index")
+(:ALIAS "the cliki" . "index")
+(:ALIAS "rtoym" . "rtoym_")
+(:ALIAS "rtoy" . "rtoym_")
+(:ALIAS "rtoy_" . "rtoym_")
+(:ALIAS "paste" . "lisppaste")
+(:ALIAS "ABCL" . "ABL")
+(:ALIAS "ABCL" . "ABL")
+(:ALIAS "\"starting-with-cl\"" . "\"startingwithcl\"")
+(:ALIAS "starting-with-cl" . "startingwithcl")
+(:ALIAS "starting-with-cl" . "startingwithcl")
+(:ALIAS "Practical Common Lisp" . "pcl-book")
+(:ALIAS "Practical Common Lisp" . "pcl-book")
+(:ALIAS "pclbook" . "pcl-book")
+(:ALIAS "lispm" . "lispm-wim2")
+(:ALIAS "clsql" . "cl-sql")
+(:ALIAS "Xophe" . "Xof")
+(:ALIAS "Xof" . "Xophe")
+(:ALIAS "FAQ" . "Frequently Asked Questions")
+(:ALIAS "\"cargo culting\"" . "\"cargo cult\"")
+(:ALIAS "\"cargo cult science\"" . "\"cargo cult\"")
+(:ALIAS "\"cargo cult programming\"" . "\"cargo cult\"")
+(:ALIAS "cargo culting" . "cargo cult")
+(:ALIAS "cargo cult science" . "cargo cult")
+(:ALIAS "cargo cult programming" . "cargo cult")
+(:ALIAS "boinkmarks" . "benchmarks")
+(:ALIAS "pcl-book" . "that-dead-sexy-book")
+(:ALIAS "pcl" . "pcl-book")
+(:ALIAS "mwh2" . "mwh")
+(:ALIAS "paredit.el" . "paredit")
+(:ALIAS "Scheme 48" . "Scheme48")
+(:ALIAS "clisp-vs-cl" . "cl-vs-clisp")
+(:ALIAS "cl-not-clisp" . "cl-vs-clisp")
+(:ALIAS "chant" . "CLIKI")
+(:ALIAS "irc logs" . "logs")
+(:ALIAS "lisp survey" . "\"comparing cl\"")
+(:ALIAS "lisp survey" . "comparing cl")
+(:ALIAS "executable" . "creating executables")
+(:ALIAS "executables" . "creating executables")
+(:ALIAS "log" . "logs")
+(:ALIAS "features-of-common-lisp" . "features of common lisp")
+(:ALIAS "features-of-cl" . "features of common lisp")
+(:ALIAS "features of cl" . "features of common lisp")
+(:ALIAS "eq" . "equal")
+(:ALIAS "eql" . "equal")
+(:ALIAS "equalp" . "equal")
+(:ALIAS "\"thwaap\"" . "\"thwap\"")
+(:ALIAS "\"thwapp\"" . "\"thwap\"")
+(:ALIAS "caw" . "C@W")
+(:ALIAS "coders-at-work" . "C@W")
+(:ALIAS "comp.lang.lisp" . "c.l.l")
+(:ALIAS "slime-video" . "slime.mov")
+(:ALIAS "sbcl" . "Steel-Bank Common Lisp")
+(:ALIAS "10 years" . "21 days")
+(:ALIAS "sources" . "minion-sources")
+(:ALIAS "lisppaste" . "lisp-paste")
+(:SD "ailab" . "http://www.cs.cmu.edu/afs/cs/project/ai-repository/ai/")

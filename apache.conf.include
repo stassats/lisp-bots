@@ -1,0 +1,24 @@
+#### $Id: apache.conf.include,v 1.7 2004/07/15 12:36:49 bmastenbrook Exp $
+#### $Source: /project/lisppaste/cvsroot/lisppaste2/apache.conf.include,v $
+
+# To include this file, simply add:
+#
+#   Include path/to/this/file/apache.conf.include
+#
+# and you are set to go.
+
+<VirtualHost www.common-lisp.net:80>
+ServerName www.common-lisp.net
+ProxyPass /paste/ http://www.common-lisp.net:8081/paste/
+ProxyPassReverse /paste/ http://www.common-lisp.net:8081/paste/
+SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
+</VirtualHost>
+
+NameVirtualHost paste.lisp.org:80
+
+<VirtualHost paste.lisp.org:80>
+ServerName paste.lisp.org
+ProxyPass / http://paste.lisp.org:8081/
+ProxyPassReverse / http://paste.lisp.org:8081/
+SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
+</VirtualHost>
