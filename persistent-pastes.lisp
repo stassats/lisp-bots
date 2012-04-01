@@ -410,19 +410,19 @@ in-memory copy."
   "Return a string of the display URL for PASTE, including a suitable
 anchor if PASTE is an annotation."
   (let ((parent-paste (paste-parent-paste paste)))
-    (urlstring (merge-url *display-paste-url*
-			  (if parent-paste
-			      (format nil "~A#~A"
-				      (paste-number parent-paste)
-				      (paste-number paste))
-			      (prin1-to-string (paste-number paste)))))))
+    (merge-url *display-paste-url*
+               (if parent-paste
+                   (format nil "~A#~A"
+                           (paste-number parent-paste)
+                           (paste-number paste))
+                   (prin1-to-string (paste-number paste))))))
 
 (defun paste-short-url (paste)
   "Return a string of the short URL for PASTE, including a suitable
 anchor if PASTE is an annotation."
   (let ((parent-paste (paste-parent-paste paste)))
     (concatenate 'string
-		 (urlstring *short-paste-url*)
+		 *short-paste-url*
 		 (if parent-paste
 		     (format nil "~36R/~36R"
 			     (paste-number parent-paste)

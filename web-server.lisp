@@ -184,6 +184,9 @@ table.webutils-form th { text-align: left; }
 (defun merge-url (base url)
   (format nil "~a~a" base url))
 
+(defun urlstring-escape (string)
+  string)
+
 (defun bottom-links ()
   (list
    <p/>
@@ -235,62 +238,63 @@ table.webutils-form th { text-align: left; }
                                        "More recent pastes..."))))))))
 
 (defmethod handle-request-response ((handler recent-handler) method request)
-  (lisppaste-send-headers-for-html request)
+  
   (xml-output-to-stream
    (request-stream request)
    (lisppaste-wrap-page
     "Recent Pastes"
     (recent-paste-list-div :count 20))))
 
+(defun xml-to-string (xml)
+  (with-output-to-string (stream)
+    (xml-output-to-stream stream xml)))
 
 (define-easy-handler (main :uri "/") ()
-  (with-output-to-string (stream)
-    (xml-output-to-stream
-     stream
-     (lisppaste-wrap-page
-      (format nil "~A pastebin" *paste-site-name*)
-      (<table width="100%" border="0" cellpadding="2">
-              (<tr> (<td> (<div class="small-header"> "Recent Pastes"))
-                    (<td align="right"> (<div class="small-header"> "Make a new paste")))
-              (<tr> (<td valign="top" width="40%">
-                         (recent-paste-list-div)
-                         <p/>
-                         (<div class="small-header"> "About lisppaste")
-                         (<div class="info-text">
-                               "Lisppaste is a pastebot / pastebin / nopaste service with syntax highlighting, XML-RPC support, annotations, and more."
-                               <p/>
-                               "Many times when working via IRC, people
+  (xml-to-string
+   (lisppaste-wrap-page
+    (format nil "~A pastebin" *paste-site-name*)
+    (<table width="100%" border="0" cellpadding="2">
+            (<tr> (<td> (<div class="small-header"> "Recent Pastes"))
+                  (<td align="right"> (<div class="small-header"> "Make a new paste")))
+            (<tr> (<td valign="top" width="40%">
+                       (recent-paste-list-div)
+                       <p/>
+                       (<div class="small-header"> "About lisppaste")
+                       (<div class="info-text">
+                             "Lisppaste is a pastebot / pastebin / nopaste service with syntax highlighting, XML-RPC support, annotations, and more."
+                             <p/>
+                             "Many times when working via IRC, people
 want to share a snippet of code with somebody else. However, just
 pasting the code into IRC creates a flood of text which is hard to
 read and scrolls by as discussion progresses."
-                               <p/>
-                               "Thus, the pastebot was invented, which
+                             <p/>
+                             "Thus, the pastebot was invented, which
 has a web form where users can paste code, and the URL of the paste is
 announced on the desired channel. Lisppaste is an advanced pastebot
 running on the IRC server "
-                               *irc-network-name*
-                               " which has many unique features."
-                               (when *no-channel-pastes*
-                                 (list
-                                  <p/>
-                                  "It also allows pastes which are not
+                             *irc-network-name*
+                             " which has many unique features."
+                             (when *no-channel-pastes*
+                               (list
+                                <p/>
+                                "It also allows pastes which are not
 announced on any channel, which is useful for sections of code which
 need to be sent to a mailing list or are discussed in ways other than
 IRC."
-                                  <p/>
-                                  "Lisppaste is graciously hosted by "
-                                  (<b> (<a href="http://www.common-lisp.net/"> "common-lisp.net"))
-                                  " - a hosting service for projects written in Common Lisp (like this one)."
-                                  <p/>
-                                  "Questions? Comments? Want lisppaste in your channel? "
-                                  (<a href=?*email-redirect-url*> "Email me")
-                                  "."))))
-                    (<td valign="top" align="right">
-                         (<form method="post" action=? *submit-paste-url*>
-                                (generate-new-paste-form :width 60 :default-user (get-default-user)))
-                         <p/>
-                         *ohloh*
-                         (<div class="ads-text"> *ads*))))))))
+                                <p/>
+                                "Lisppaste is graciously hosted by "
+                                (<b> (<a href="http://www.common-lisp.net/"> "common-lisp.net"))
+                                " - a hosting service for projects written in Common Lisp (like this one)."
+                                <p/>
+                                "Questions? Comments? Want lisppaste in your channel? "
+                                (<a href=?*email-redirect-url*> "Email me")
+                                "."))))
+                  (<td valign="top" align="right">
+                       (<form method="post" action=? *submit-paste-url*>
+                              (generate-new-paste-form :width 60 :default-user (get-default-user)))
+                       <p/>
+                       *ohloh*
+                       (<div class="ads-text"> *ads*)))))))
 
 (defun ban-log (user request)
   (log-event
@@ -313,7 +317,7 @@ IRC."
 	     (not (paste-allowed-from-ip-p forwarded-for is-pasting)))
         (progn
 	  (ban-log forwarded-for request) 
-          (lisppaste-send-headers-for-html request)
+          
           (xml-output-to-stream
            (request-stream request)
            (<html> (<head> (<title> "No cookie for you!"))
@@ -361,7 +365,7 @@ IRC."
        (request-send-headers request :expires 0
                                      :content-type "text/html; charset=utf-8")
        (new-paste-form request :annotate annotate :default-channel default-channel))
-      (t (lisppaste-send-headers-for-html request)
+      (t 
          (xml-output-to-stream
           (request-stream request)
           (lisppaste-wrap-page
@@ -426,7 +430,7 @@ IRC."
     str))
 
 (defmethod handle-request-response ((handler syndication-handler) method request)
-  (lisppaste-send-headers-for-html request)
+  
   (xml-output-to-stream
    (request-stream request)
    (lisppaste-wrap-page
@@ -475,7 +479,7 @@ with your favorite RSS reader."
 				     (subseq channel 1)))))
 
 (defmethod handle-request-response ((handler channel-select-handler) method request)
-  (lisppaste-send-headers-for-html request)
+  
   (xml-output-to-stream
    (request-stream request)
    (lisppaste-wrap-page
@@ -514,7 +518,7 @@ with your favorite RSS reader."
                                   (sort (remove "None" *channels* :test #'string-equal) #'string<)))))))))
   
 (defmethod handle-request-response ((handler stats-handler) method request)
-  (lisppaste-send-headers-for-html request)
+  
   (xml-output-to-stream
    (request-stream request)
    (lisppaste-wrap-page
@@ -554,7 +558,7 @@ with your favorite RSS reader."
 	    collect "... "))))
 
 (defmethod handle-request-response ((handler list-paste-handler) method request)
-  (lisppaste-send-headers-for-html request)
+  
   (destructuring-bind
 	(channel &rest others)
       (split-sequence:split-sequence
@@ -803,11 +807,10 @@ with your favorite RSS reader."
   (or (cookie-in "USERNAME")
       ""))
 
-(defun new-paste-form (request &key (message "") (annotate nil) (default-channel "") default-user (default-title "untitled") (default-contents ""))
+(defun new-paste-form (&key (message "") (annotate nil) (default-channel "") default-user (default-title "untitled") (default-contents ""))
   (unless default-user
     (setf default-user (get-default-user)))
-  (xml-output-to-stream
-   (request-stream request)
+  (xml-to-string
    (lisppaste-wrap-page
     (if annotate "Enter your annotation" "Enter your paste")
     (if (not (zerop (length message)))
@@ -890,7 +893,7 @@ with your favorite RSS reader."
       ;;     (request-send-headers request :expires 0
       ;;   			:content-type "text/html; charset=utf-8"
       ;;                           :set-cookie cookies)
-      ;;     (lisppaste-send-headers-for-html request))
+      ;;     )
       ) 
     (expire-used-captchas)
     (cond
@@ -956,44 +959,42 @@ with your favorite RSS reader."
                                :default-title title
                                :default-contents text))
       ((and annotate annotate-paste (paste-moldy annotate-paste))
-       (xml-output-to-stream
-	(request-stream request)
-	(lisppaste-wrap-page
-	 (format nil "Paste ~A too old!" (paste-number annotate-paste))
-	 (format nil "I can't imagine why you'd want to annotate a paste that's ~A old."
-		 (time-delta (paste-universal-time annotate-paste) :ago-p nil)))))
+       (xml-to-string
+        (lisppaste-wrap-page
+         (format nil "Paste ~A too old!" (paste-number annotate-paste))
+         (format nil "I can't imagine why you'd want to annotate a paste that's ~A old."
+                 (time-delta (paste-universal-time annotate-paste) :ago-p nil)))))
       ((not (member channel *channels* :test #'string-equal))
        (new-paste-form :message "Whatever channel that is, I don't know about it."
-                               :default-channel channel
-                               :annotate annotate-paste
-                               :default-user username
-                               :default-title title
-                               :default-contents text)) 
+                       :default-channel channel
+                       :annotate annotate-paste
+                       :default-user username
+                       :default-title title
+                       :default-contents text)) 
       ((or
         (some (lambda (regexp)
                 (or (cl-ppcre:scan regexp text)
 		    (cl-ppcre:scan regexp title))) *banned-content-regexps*)
-	(let ((user-agent (car (request-header request :user-agent))))
+	(let ((user-agent (user-agent)))
 	  (when user-agent
 	    (some (lambda (regexp)
 		    (cl-ppcre:scan regexp user-agent))
 		  *banned-user-agent-regexps*)))
         (member title *banned-paste-titles* :test #'equal)
         (member username *banned-paste-users* :test #'equalp))
-       (ban-ip/request request)
-       (ban-log username request) 
-       (xml-output-to-stream
-        (request-stream request)
+       ;(ban-ip/request request)
+       ;(ban-log username request) 
+       (xml-to-string
         (lisppaste-wrap-page
          "Disallowed!"
          (<div class="info-text">
-	       *paste-site-name*
+               *paste-site-name*
                " is a public service to the open source software community and is intended for sharing of code, debug output, and other software-related information. It is not a wiki or a forum and it cannot under any circumstances be made to link to any sites. It is also not a service to the torrent scene or to authors of erotic fiction. Please consider using another service such as "
-	       (<a href= "http://www.pastebin.ca"> "pastebin.ca")
-	       " for this content."
+               (<a href= "http://www.pastebin.ca"> "pastebin.ca")
+               " for this content."
                <p/>
                "If you feel you have recieved this message in error, please "
-               (<a href=?(urlstring *email-redirect-url*)> "contact us")
+               (<a href=?*email-redirect-url*> "contact us")
                " and include the contents of your paste. Thank you."))))
       (t
        (let* ((expiration-delta (unless annotate
@@ -1005,42 +1006,41 @@ with your favorite RSS reader."
 		      :title title
 		      :contents text
 		      :channel channel
-		      :colorization-mode (coerce colorize-as 'string)
+		      :colorization-mode (coerce colorize 'string)
 		      :expiration-time (if expiration-delta
 					   (+ (get-universal-time)
 					      expiration-delta))))
 	      (url (paste-short-url paste))
 	      (paste-number (or annotate-number (paste-number paste)))
 	      (annotation-number (if annotate-paste (paste-number paste))))
-	 (log-new-paste (car (request-header request :x-forwarded-for))
+	 (log-new-paste (remote-addr*)
 			paste-number
 			annotation-number
 			title) 
-	 (xml-output-to-stream
-	  (request-stream request)
-	  (lisppaste-wrap-page
-	   (format nil "Paste number ~A pasted!" paste-number)
-	   (<p>
-	    (if annotate
-		"Your annotation should be available at "
-		"Your paste should be available at ")
-	    (<b> (<a href=?url> url))
-	    (unless (and *no-channel-pastes*
-			 (string-equal channel "none"))
-	      (list ", and was also sent to " channel " at " *irc-network-name*))
-	    ".")
-	   (<p>
-	    (<b> (<a href=? (paste-tweet-url paste)>
-		     "Tweet this!")))
-	   (<form method="post" action=?(urlstring *new-paste-url*)>
-		  <input type="hidden" name="annotate" value=?(prin1-to-string paste-number) />
-		  (<div>
-		   (<span class="controls">
-			  (<span class="small-header">
-				 "Don't make more pastes; annotate this one!")
-			  <br/>
-			  <input type="submit" value="Annotate this paste" />))
-		  *ohloh*))))))))
+	 (xml-to-string
+          (lisppaste-wrap-page
+           (format nil "Paste number ~A pasted!" paste-number)
+           (<p>
+            (if annotate
+                "Your annotation should be available at "
+                "Your paste should be available at ")
+            (<b> (<a href=?url> url))
+            (unless (and *no-channel-pastes*
+                         (string-equal channel "none"))
+              (list ", and was also sent to " channel " at " *irc-network-name*))
+            ".")
+           (<p>
+            (<b> (<a href=? (paste-tweet-url paste)>
+                     "Tweet this!")))
+           (<form method="post" action=?*new-paste-url*>
+                  <input type="hidden" name="annotate" value=?(prin1-to-string paste-number) />
+                  (<div>
+                   (<span class="controls">
+                          (<span class="small-header">
+                                 "Don't make more pastes; annotate this one!")
+                          <br/>
+                          <input type="submit" value="Annotate this paste" />))
+                  *ohloh*))))))))
 
 (defun ends-with (str end)
   (let ((l1 (length str))
@@ -1296,26 +1296,32 @@ only be shared with the administrator of the site."
 							     (colorize:scan-string colorize-as (paste-contents paste))))))
 	     (encode (paste-contents paste)))))))))
 
-(defmethod handle-request-response ((handler display-paste-handler) method request)
-  (let* ((paste-number (quick-parse-junk-integer
-                        (request-unhandled-part request)))
-         (raw (ends-with (request-unhandled-part request) "/raw"))
-         (xml (ends-with (request-unhandled-part request) "/xml"))
-	 (content-type (or (body-param "type" (request-body request)) "text/plain"))
+(defun parse-paste-number (script-name)
+  (ppcre:register-groups-bind (integer)
+      (#.(format nil "~a(\\d+)" *display-paste-url*) script-name)
+    (quick-parse-junk-integer integer)))
+
+(define-easy-handler (display :uri
+                              (lambda (x) (eql 0 (search *display-paste-url*
+                                                       (script-name x)))))
+    (colorize linenumbers type)
+  (let* ((paste-number (parse-paste-number (script-name*)))
+         (raw (ends-with (script-name*) "/raw"))
+         (xml (ends-with (script-name*) "/xml"))
+	 (content-type (or type "text/plain"))
          (paste (find-paste paste-number))
 	 (expired (find-expired-paste paste-number))
-         (linenumbers (equalp (body-param "linenumbers" (request-body request))
+         (linenumbers (equalp linenumbers
 			      "true"))
-         (colorize-string (or
-                           (body-param "colorize" (request-body request))
-                           (and paste
-                                (if (eql (paste-colorization-mode paste) :none)
-                                    (progn (setf (paste-colorization-mode paste) "")
-					   nil)
-                                    t)
-                                (> (length (paste-colorization-mode paste)) 0)
-                                (paste-colorization-mode paste))
-                           ))
+         (colorize-string (or colorize
+                              (and paste
+                                   (if (eql (paste-colorization-mode paste) :none)
+                                       (progn (setf (paste-colorization-mode paste) "")
+                                              nil)
+                                       t)
+                                   (> (length (paste-colorization-mode paste)) 0)
+                                   (paste-colorization-mode paste))
+                              ))
          (colorize-as (or
                        (car (rassoc colorize-string (colorize:coloring-types) :test #'string-equal))
                        (if (and paste
@@ -1324,66 +1330,64 @@ only be shared with the administrator of the site."
          (colorize:*css-background-class* "paste"))
     (cond
       ((not (find content-type *allowed-content-types* :test #'equal))
-       (lisppaste-send-headers-for-html request)
-       (xml-output-to-stream
-	(request-stream request)
+       (xml-to-string
 	(lisppaste-wrap-page
 	 (format nil "Bad content-type ~A!~%" content-type))))
       ((and paste (or raw xml))
-       (let ((p (and raw (position #\, (request-unhandled-part request) :test #'char=))))
-	 (if p (let ((ann (quick-parse-junk-integer (request-unhandled-part request) :start (1+ p))))
-		 (let ((theann (car (member ann (paste-annotations paste) :key #'paste-number :test #'eql))))
-		   (if theann
-		       (progn
-			 (request-send-headers request :expires 0 :content-type content-type)
-			 (write-string (remove #\Return
-					       (paste-contents theann)
-					       :test #'char=) (request-stream request))))))
-	     (if raw
-		 (progn
-		   (request-send-headers request :expires 0 :content-type content-type)
-		   (write-string (remove #\return
-					 (paste-contents paste)
-					 :test #'char=)(request-stream request))
-		   t)
-		 (progn
-		   (request-send-headers request :expires 0 :content-type "text/xml")
-		   (paste-write-xml paste (request-stream request))
-		   t)))))
+       ;; (let ((p (and raw (position #\, (request-unhandled-part request) :test #'char=))))
+       ;;   (cond (p
+       ;;          (let ((ann (quick-parse-junk-integer (request-unhandled-part request) :start (1+ p))))
+       ;;            (let ((theann (car (member ann (paste-annotations paste) :key #'paste-number :test #'eql))))
+       ;;              (when theann
+       ;;                (setf (content-type*) content-type)
+       ;;                (remove #\Return
+       ;;                        (paste-contents theann)
+       ;;                        :test #'char=)))))
+       ;;       (if raw
+       ;;  	 (progn
+       ;;  	   (setf (content-type*) content-type)
+       ;;  	   (write-string (remove #\return
+       ;;  				 (paste-contents paste)
+       ;;  				 :test #'char=)(request-stream request))
+       ;;  	   t)
+       ;;  	 (progn
+       ;;  	   (request-send-headers request :expires 0 :content-type "text/xml")
+       ;;  	   (paste-write-xml paste (request-stream request))
+       ;;  	   t))))
+       )
       (paste
        (let ((annotate-html
-	      (<table class="controls">
-		      (<tr>
-		       (<td>
-			(when (paste-annotations paste)
-			  (list "Index of paste annotations: "
-				(loop for ann in (reverse (paste-annotations paste))
-				   for test from (length (paste-annotations paste)) downto 1
-				   collect
-				   (<a href=?(format nil "#~A" (paste-number ann))>
-				       (prin1-to-string (paste-number ann)))
-				   if (not (eql test 1))
-				   collect " | ")
-				<p/>))
-			<input type="hidden" name="annotate" value=?(prin1-to-string (paste-number paste)) />
-			(unless (paste-moldy paste)
-			  <input type="submit" value="Annotate this paste"/>))))))
-	 (request-send-headers request :expires 0
-			       :content-type (if (paste-is-unicode-p paste)
-						 "text/html; charset=utf-8"
-						 "text/html; charset=iso-8859-1"))
-	 (xml-output-to-stream
-	  (request-stream request)
+               (<table class="controls">
+                       (<tr>
+                        (<td>
+                         (when (paste-annotations paste)
+                           (list "Index of paste annotations: "
+                                 (loop for ann in (reverse (paste-annotations paste))
+                                       for test from (length (paste-annotations paste)) downto 1
+                                       collect
+                                       (<a href=?(format nil "#~A" (paste-number ann))>
+                                           (prin1-to-string (paste-number ann)))
+                                       if (not (eql test 1))
+                                       collect " | ")
+                                 <p/>))
+                         <input type="hidden" name="annotate" value=?(prin1-to-string (paste-number paste)) />
+                         (unless (paste-moldy paste)
+                           <input type="submit" value="Annotate this paste"/>))))))
+	 (setf (content-type*) 
+               (if (paste-is-unicode-p paste)
+                     "text/html; charset=utf-8"
+                     "text/html; charset=iso-8859-1"))
+	 (xml-to-string 
 	  (lisppaste-wrap-page
 	   (format nil "Paste number ~A: ~A" paste-number (paste-title paste))
 	   (<div>
-	    (<form method="post" action=?(urlstring *new-paste-url*)>
+	    (<form method="post" action=?*new-paste-url*>
 		   
 		   (when (or (paste-annotations paste)
 			     (not (paste-moldy paste)))
 		     (<center> annotate-html)))
 	    <p/>
-	    (format-paste paste (urlstring (request-url request)) paste-number nil colorize-as
+	    (format-paste paste (request-uri*) paste-number nil colorize-as
 			  linenumbers)
 	    (if (paste-annotations paste)
 		(<p>
@@ -1392,13 +1396,14 @@ only be shared with the administrator of the site."
 			)
 		 (nreverse
 		  (loop for a in (paste-annotations paste)
-		     collect (<p>
-			      (format-paste
-			       a
-			       (format nil "~A,~A"
-				       (urlstring (request-url request))
-				       (paste-number a)) (paste-number a)
-			       t colorize-as linenumbers)))))
+                        collect (<p>
+                                 (format-paste
+                                  a
+                                  (format nil "~A,~A"
+                                          (request-uri*)
+                                          (paste-number a))
+                                  (paste-number a)
+                                  t colorize-as linenumbers)))))
 		(<p>
 		 (<span class="small-header">
 			"This paste has no annotations.")))
@@ -1406,69 +1411,67 @@ only be shared with the administrator of the site."
 	    (<table width="100%">
 		    (<tr>
 		     (<td align="left">
-			  (<form method="post" action=?(urlstring
-							(merge-url
-							 *display-paste-url*
-							 (request-unhandled-part request)))>
-							 (<table class="controls">
-								 (<tr>
-								  (<td>
-								   "Colorize as: "
-								   (<select name="colorize">
-									    (<option value="None"> "None")
-									    (loop for pair in (colorize:coloring-types)
-									       collect
-									       (<option value=?(cdr pair) $(if (eq (car pair) colorize-as) '("selected" "SELECTED")) >
-											(cdr pair))))
-								   <br/>
-								   <input type="checkbox" name="linenumbers" value="true" $(if linenumbers '("checked" "checked")) />
-								   " Show Line Numbers"
-								   <br/>
-								   (<center>
-								    <input type="submit" value="Format"/>)))))) 
-		     (<td align="right">
-			  (apply-translator
-			   *untablify-translator*
-			   (list
-			    (if (paste-maybe-spam-p paste)
-				(list
-				 (<span class= "controls">
-					"Already reported as spam.")
-				 <p/>)
-				(form-html (mark-as-spam (handler-url 'mark-as-spam-handler) :method :get)
-					   (paste paste)))
+			  (<form method="post" action=?(merge-url
+                                                        *display-paste-url*
+                                                        "dsf")>
+                                 (<table class="controls">
+                                         (<tr>
+                                          (<td>
+                                           "Colorize as: "
+                                           (<select name="colorize">
+                                                    (<option value="None"> "None")
+                                                    (loop for pair in (colorize:coloring-types)
+                                                          collect
+                                                          (<option value=?(cdr pair) $(if (eq (car pair) colorize-as) '("selected" "SELECTED")) >
+                                                                   (cdr pair))))
+                                           <br/>
+                                           <input type="checkbox" name="linenumbers" value="true" $(if linenumbers '("checked" "checked")) />
+                                           " Show Line Numbers"
+                                           <br/>
+                                           (<center>
+                                            <input type="submit" value="Format"/>)))))) 
+		     ;; (<td align="right">
+		     ;;      (apply-translator
+		     ;;       *untablify-translator*
+		     ;;       (list
+		     ;;        (if (paste-maybe-spam-p paste)
+		     ;;    	(list
+		     ;;    	 (<span class= "controls">
+		     ;;    		"Already reported as spam.")
+		     ;;    	 <p/>)
+		     ;;    	(form-html (mark-as-spam (handler-url 'mark-as-spam-handler) :method :get)
+                     ;;              (paste paste)))
 			  
-			    (if (paste-deletion-requested paste)
-				(list
-				 (<span class= "controls">
-					"Already requested for deletion.")
-				 <p/>)
-				(form-html (request-deletion (handler-url 'request-deletion-handler) :method :get)
-					   (paste paste)))
+		     ;;        (if (paste-deletion-requested paste)
+		     ;;    	(list
+		     ;;    	 (<span class= "controls">
+		     ;;    		"Already requested for deletion.")
+		     ;;    	 <p/>)
+		     ;;    	(form-html (request-deletion (handler-url 'request-deletion-handler) :method :get)
+                     ;;              (paste paste)))
 			  
-			    (unless (string-equal (paste-channel paste) "None")
-			      (form-html (mark-as-wrong-channel (handler-url 'mark-as-wrong-channel-handler) :method :get)
-					 (paste paste)))
+		     ;;        (unless (string-equal (paste-channel paste) "None")
+		     ;;          (form-html (mark-as-wrong-channel (handler-url 'mark-as-wrong-channel-handler) :method :get)
+                     ;;            (paste paste)))
 			  
-			    (when (or (paste-annotations paste)
-				      (not (paste-moldy paste)))
-			      (<form method="post" action=?(urlstring *new-paste-url*)>
-				     annotate-html)))))))
+		     ;;        (when (or (paste-annotations paste)
+		     ;;    	      (not (paste-moldy paste)))
+		     ;;          (<form method="post" action=?*new-paste-url*>
+		     ;;    	     annotate-html)))))
+                     ))
 	    <p/>
 	    (<center>
 	     *ohloh*
 	     (<div class="ads-text"> *ads*)))))))
       (expired
-       (lisppaste-send-headers-for-html request :response-code 404 :response-text "Not Found")
-       (xml-output-to-stream
-	(request-stream request)
+       (setf (return-code*) 404)
+       (xml-to-string
 	(lisppaste-wrap-page
 	 (format nil "Sorry, the paste numbered ~A expired ~A." paste-number
 		 (time-delta (paste-expiration-time expired))))))
       (t
-       (lisppaste-send-headers-for-html request :response-code 404 :response-text "Not Found")
-       (xml-output-to-stream
-	(request-stream request)
+       (setf (return-code*) 404)
+       (xml-to-string
 	(lisppaste-wrap-page
 	 (format nil "Invalid paste number ~A!" paste-number)))))))
 
