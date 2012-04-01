@@ -1,12 +1,6 @@
 ;;;; See the LICENSE file for licensing information.
 
 (in-package :lisppaste)
-(defclass lisppaste-application () ())
-(defclass lisppaste-basic-behavior () ())
-
-(defclass lisppaste-basic-handler (handler lisppaste-basic-behavior) ())
-
-(defclass email-redirect-handler (lisppaste-basic-handler) ())
 
 ;; (define-handler-hierarchy (:application lisppaste-application)
 ;;     (*paste-external-url*
@@ -1436,16 +1430,5 @@ with your favorite RSS reader."
           (lisppaste-wrap-page
            (format nil "Invalid paste number ~A!" paste-number))))))))
 
-(defmethod handle-request-response ((handler email-redirect-handler) method request)
-  (let ((email-url (concatenate 'string "mailto:" *owner-email* "?subject=")))
-    (request-send-headers
-     request
-     :extra-http-headers `((:host . ,*paste-site-name*))
-     :location email-url
-     :expires "Fri, 30 Oct 1998 14:19:41 GMT"
-     :pragma "no-cache"
-     :response-code 302 :response-text "Redirected")
-    (xml-output-to-stream
-     (request-stream request)
-     (<html> (<body> (<h1> "Redirected"))))
-    t))
+(define-easy-handler (email-redirect :uri *email-redirect-url*) ()
+  (redirect (format nil "mailto:~a?subject=" *owner-email*)))
