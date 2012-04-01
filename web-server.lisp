@@ -1408,7 +1408,7 @@ with your favorite RSS reader."
 
 
 
-(define-easy-handler (short-paste :uri (match-prefix *short-paste-url*)) ()
+(define-easy-handler (short-paste :uri (match-prefix *short-paste-url* "")) ()
   (multiple-value-bind (paste-number annotation)
       (parse-short-paste-number (script-name*))
     (let* ((paste (find-paste paste-number))

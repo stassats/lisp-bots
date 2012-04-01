@@ -20,8 +20,15 @@
 			 #'char-code password))
    '(vector t)))
 
-(defun match-prefix (prefix)
-  (let ((regex (ppcre:create-scanner
-                (format nil "^~a(/.*)?$" (string-right-trim "/" prefix)))))
-   (lambda (x)
-     (ppcre:scan regex (script-name x)))))
+(defun match-prefix (prefix &optional (separator "/"))
+  (let ((regex
+          (ppcre:create-scanner
+           `(:sequence :start-anchor ,(string-right-trim separator prefix)
+                       (:greedy-repetition
+                        0 1
+                        (:register
+                         (:sequence ,separator
+                                    (:greedy-repetition 0 nil :everything))))
+                       :end-anchor))))
+    (lambda (x)
+      (ppcre:scan regex (script-name x)))))
