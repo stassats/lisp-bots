@@ -19,3 +19,8 @@
 		    (map '(vector (unsigned-byte 8))
 			 #'char-code password))
    '(vector t)))
+
+(defun match-prefix (prefix)
+  (lambda (x)
+    (eql 0
+         (search prefix (script-name x)))))

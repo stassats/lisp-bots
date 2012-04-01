@@ -9,7 +9,7 @@
   (:use :cl #+sbcl :sb-bsd-sockets :html-encode :hunchentoot
         :ironclad :split-sequence
         :webutils)
-  (:shadow null)
+  (:shadowing-import-from cl null)
   (:export
    :start-lisppaste
    :join-new-irc-channel

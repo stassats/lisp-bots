@@ -319,12 +319,6 @@ IRC."
                    (<body> (<h1> (<font color="red"> "Naughty boy!"))))))
         (funcall thunk))))
 
-(defmethod handle-request-response :around
-    ((handler submit-paste-handler) method request)
-  (call-unless-banned request
-		      (lambda () (call-next-method))
-		      t))
-
 (defun quick-parse-junk-integer (string &key (start 0) (limit 64) (radix 10))
   (if (> (length string) start)
       (let ((end start))
@@ -1115,95 +1109,95 @@ with your favorite RSS reader."
   (<th $args> . body)
   (<td $args>))
 
-(define-application-handler (mark-as-spam-handler :get request)
-  (application-process-form (mark-as-spam)
-    (application-page ((format nil "Marking paste ~A as spam" (paste-number paste)))
-     "Are you sure that this paste is spam? Spam for this purpose is defined as:"
-     (<ul> (<li> "Commercial advertising")
-	   (<li> "Materials containing gratuitious profanity")
-	   (<li> "Materials relating to the mass violation of copyright (e.g. through file-sharing networks)"))
-     "If so, please click the following button:"
-     <p/>
-     (apply-translator
-      *untablify-translator*
-      (form-html (mark-as-spam (handler-url 'mark-as-spam-handler))
-		 (paste paste)))
-     <p/>
-     "If the paste isn't spam, but you'd like to request that it be
-deleted for other reasons, please click the following button:"
-     <p/>
-     (apply-translator
-      *untablify-translator*
-      (form-html (request-deletion (handler-url 'request-deletion-handler) :method :get)
-		 (paste paste)))
-     <p/>
-     "If not, please click the following:"
-     <p/>
-     (<form> <input type= "button" onclick= "history.back();" value= "It isn't spam!" />))))
+;; (define-application-handler (mark-as-spam-handler :get request)
+;;   (application-process-form (mark-as-spam)
+;;     (application-page ((format nil "Marking paste ~A as spam" (paste-number paste)))
+;;      "Are you sure that this paste is spam? Spam for this purpose is defined as:"
+;;      (<ul> (<li> "Commercial advertising")
+;; 	   (<li> "Materials containing gratuitious profanity")
+;; 	   (<li> "Materials relating to the mass violation of copyright (e.g. through file-sharing networks)"))
+;;      "If so, please click the following button:"
+;;      <p/>
+;;      (apply-translator
+;;       *untablify-translator*
+;;       (form-html (mark-as-spam (handler-url 'mark-as-spam-handler))
+;; 		 (paste paste)))
+;;      <p/>
+;;      "If the paste isn't spam, but you'd like to request that it be
+;; deleted for other reasons, please click the following button:"
+;;      <p/>
+;;      (apply-translator
+;;       *untablify-translator*
+;;       (form-html (request-deletion (handler-url 'request-deletion-handler) :method :get)
+;; 		 (paste paste)))
+;;      <p/>
+;;      "If not, please click the following:"
+;;      <p/>
+;;      (<form> <input type= "button" onclick= "history.back();" value= "It isn't spam!" />))))
 
-(define-application-handler (mark-as-spam-handler :post request)
-    (application-process-form (mark-as-spam)
-      (setf (paste-maybe-spam-p paste) :true)
-      (paste-write-xml-to-file paste)
-      (application-page ((format nil "Paste ~A marked as spam!" (paste-number paste)))
-	"The paste "
-	(<a href=? (paste-display-url paste)>
-	    (prin1-to-string (paste-number paste)))
-	" has been marked as spam. Thank you!")))
+;; (define-application-handler (mark-as-spam-handler :post request)
+;;     (application-process-form (mark-as-spam)
+;;       (setf (paste-maybe-spam-p paste) :true)
+;;       (paste-write-xml-to-file paste)
+;;       (application-page ((format nil "Paste ~A marked as spam!" (paste-number paste)))
+;; 	"The paste "
+;; 	(<a href=? (paste-display-url paste)>
+;; 	    (prin1-to-string (paste-number paste)))
+;; 	" has been marked as spam. Thank you!")))
 
-(define-application-handler (request-deletion-handler :get request)
-  (application-process-form (request-deletion)
-    (application-page ((format nil "Requesting deletion of paste ~A" (paste-number paste)))
-     "Please fill in the following form describing the reason why you
-want this paste to be deleted. For example:"
-     (<ul> (<li> "Does it infringe on a copyright?")
-	   (<li> "Does it include personal information?")
-	   (<li> "Was it pasted in error?"))
-     "Please also include a valid email address where you can be
-contacted if there are questions about your request. This email will
-only be shared with the administrator of the site."
-     <p/>
-     (form-html (request-deletion-with-reason (handler-url 'request-deletion-handler))
-		(paste paste))
-     <p/>
-     "If not, please click the following:"
-     <p/>
-     (<form> <input type= "button" onclick= "history.back();" value= "Whoops! Get me out of here!" />))))
+;; (define-application-handler (request-deletion-handler :get request)
+;;   (application-process-form (request-deletion)
+;;     (application-page ((format nil "Requesting deletion of paste ~A" (paste-number paste)))
+;;      "Please fill in the following form describing the reason why you
+;; want this paste to be deleted. For example:"
+;;      (<ul> (<li> "Does it infringe on a copyright?")
+;; 	   (<li> "Does it include personal information?")
+;; 	   (<li> "Was it pasted in error?"))
+;;      "Please also include a valid email address where you can be
+;; contacted if there are questions about your request. This email will
+;; only be shared with the administrator of the site."
+;;      <p/>
+;;      (form-html (request-deletion-with-reason (handler-url 'request-deletion-handler))
+;; 		(paste paste))
+;;      <p/>
+;;      "If not, please click the following:"
+;;      <p/>
+;;      (<form> <input type= "button" onclick= "history.back();" value= "Whoops! Get me out of here!" />))))
 
-(define-application-handler (request-deletion-handler :post request)
-    (application-process-form (request-deletion-with-reason)
-      (setf (paste-deletion-requested paste) reason
-	    (paste-deletion-requested-email paste) email)
-      (paste-write-xml-to-file paste)
-      (application-page ((format nil "Paste ~A deletion request received!" (paste-number paste)))
-	"The deletion request for paste "
-	(<a href=? (paste-display-url paste)>
-	    (prin1-to-string (paste-number paste)))
-	" has been received and will be reviewed shortly. Thank you!")))
+;; (define-application-handler (request-deletion-handler :post request)
+;;     (application-process-form (request-deletion-with-reason)
+;;       (setf (paste-deletion-requested paste) reason
+;; 	    (paste-deletion-requested-email paste) email)
+;;       (paste-write-xml-to-file paste)
+;;       (application-page ((format nil "Paste ~A deletion request received!" (paste-number paste)))
+;; 	"The deletion request for paste "
+;; 	(<a href=? (paste-display-url paste)>
+;; 	    (prin1-to-string (paste-number paste)))
+;; 	" has been received and will be reviewed shortly. Thank you!")))
 
-(define-application-handler (mark-as-wrong-channel-handler :get request)
-  (application-process-form (mark-as-wrong-channel)
-    (application-page ((format nil "Marking paste ~A as to the wrong channel" (paste-number paste)))
-     "Are you sure this paste went to the wrong channel? If so, please click the following button and paste annotations will no longer notify this channel:"
-     <p/>
-     (apply-translator
-      *untablify-translator*
-      (form-html (mark-as-wrong-channel (handler-url 'mark-as-wrong-channel-handler))
-		 (paste paste)))
-     <p/>
-     "If not, please click the following:"
-     <p/>
-     (<form> <input type= "button" onclick= "history.back();" value= "Oops! Never mind." />))))
+;; (define-application-handler (mark-as-wrong-channel-handler :get request)
+;;   (application-process-form (mark-as-wrong-channel)
+;;     (application-page ((format nil "Marking paste ~A as to the wrong channel" (paste-number paste)))
+;;      "Are you sure this paste went to the wrong channel? If so, please click the following button and paste annotations will no longer notify this channel:"
+;;      <p/>
+;;      (apply-translator
+;;       *untablify-translator*
+;;       (form-html (mark-as-wrong-channel (handler-url 'mark-as-wrong-channel-handler))
+;; 		 (paste paste)))
+;;      <p/>
+;;      "If not, please click the following:"
+;;      <p/>
+;;      (<form> <input type= "button" onclick= "history.back();" value= "Oops! Never mind." />))))
 
-(define-application-handler (mark-as-wrong-channel-handler :post request)
-  (application-process-form (mark-as-wrong-channel)
-    (setf (paste-channel paste) "None")
-    (paste-write-xml-to-file paste)
-    (application-page ((format nil "Paste ~A removed from this channel!" (paste-number paste)))
-      "The paste "
-      (<a href=? (paste-display-url paste)>
-	  (prin1-to-string (paste-number paste)))
-      " has been removed from this channel. Thank you!")))
+;; (define-application-handler (mark-as-wrong-channel-handler :post request)
+;;   (application-process-form (mark-as-wrong-channel)
+;;     (setf (paste-channel paste) "None")
+;;     (paste-write-xml-to-file paste)
+;;     (application-page ((format nil "Paste ~A removed from this channel!" (paste-number paste)))
+;;       "The paste "
+;;       (<a href=? (paste-display-url paste)>
+;; 	  (prin1-to-string (paste-number paste)))
+;;       " has been removed from this channel. Thank you!")))
 
 (defun format-paste (paste this-url paste-number &optional annotation colorize-as line-numbers)
   (let ((n 0) (next-first-char-nbsp t))
@@ -1284,11 +1278,6 @@ only be shared with the administrator of the site."
   (ppcre:register-groups-bind (integer)
       (#.(format nil "~a(\\d+)" *display-paste-url*) script-name)
     (quick-parse-junk-integer integer)))
-
-(defun match-prefix (prefix)
-  (lambda (x)
-    (eql 0
-         (search prefix (script-name x)))))
 
 (define-easy-handler (display :uri (match-prefix *display-paste-url*))
     (colorize linenumbers type)
