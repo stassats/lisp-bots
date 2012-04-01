@@ -33,7 +33,7 @@
     (irc:privmsg (find-connection channel)
                  channel
                  (format nil "To use the lisppaste bot, visit ~A/~A and enter your paste."
-                         *new-paste-url*
+                         (full-url *new-paste-url*)
                          (urlstring-escape (subseq channel 1))))
     t))
 
@@ -63,7 +63,8 @@
       (cond ((string-equal message-nick nick)
              (irc:privmsg connection
                           (irc:source message)
-                          (format nil "To use the lisppaste bot, visit ~A and enter your paste. Be sure to select the right channel!" (araneida:urlstring *new-paste-url*)))
+                          (format nil "To use the lisppaste bot, visit ~A and enter your paste. Be sure to select the right channel!"
+                                  (full-url *new-paste-url*)))
 	     ;; KLUDGE: keep from flooding off
 	     (sleep 0.05))
             ((some #'(lambda (e)
@@ -80,7 +81,7 @@
                                (server *default-irc-server*)
                                (port *default-irc-server-port*))
   (let ((connection (irc:connect :nickname nickname
-                                 :realname *new-paste-url*
+                                 :realname (full-url *new-paste-url*)
                                  :server server
                                  :port port)))
     (push (cons nickname connection) *connections*)
@@ -143,7 +144,7 @@
   (setf
    (cdr (assoc nickname *connections* :test #'string-equal))
    (irc:connect :nickname nickname
-		:realname (araneida:urlstring *new-paste-url*)
+		:realname (full-url *new-paste-url*)
 		:server server
 		:port *default-irc-server-port*))
   (mapcar #'(lambda (channel) (irc:join (nick-connection nickname) channel))

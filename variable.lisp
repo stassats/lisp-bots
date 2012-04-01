@@ -1,6 +1,3 @@
-;;;; $Id: variable.lisp,v 1.61 2010-06-26 15:10:45 lisppaste Exp $
-;;;; $Source: /project/lisppaste/cvsroot/lisppaste2/variable.lisp,v $
-
 ;;;; See the LICENSE file for licensing information.
 
 ;;; This is the main file to edit to customize lisppaste to your
@@ -28,7 +25,8 @@
 (defparameter *external-http-port* 80
   "Port lisppaste's araneida will listen on for requests from remote clients.")
 
-(defparameter *paste-site-name* "paste.lisp.org"
+(defparameter *paste-site-name* ;; "paste.lisp.org"
+  "localhost:8080"
   "Website we are running on (used for creating links).")
 
 (defclass lisppaste-acceptor (easy-acceptor)
@@ -42,6 +40,12 @@
 
 (defparameter *paste-external-url*
   (format nil "http://~a/" *paste-site-name*))
+
+
+(defun full-url (url)
+  (format nil "~a~a"
+          *paste-external-url*
+          (string-left-trim "/" url)))
 
 (defvar *meme-links* nil) ; whether to link to meme IRC logs, probably
 			  ; only useful for freenode's lisppaste

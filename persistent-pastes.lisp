@@ -410,7 +410,7 @@ in-memory copy."
   "Return a string of the display URL for PASTE, including a suitable
 anchor if PASTE is an annotation."
   (let ((parent-paste (paste-parent-paste paste)))
-    (merge-url *display-paste-url*
+    (merge-url (full-url *display-paste-url*)
                (if parent-paste
                    (format nil "~A#~A"
                            (paste-number parent-paste)

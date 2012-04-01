@@ -798,10 +798,11 @@ with your favorite RSS reader."
 
 (defun paste-tweet-url (paste)
   (format nil "http://twitter.com/home?status=~A"
-          (urlstring-escape (trim-to-length (format nil "~A ~A"
-                                                    (paste-short-url paste)
-                                                    (paste-title paste))
-                                            140))))
+          (full-url
+           (urlstring-escape (trim-to-length (format nil "~A ~A"
+                                                     (paste-short-url paste)
+                                                     (paste-title paste))
+                                             140)))))
 
 (defun log-new-paste (ip number annotation title)
   (log-event
@@ -954,7 +955,7 @@ with your favorite RSS reader."
             (if annotate
                 "Your annotation should be available at "
                 "Your paste should be available at ")
-            (<b> (<a href=?url> url))
+            (<b> (<a href=?url> (full-url url)))
             (unless (and *no-channel-pastes*
                          (string-equal channel "none"))
               (list ", and was also sent to " channel " at " *irc-network-name*))
@@ -1186,8 +1187,8 @@ with your favorite RSS reader."
                           (<a href=? (paste-tweet-url paste)>
                               "Tweet this!")
                           " | "
-                          (<a href=? (paste-short-url paste)>
-                              (paste-short-url paste))))
+                          (<a href=? (paste-short-url paste) >
+                              (full-url (paste-short-url paste)))))
                (when (not annotation)
                  (<tr>
                   (<td> "Channel:")
