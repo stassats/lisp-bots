@@ -9,19 +9,14 @@
 
 (defclass lisppaste-basic-handler (handler lisppaste-basic-behavior) ())
 
-(defclass main-handler (lisppaste-basic-handler) ())
 
 (defclass recent-handler (lisppaste-basic-handler) ())
 
-(defclass css-handler (lisppaste-basic-handler) ())
 
-(defclass new-paste-handler (lisppaste-basic-handler) ())
 
 (defclass list-paste-handler (lisppaste-basic-handler) ())
 
-(defclass submit-paste-handler (lisppaste-basic-handler) ())
 
-(defclass display-paste-handler (lisppaste-basic-handler) ())
 
 (defclass short-paste-handler (lisppaste-basic-handler) ())
 
@@ -341,38 +336,35 @@ IRC."
 	(if (> end start)
 	    (parse-integer string :start start :end end :radix radix)))))
 
-(defmethod handle-request-response ((handler new-paste-handler) method request)
-  (let* ((annotate-string (body-param "annotate" (request-body request)))
-         (annotate-number (if annotate-string (quick-parse-junk-integer annotate-string)))
-         (annotate (if annotate-number (find-paste annotate-number)))
+(defun parse-new-paste-channel ()
+  (ppcre:register-groups-bind (channel)
+      (#.(format nil "~a/(\.+)" *new-paste-url*) (script-name*))
+    channel))
+
+(define-easy-handler (new-paste :uri (match-prefix *new-paste-url*))
+    (annotate channel)
+  (let* ((annotate-number (if annotate (quick-parse-junk-integer annotate)))
+         (annotate-paste (if annotate-number (find-paste annotate-number)))
          (default-channel
-           (or (and annotate (paste-channel annotate))
-               (if (equalp (urlstring-unescape (request-unhandled-part request)) "/none")
+           (or (and annotate-paste (paste-channel annotate-paste))
+               (if (ends-with (script-name*) "/none")
                    "None")
-               (find-if #'(lambda (e) (> (length e) 1))
-                        (list
-                         (and (eql method :post)
-                              (body-param "channel"
-                                          (request-body request)))
-                         (substitute #\# #\/ (urlstring-unescape (request-unhandled-part request)) :test #'char=) 
-                         (and *no-channel-pastes*
-                              "None")
-                         )))))
+               (or channel
+                   (parse-new-paste-channel))
+               (and *no-channel-pastes*
+                    "None"))))
     (cond
       ((and default-channel (or (and *no-channel-pastes*
                                      (string-equal default-channel "None"))
                                 (find default-channel *channels* :test #'string-equal)))
-       (request-send-headers request :expires 0
-                                     :content-type "text/html; charset=utf-8")
-       (new-paste-form request :annotate annotate :default-channel default-channel))
+       (new-paste-form :annotate annotate-paste :default-channel default-channel))
       (t 
-         (xml-output-to-stream
-          (request-stream request)
+         (xml-to-string
           (lisppaste-wrap-page
            "Select a channel"
            (<form method="post" action=?*new-paste-url*>
                   (<div class="controls">
-                        <input type="hidden" name="annotate" value=?annotate-string />
+                        <input type="hidden" name="annotate" value=?annotate />
                         "Please select a channel to lisppaste to: "
                         (<select name="channel">
                                  (<option value=""> "")
@@ -1293,9 +1285,12 @@ only be shared with the administrator of the site."
       (#.(format nil "~a(\\d+)" *display-paste-url*) script-name)
     (quick-parse-junk-integer integer)))
 
-(define-easy-handler (display :uri
-                              (lambda (x) (eql 0 (search *display-paste-url*
-                                                       (script-name x)))))
+(defun match-prefix (prefix)
+  (lambda (x)
+    (eql 0
+         (search prefix (script-name x)))))
+
+(define-easy-handler (display :uri (match-prefix *display-paste-url*))
     (colorize linenumbers type)
   (let* ((paste-number (parse-paste-number (script-name*)))
          (raw (ends-with (script-name*) "/raw"))
@@ -1367,8 +1362,8 @@ only be shared with the administrator of the site."
                            <input type="submit" value="Annotate this paste"/>))))))
 	 (setf (content-type*) 
                (if (paste-is-unicode-p paste)
-                     "text/html; charset=utf-8"
-                     "text/html; charset=iso-8859-1"))
+                   "text/html; charset=utf-8"
+                   "text/html; charset=iso-8859-1"))
 	 (xml-to-string 
 	  (lisppaste-wrap-page
 	   (format nil "Paste number ~A: ~A" paste-number (paste-title paste))
