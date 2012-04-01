@@ -557,127 +557,119 @@ with your favorite RSS reader."
 	    if (eql (- i page) 5)
 	    collect "... "))))
 
-(defmethod handle-request-response ((handler list-paste-handler) method request)
-  
-  (destructuring-bind
-	(channel &rest others)
-      (split-sequence:split-sequence
-       #\?
-       (urlstring-unescape (request-unhandled-part request)))
-    (let* ((discriminate-channel
-	    (or
-	     (body-param "channel" (request-body request))
-	     (if (not (string-equal channel ""))
-		 (or (and *no-channel-pastes*
-			  (string-equal channel "/none")
-			  "None")
-		     (and *no-channel-pastes*
-			  (string-equal channel "/some")
-			  "Some")
-		     (substitute #\# #\/ channel
-				 :test #'char=)))))
-	   (discriminate-channel
-	    (if (string-equal discriminate-channel "allchannels")
-		nil discriminate-channel))
-	   (page (or (when others
-		       (quick-parse-junk-integer (car others)))
-		     0))
-	   (discriminated-pastes
-	    (list-pastes :in-channel (if (equal discriminate-channel "Some")
-					 t
-					 discriminate-channel)))
-	   (highest-page (floor (/ (- (length discriminated-pastes) 1)
-				   *pastes-per-page*)))
-	   (page-links (page-links-for-paste-list page highest-page discriminate-channel)))
-      (xml-output-to-stream
-       (request-stream request)
-       (lisppaste-wrap-page
-	(if discriminate-channel
-	    (format nil "All pastes in channel ~A" discriminate-channel)
-	    "All pastes in system")
-	(when (and discriminate-channel
-		   (not (member discriminate-channel *channels* :test #'string-equal)))
-	  (<div>
-	   (<font color="red">
-		  (format nil "Lisppaste isn't in the channel ~A." discriminate-channel))))
-	(when discriminate-channel
-	  (<div class="top-link">
-		(<a href=?(channel-paste-url discriminate-channel)>
-		    "New paste here")))
-	(<center>
-	 (<form method="post" action=?(urlstring *list-paste-url*)>
-		(<table class="controls">
-			(<tr> (<td align="left"> "View only: ")
-			      (<td valign="top" align="center">
-				   (<select name="channel">
-					    (<option value="allchannels">
-						     "All channels")
-					    (mapcar (lambda (e)
-						      (<option value=?e $ (if (equal e discriminate-channel) '("selected" "SELECTED"))> e)
-						      ) *channels*))
-				   <input type="submit" value="Submit"/>))
-			(<tr>
-			 (<td align="left">
-			      (if discriminate-channel
-				  "Syndicate this channel: "
-				  "Syndicate all channels: "))
-			 (<td align="center">
-			      (<a href=?(concatenate 'string
-						     (urlstring *rss-url*)
-						     (if discriminate-channel
-							 (or (and *no-channel-pastes*
-								  (string-equal discriminate-channel "none")
-								  "?none")
-							     (substitute #\? #\# discriminate-channel)) ""))>
-							     "Basic")
-			      " | "
-			      (<a href=?(concatenate 'string
-						     (urlstring *rss-full-url*)
-						     (if discriminate-channel
-							 (or (and *no-channel-pastes*
-								  (string-equal discriminate-channel "none")
-								  "?none")
-							     (substitute #\? #\# discriminate-channel))
-							 ""))>
-							 "Full")))
-			(<tr>
-			 (<td align="left">
-			      "Page: ")
-			 (<td align="center">
-			      page-links)))))
-	<p/>
-	(<table width="100%" cellpadding="2" class="detailed-paste-list">
-		(<tr>
-		 (<td>)
-		 (<td> "By")
-		 (<td> "Where")
-		 (<td> "When")
-		 (<td> "Title")
-		 (<td> "Ann."))
-		(loop for i from 0 to (- (* (1+ page) *pastes-per-page*) 1)
-		      for paste in discriminated-pastes
-		      if (>= i (* page *pastes-per-page*))
-		      collect
-		      (<tr>
-		       (<td nowrap="nowrap">
-			    (<a href=?(paste-display-url paste)>
-				(concatenate 'string "#" (prin1-to-string (paste-number paste)))))
-		       (<td nowrap="nowrap">
-			    (max-length (paste-user paste) 12))
-		       (<td nowrap="nowrap"> (paste-channel paste))
-		       (<td nowrap="nowrap"> (time-delta (paste-universal-time paste) :level 1 :ago-p nil))
-		       (<td width="100%" bgcolor="#F6F6F6" nowrap="nowrap">
-			    (max-length (paste-title paste) 50))
-		       (<td nowrap="nowrap"> (length (paste-annotations paste))))))
-	<p/>
-	(<center>
-	 (<table class="controls">
-		 (<tr> (<td> "Page: " page-links)))))))))
+(define-easy-handler (list-all-pastes :uri *list-paste-url*) (channel)
+  (let* ((discriminate-channel
+           (or channel
+               (if (not (string-equal channel ""))
+                   (or (and *no-channel-pastes*
+                            (string-equal channel "/none")
+                            "None")
+                       (and *no-channel-pastes*
+                            (string-equal channel "/some")
+                            "Some")
+                       (substitute #\# #\/ channel
+                                   :test #'char=)))))
+         (discriminate-channel
+           (if (string-equal discriminate-channel "allchannels")
+               nil discriminate-channel))
+         (page (or ;; (when others
+                   ;;   (quick-parse-junk-integer (car others)))
+                   0))
+         (discriminated-pastes
+           (list-pastes :in-channel (if (equal discriminate-channel "Some")
+                                        t
+                                        discriminate-channel)))
+         (highest-page (floor (/ (- (length discriminated-pastes) 1)
+                                 *pastes-per-page*)))
+         (page-links (page-links-for-paste-list page highest-page discriminate-channel)))
+    (xml-to-string
+     (lisppaste-wrap-page
+      (if discriminate-channel
+          (format nil "All pastes in channel ~A" discriminate-channel)
+          "All pastes in system")
+      (when (and discriminate-channel
+                 (not (member discriminate-channel *channels* :test #'string-equal)))
+        (<div>
+         (<font color="red">
+                (format nil "Lisppaste isn't in the channel ~A." discriminate-channel))))
+      (when discriminate-channel
+        (<div class="top-link">
+              (<a href=?(channel-paste-url discriminate-channel)>
+                  "New paste here")))
+      (<center>
+       (<form method="post" action=?*list-paste-url*>
+              (<table class="controls">
+                      (<tr> (<td align="left"> "View only: ")
+                            (<td valign="top" align="center">
+                                 (<select name="channel">
+                                          (<option value="allchannels">
+                                                   "All channels")
+                                          (mapcar (lambda (e)
+                                                    (<option value=?e $ (if (equal e discriminate-channel) '("selected" "SELECTED"))> e)
+                                                    ) *channels*))
+                                 <input type="submit" value="Submit"/>))
+                      (<tr>
+                       (<td align="left">
+                            (if discriminate-channel
+                                "Syndicate this channel: "
+                                "Syndicate all channels: "))
+                       (<td align="center">
+                            (<a href=?(concatenate 'string
+                                                   *rss-url*
+                                                   (if discriminate-channel
+                                                       (or (and *no-channel-pastes*
+                                                                (string-equal discriminate-channel "none")
+                                                                "?none")
+                                                           (substitute #\? #\# discriminate-channel)) ""))>
+                                "Basic")
+                            " | "
+                            (<a href=?(concatenate 'string
+                                                   *rss-full-url*
+                                                   (if discriminate-channel
+                                                       (or (and *no-channel-pastes*
+                                                                (string-equal discriminate-channel "none")
+                                                                "?none")
+                                                           (substitute #\? #\# discriminate-channel))
+                                                       ""))>
+                                "Full")))
+                      (<tr>
+                       (<td align="left">
+                            "Page: ")
+                       (<td align="center">
+                            page-links)))))
+      <p/>
+      (<table width="100%" cellpadding="2" class="detailed-paste-list">
+              (<tr>
+               (<td>)
+               (<td> "By")
+               (<td> "Where")
+               (<td> "When")
+               (<td> "Title")
+               (<td> "Ann."))
+              (loop for i from 0 to (- (* (1+ page) *pastes-per-page*) 1)
+                    for paste in discriminated-pastes
+                    if (>= i (* page *pastes-per-page*))
+                    collect
+                    (<tr>
+                     (<td nowrap="nowrap">
+                          (<a href=?(paste-display-url paste)>
+                              (concatenate 'string "#" (prin1-to-string (paste-number paste)))))
+                     (<td nowrap="nowrap">
+                          (max-length (paste-user paste) 12))
+                     (<td nowrap="nowrap"> (paste-channel paste))
+                     (<td nowrap="nowrap"> (time-delta (paste-universal-time paste) :level 1 :ago-p nil))
+                     (<td width="100%" bgcolor="#F6F6F6" nowrap="nowrap">
+                          (max-length (paste-title paste) 50))
+                     (<td nowrap="nowrap"> (length (paste-annotations paste))))))
+      <p/>
+      (<center>
+       (<table class="controls">
+               (<tr> (<td> "Page: " page-links))))))))
 
 (defun handle-rss-request (request &key full)
   (araneida:request-send-headers request :expires 0 :content-type "application/rss+xml")
   (format (araneida:request-stream request) "<?xml version=\"1.0\" encoding=\"UTF-8\"?>~C~C" #\Return #\Linefeed)
-  (let* ((unhandled (araneida:urlstring-unescape
+  (let* ((unhandled (urlstring-unescape
 		     (araneida:request-unhandled-part request)))
 	 (discriminate-channel (if (not (string= unhandled ""))
                                    (or (and *no-channel-pastes*
@@ -691,7 +683,7 @@ with your favorite RSS reader."
        ,(format nil
                 "<channel><title>Lisppaste pastes~A</title><link>~A</link><description>Pastes in this pastebot~A</description>~{~A~}</channel>~C~C"
                 (if discriminate-channel (format nil " for channel ~A" discriminate-channel) "")
-                (urlstring *list-paste-url*)
+                *list-paste-url*
                 (if discriminate-channel (format nil " on channel ~A" discriminate-channel) "")
                 (mapcar #'(lambda (paste)
                             (format nil "<item><link>~A</link><pubDate>~A</pubDate><title>\"~A\" by ~A</title><description>~A</description></item>~C~C"
@@ -1522,92 +1514,3 @@ only be shared with the administrator of the site."
      (<html> (<body> (<h1> "Redirected"))))
     t))
 
-(defmethod handle-request-response ((handler 404-handler) method request)
-  #+nil
-  (log-event (format nil "404: ~A ~A ~A~%"
-		     (car (request-header request :x-forwarded-for))
-		     (urlstring (request-url request))
-		     (car (request-header request :user-agent)))
-	     :log-file *access-log-file*)
-  (request-send-headers request :response-code 404 :response-text "Not Found" :content-type "text/html")
-  (xml-output-to-stream
-   (request-stream request)
-   (<html> (<body> (<h1> "404'd!!"))))
-  t)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'new-paste-handler)
- (urlstring *new-paste-url*) nil)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'list-paste-handler)
- (urlstring *list-paste-url*) nil)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'submit-paste-handler)
- (urlstring *submit-paste-url*) t)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'display-paste-handler)
- (urlstring *display-paste-url*) nil)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'short-paste-handler)
- (urlstring *short-paste-url*) nil)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'rss-handler)
- (urlstring *rss-url*) nil)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'rss-full-handler)
- (urlstring *rss-full-url*) nil)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'syndication-handler)
- (urlstring *syndication-url*) nil)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'stats-handler)
- (urlstring *stats-url*) nil)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'main-handler)
- (urlstring *paste-external-url*) t)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'css-handler)
- (urlstring *css-url*) t)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'recent-handler)
- (urlstring *recent-url*) t)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'email-redirect-handler)
- (urlstring *email-redirect-url*) t)
-
-(install-handler
- (http-listener-handler *paste-listener*)
- (make-instance 'channel-select-handler)
- (urlstring *channel-select-url*) t)
-
-(loop for url in *404-urls*
-     do
-     (install-handler
-      (http-listener-handler *paste-listener*)
-      (make-instance '404-handler)
-      (urlstring url) nil))
