@@ -9,12 +9,6 @@
 
 (defclass lisppaste-basic-handler (handler lisppaste-basic-behavior) ())
 
-(defclass rss-handler (lisppaste-basic-handler) ())
-
-(defclass rss-full-handler (lisppaste-basic-handler) ())
-
-(defclass syndication-handler (lisppaste-basic-handler) ())
-
 (defclass email-redirect-handler (lisppaste-basic-handler) ())
 
 ;; (define-handler-hierarchy (:application lisppaste-application)
@@ -386,10 +380,8 @@ IRC."
       (concatenate 'string (subseq str 0 (1- n)) "...")
     str))
 
-(defmethod handle-request-response ((handler syndication-handler) method request)
-  
-  (xml-output-to-stream
-   (request-stream request)
+(define-easy-handler (syndication :uri *syndication-url*) ()
+  (xml-to-string
    (lisppaste-wrap-page
     "Syndication options"
     "Lisppaste can be syndicated in a variety of RSS formats for use
@@ -482,14 +474,14 @@ with your favorite RSS reader."
 
 (defun page-links-for-paste-list (page highest-page channel)
   (let ((base-url (if channel
-		      (append-url *list-paste-url*
+		      (merge-url *list-paste-url*
 				  (format nil "/~A"
 					  (if (char= #\# (char channel 0))
 					      (subseq channel 1)
 					      channel)))
 		      *list-paste-url*)))
     (flet ((page-url (i)
-	     (urlstring (merge-url base-url (format nil "?~A" i)))))
+	     (merge-url base-url (format nil "?~A" i))))
       ;; XXX: Must we loop over all pages or is there a better way?
       (loop for i from 0 to highest-page
 	    for should-collect = (or (zerop i)
@@ -619,57 +611,66 @@ with your favorite RSS reader."
        (<table class="controls">
                (<tr> (<td> "Page: " page-links))))))))
 
-(defun handle-rss-request (request &key full)
-  (araneida:request-send-headers request :expires 0 :content-type "application/rss+xml")
-  (format (araneida:request-stream request) "<?xml version=\"1.0\" encoding=\"UTF-8\"?>~C~C" #\Return #\Linefeed)
-  (let* ((unhandled (urlstring-unescape
-		     (araneida:request-unhandled-part request)))
-	 (discriminate-channel (if (not (string= unhandled ""))
-                                   (or (and *no-channel-pastes*
-                                            (string-equal unhandled "?none")
-                                            "None")
-                                       (substitute #\# #\? unhandled
-                                                   :test #'char=)))))
-    (html-stream
-     (request-stream request)
-     `((|rss| :|version| "2.0")
-       ,(format nil
-                "<channel><title>Lisppaste pastes~A</title><link>~A</link><description>Pastes in this pastebot~A</description>~{~A~}</channel>~C~C"
-                (if discriminate-channel (format nil " for channel ~A" discriminate-channel) "")
-                *list-paste-url*
-                (if discriminate-channel (format nil " on channel ~A" discriminate-channel) "")
-                (mapcar #'(lambda (paste)
-                            (format nil "<item><link>~A</link><pubDate>~A</pubDate><title>\"~A\" by ~A</title><description>~A</description></item>~C~C"
-                                    (paste-display-url paste)
-                                    (date:universal-time-to-rfc-date
-                                     (apply #'max
-                                            (paste-universal-time paste)
-                                            (mapcar #'paste-universal-time (paste-annotations paste))))
-                                    (encode-for-pre (paste-title paste))
-                                    (encode-for-pre (paste-user paste))
-                                    (if full
-                                        (encode-for-pre
-                                         (encode-for-http
-                                          (with-output-to-string (stream)
-                                            (xml-output-to-stream
-                                             stream
-                                             (<p>
-                                              (format-paste paste nil (paste-number paste))
-                                              (loop for a in (paste-annotations paste)
-                                                 collect (format-paste a nil (paste-number a) t)))))))
-                                        (format nil "Paste to channel ~A with ~A annotations." (encode-for-pre (paste-channel paste)) (length (paste-annotations paste))))
-                                    #\Return #\Linefeed))
-			(list-pastes :in-channel discriminate-channel
-				     :limit 20))
-                #\Return #\Linefeed)))))
+(defun parse-rss-channel-name ()
+  (ppcre:scan-to-strings "(?<=\\?).+$" (request-uri*)))
 
-(defmethod handle-request-response ((handler rss-handler) method request)
-  (handle-rss-request request))
+(defun handle-rss-request (&key full)
+  (setf (content-type*) "application/rss+xml")
+  (let* ((channel (parse-rss-channel-name))
+         (discriminate-channel (unless (or (null channel)
+                                           (equalp channel "none"))
+                                 channel)))
+    (who:with-html-output-to-string (*standard-output*)
+      (format t "<?xml version=\"1.0\" encoding=\"UTF-8\"?>~C~C" #\Return #\Linefeed)
+      (:rss :version "2.0"
+            (:channel
+             (:title "Lisppaste pastes")
+             (when discriminate-channel
+               (fmt " for channel ~A" discriminate-channel))
+             (:link (str *list-paste-url*))
+             (:description "Pastes in this pastebot")
+             (when discriminate-channel
+               (fmt " on channel ~A" discriminate-channel))
+             (loop for paste in (list-pastes :in-channel discriminate-channel
+                                             :limit 20)
+                   do
+                   (htm
+                    (:item (:link (fmt "http://~a~a" *paste-site-name*
+                                       (paste-display-url paste)))
+                      (fmt "<pubDate>~A</pubDate>"
+                           (date:universal-time-to-rfc-date
+                            (apply #'max
+                                   (paste-universal-time paste)
+                                   (mapcar #'paste-universal-time
+                                           (paste-annotations paste)))))
+                      (:title (prin1 (encode-for-pre (paste-title paste)))
+                              " by "
+                              (str (encode-for-pre (paste-user paste))))
+                      (:description
+                       (if full
+                           (str (encode-for-pre
+                                 (encode-for-http
+                                  (xml-to-string
+                                   (<p>
+                                    (format-paste paste nil (paste-number paste))
+                                    (loop for a in (paste-annotations paste)
+                                          collect (format-paste a nil (paste-number a) t)))))))
+                           (fmt "Paste to channel ~A with ~A annotations."
+                                (encode-for-pre (paste-channel paste))
+                                (length (paste-annotations paste)))))))))))))
 
-(defmethod handle-request-response ((handler rss-full-handler) method request)
-  (handle-rss-request request :full t))
+(define-easy-handler (rss :uri *rss-url*) ()
+  (handle-rss-request))
 
-(defun generate-new-paste-form (&key annotate (default-channel "None") (default-user "") (default-title "untitled") (default-contents "") (width 80))
+(define-easy-handler (rss-full :uri *rss-full-url*) ()
+  (handle-rss-request :full t))
+
+(defun generate-new-paste-form (&key annotate
+                                     (default-channel "None")
+                                     (default-user "")
+                                     (default-title "untitled")
+                                     (default-contents "")
+                                     (width 80))
   (<table class="new-paste-form">
           (unless annotate
             (<tr>
@@ -1451,4 +1452,3 @@ with your favorite RSS reader."
      (request-stream request)
      (<html> (<body> (<h1> "Redirected"))))
     t))
-
