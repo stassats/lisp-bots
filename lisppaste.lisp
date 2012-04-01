@@ -16,7 +16,7 @@
   (elisp-lookup:populate-table)
   (format t "Done!~%")
   (setf *boot-time* (get-universal-time))
-  (araneida:start-listening *paste-listener*))
+  (start *acceptor*))
 
 (defun logging-date ()
   (multiple-value-bind (second minute hour date month year)

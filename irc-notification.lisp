@@ -32,7 +32,9 @@
              (find channel *channels* :test #'string-equal))
     (irc:privmsg (find-connection channel)
                  channel
-                 (format nil "To use the lisppaste bot, visit ~A/~A and enter your paste." (araneida:urlstring *new-paste-url*) (araneida:urlstring-escape (subseq channel 1))))
+                 (format nil "To use the lisppaste bot, visit ~A/~A and enter your paste."
+                         *new-paste-url*
+                         (urlstring-escape (subseq channel 1))))
     t))
 
 (defun excluding-trailing-digits (nick)
@@ -78,7 +80,7 @@
                                (server *default-irc-server*)
                                (port *default-irc-server-port*))
   (let ((connection (irc:connect :nickname nickname
-                                 :realname (araneida:urlstring *new-paste-url*)
+                                 :realname *new-paste-url*
                                  :server server
                                  :port port)))
     (push (cons nickname connection) *connections*)

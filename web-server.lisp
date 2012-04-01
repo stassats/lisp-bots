@@ -289,7 +289,7 @@ IRC."
 (defun parse-new-paste-channel ()
   (ppcre:register-groups-bind (channel)
       (#.(format nil "^~a/(\.+)" *new-paste-url*) (script-name*))
-    channel))
+    (format nil "#~a" channel)))
 
 (define-easy-handler (new-paste :uri (match-prefix *new-paste-url*))
     (annotate channel)
