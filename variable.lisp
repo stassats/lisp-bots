@@ -31,7 +31,13 @@
 (defparameter *paste-site-name* "paste.lisp.org"
   "Website we are running on (used for creating links).")
 
-(defvar *acceptor* (make-instance 'easy-acceptor
+(defclass lisppaste-acceptor (easy-acceptor)
+  ())
+
+(defmethod acceptor-status-message ((acceptor lisppaste-acceptor) (code (eql +http-not-found+)) &key)
+  nil)
+
+(defvar *acceptor* (make-instance 'lisppaste-acceptor
                                   :port *internal-http-port*))
 
 (defparameter *paste-external-url*

@@ -19,12 +19,6 @@
 
 (defclass email-redirect-handler (lisppaste-basic-handler) ())
 
-(defclass 404-handler (handler) ())
-
-;(define-application lisppaste-application *paste-listener*)
-
-(defclass admin-mixin () ())
-
 ;; (define-handler-hierarchy (:application lisppaste-application)
 ;;     (*paste-external-url*
 ;;      ("request-deletion" (request-deletion-handler lisppaste-basic-behavior) :inexact t)
@@ -1261,7 +1255,7 @@ with your favorite RSS reader."
   (let* ((paste-number (parse-paste-number (script-name*)))
          (raw (ends-with (script-name*) "/raw"))
          (xml (ends-with (script-name*) "/xml"))
-	 (content-type (or type "text/plain"))
+	 (content-type (:dbg (or type "text/plain")))
          (paste (find-paste paste-number))
 	 (expired (find-expired-paste paste-number))
          (linenumbers (equalp linenumbers
@@ -1273,8 +1267,7 @@ with your favorite RSS reader."
                                               nil)
                                        t)
                                    (> (length (paste-colorization-mode paste)) 0)
-                                   (paste-colorization-mode paste))
-                              ))
+                                   (paste-colorization-mode paste))))
          (colorize-as (or
                        (car (rassoc colorize-string (colorize:coloring-types) :test #'string-equal))
                        (if (and paste
@@ -1287,27 +1280,22 @@ with your favorite RSS reader."
 	(lisppaste-wrap-page
 	 (format nil "Bad content-type ~A!~%" content-type))))
       ((and paste (or raw xml))
-       ;; (let ((p (and raw (position #\, (request-unhandled-part request) :test #'char=))))
-       ;;   (cond (p
-       ;;          (let ((ann (quick-parse-junk-integer (request-unhandled-part request) :start (1+ p))))
-       ;;            (let ((theann (car (member ann (paste-annotations paste) :key #'paste-number :test #'eql))))
-       ;;              (when theann
-       ;;                (setf (content-type*) content-type)
-       ;;                (remove #\Return
-       ;;                        (paste-contents theann)
-       ;;                        :test #'char=)))))
-       ;;       (if raw
-       ;;  	 (progn
-       ;;  	   (setf (content-type*) content-type)
-       ;;  	   (write-string (remove #\return
-       ;;  				 (paste-contents paste)
-       ;;  				 :test #'char=)(request-stream request))
-       ;;  	   t)
-       ;;  	 (progn
-       ;;  	   (request-send-headers request :expires 0 :content-type "text/xml")
-       ;;  	   (paste-write-xml paste (request-stream request))
-       ;;  	   t))))
-       )
+       (let ((p (and raw (position #\, (script-name*)))))
+         (cond (p
+                (let ((ann (quick-parse-junk-integer (script-name*) :start (1+ p))))
+                  (let ((theann (car (member ann (paste-annotations paste) :key #'paste-number :test #'eql))))
+                    (when theann
+                      (setf (content-type*) content-type)
+                      (remove #\Return
+                              (paste-contents theann)
+                              :test #'char=)))))
+               (raw (setf (content-type*) content-type)
+                      (remove #\return
+                              (paste-contents paste)
+                              :test #'char=))
+               (t (setf (content-type*) "text/xml")
+                      (with-output-to-string (stream)
+                        (paste-write-xml paste stream))))))
       (paste
        (let ((annotate-html
                (<table class="controls">
@@ -1417,24 +1405,27 @@ with your favorite RSS reader."
 	     *ohloh*
 	     (<div class="ads-text"> *ads*)))))))
       (expired
-       (setf (return-code*) 404)
+       (setf (return-code*)
+             +http-not-found+)
        (xml-to-string
 	(lisppaste-wrap-page
 	 (format nil "Sorry, the paste numbered ~A expired ~A." paste-number
 		 (time-delta (paste-expiration-time expired))))))
       (t
-       (setf (return-code*) 404)
+       (setf (return-code*) +http-not-found+)
        (xml-to-string
 	(lisppaste-wrap-page
 	 (format nil "Invalid paste number ~A!" paste-number)))))))
 
 (defun parse-short-paste-number (script-name)
   (ppcre:register-groups-bind (paste annotation)
-      ("^/\\+/(\\w+)/?(\\w*)" script-name)
+      ("^/\\+(\\w+)/?(\\w*)" script-name)
     (values
      (parse-integer paste :junk-allowed t :radix 36)
      (and annotation
           (parse-integer annotation :junk-allowed t :radix 36)))))
+
+
 
 (define-easy-handler (short-paste :uri (match-prefix *short-paste-url*)) ()
   (multiple-value-bind (paste-number annotation)
@@ -1446,7 +1437,7 @@ with your favorite RSS reader."
         (paste
          (redirect url))
         (t
-         (setf (return-code*) 404)
+         (setf (return-code*) +http-not-found+)
          (xml-to-string
           (lisppaste-wrap-page
            (format nil "Invalid paste number ~A!" paste-number))))))))
