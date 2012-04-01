@@ -15,8 +15,6 @@
 
 (defclass syndication-handler (lisppaste-basic-handler) ())
 
-(defclass stats-handler (lisppaste-basic-handler) ())
-
 (defclass email-redirect-handler (lisppaste-basic-handler) ())
 
 ;; (define-handler-hierarchy (:application lisppaste-application)
@@ -474,10 +472,8 @@ with your favorite RSS reader."
                                           (last-paste-date-for-channel channel))))
                                   (sort (remove "None" *channels* :test #'string-equal) #'string<)))))))))
   
-(defmethod handle-request-response ((handler stats-handler) method request)
-  
-  (xml-output-to-stream
-   (request-stream request)
+(define-easy-handler (stats :uri *stats-url*) ()
+  (xml-to-string
    (lisppaste-wrap-page
     "Statistics"
     (<div>
