@@ -2,7 +2,12 @@
   (:use :cl)
   (:export :lookup
            :*spec-directories*
-           :read-specifications))
+           :read-specifications
+           :term
+           :key
+           :url
+           :term-type
+           :title))
 
 (in-package :spec-lookup)
 
@@ -121,6 +126,11 @@
           (url term)))
 
 (defun lookup (spec term &key type)
-  (let ((spec (find-spec spec)))
-    (assert spec)
-    (format-url spec (find-term term spec))))
+  (let* ((spec (find-spec spec))
+         (term (progn
+                 (assert spec)
+                 (find-term term spec))))
+    (when term
+      (values
+       (format-url spec term)
+       term))))

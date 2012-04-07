@@ -35,7 +35,9 @@
          ,else))))
 
 (defun clhs-lookup (str)
-  (spec-lookup:lookup "clhs" str))
+  (multiple-value-bind (url term)
+      (spec-lookup:lookup "clhs" str)
+    (format nil "~@[~a: ~]~a" (spec-lookup:title term) url)))
 
 (defun r5rs-lookup (str)
   (and (find-package :r5rs-lookup)
