@@ -35,9 +35,7 @@
          ,else))))
 
 (defun clhs-lookup (str)
-  (and (find-package :clhs-lookup)
-       (funcall (intern "SPEC-LOOKUP" :clhs-lookup)
-                str)))
+  (spec-lookup:lookup "clhs" str))
 
 (defun r5rs-lookup (str)
   (and (find-package :r5rs-lookup)
@@ -193,6 +191,7 @@
                      *base-path*))))
 
 (defun start-specbot (nick server &rest channels)
+  (spec-lookup:read-specifications)
   (add-simple-alist-lookup *754-file* 'ieee754 "ieee754" "Section numbers of IEEE 754")
   (add-simple-alist-lookup *ppc-file* 'ppc "ppc" "PowerPC assembly mnemonics")
   (add-simple-alist-lookup *sus-file* 'sus "posix" "Single UNIX Specification")

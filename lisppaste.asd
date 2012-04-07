@@ -1,7 +1,4 @@
-;;;; Silly emacs, this is -*- Lisp -*-
-;;;; $Id: lisppaste.asd,v 1.26 2010-05-29 14:19:47 lisppaste Exp $
-;;;; $Source: /project/lisppaste/cvsroot/lisppaste2/lisppaste.asd,v $
-
+;;;; -*- Lisp -*-
 ;;;; See the LICENSE file for licensing information.
 
 (defsystem lisppaste
@@ -25,8 +22,6 @@ located."
                  (:file "colorize-package")
                  (:file "coloring-css" :depends-on ("colorize-package"))
                  (:file "colorize" :depends-on ("colorize-package" "coloring-css"))
-                 (:file "abbrev")
-                 (:file "clhs-lookup" :depends-on ("abbrev"))
                  (:file "r5rs-lookup")
 		 (:file "cocoa-lookup")
                  (:file "elisp-lookup")
@@ -56,7 +51,8 @@ located."
                  (:file "system-server"
                         :depends-on ("variable" "colorize-package"
                                                 "coloring-css"))
-                 (:file "xml-paste"
-                        :depends-on ("variable" "lisppaste" "web-server" "ip-threshold"))
-		 (:file "administration"
-			:depends-on ("web-server" "variable"))))
+                 ;; (:file "xml-paste"
+                 ;;        :depends-on ("variable" "lisppaste" "web-server" "ip-threshold"))
+		 ;; (:file "administration"
+		 ;;        :depends-on ("web-server" "variable"))
+                 ))

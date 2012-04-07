@@ -47,19 +47,19 @@
 
 (defvar *show-captcha* t)
 
-(defmethod handle-request-response :around ((handler lisppaste-basic-behavior) method request)
-  (with-open-file (*trace-output* (times-file-for-class handler)
-                                  :direction :output
-                                  :if-exists :append :if-does-not-exist :create)
-    (expire-authorization-tokens)
-    (unwind-protect
-         (call-unless-banned
-          request
-          (lambda ()
-            (let ((*show-captcha* (not (is-authorized request))))
-              (call-next-method)))
-          nil)
-      (force-output *trace-output*))))
+;; (defmethod handle-request-response :around ((handler lisppaste-basic-behavior) method request)
+;;   (with-open-file (*trace-output* (times-file-for-class handler)
+;;                                   :direction :output
+;;                                   :if-exists :append :if-does-not-exist :create)
+;;     (expire-authorization-tokens)
+;;     (unwind-protect
+;;          (call-unless-banned
+;;           request
+;;           (lambda ()
+;;             (let ((*show-captcha* (not (is-authorized request))))
+;;               (call-next-method)))
+;;           nil)
+;;       (force-output *trace-output*))))
 
 (defun make-css ()
   (let ((colorize:*css-background-class* "paste"))
@@ -175,10 +175,10 @@ table.webutils-form th { text-align: left; }
                        (<a href="http://www.common-lisp.net/project/lisppaste"> "Project home")))))
    (<i> "Lisppaste pastes can be made by anyone at any time. Imagine a fearsomely comprehensive disclaimer of liability. Now fear, comprehensively.")))
 
-(defmethod application-wrap-page ((application-handler lisppaste-application) request title body &rest extra-headers)
-  (apply #'request-send-headers request :expires 0 :content-type "text/html; charset=utf-8" extra-headers)
-  (xml-output-to-stream (request-stream request)
-                        (lisppaste-wrap-page title body)))
+;; (defmethod application-wrap-page ((application-handler lisppaste-application) request title body &rest extra-headers)
+;;   (apply #'request-send-headers request :expires 0 :content-type "text/html; charset=utf-8" extra-headers)
+;;   (xml-output-to-stream (request-stream request)
+;;                         (lisppaste-wrap-page title body)))
 
 (defun lisppaste-send-headers-for-html (request &rest other-arguments)
   (apply #'request-send-headers request :expires 0 :content-type "text/html; charset=utf-8" other-arguments))
