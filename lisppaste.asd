@@ -30,7 +30,7 @@ located."
                         :depends-on ("variable"
 				     #-lisppaste-no-irc "irc-notification"))
                  (:file "lisppaste"
-                        :depends-on ("variable" "clhs-lookup"
+                        :depends-on ("variable" 
                                                 "r5rs-lookup"
 						"cocoa-lookup"
                                                 "elisp-lookup"
@@ -38,7 +38,7 @@ located."
                                                 "irc-notification"
 						"persistent-pastes"))
                  (:file "coloring-types"
-                        :depends-on ("colorize" "clhs-lookup"))
+                        :depends-on ("colorize" ))
 		 (:file "ip-threshold"
 			:depends-on ("lisppaste" "persistent-pastes"))
                  (:file "web-server"
