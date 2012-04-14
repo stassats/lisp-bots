@@ -196,6 +196,72 @@
                     (pathname-directory
                      *base-path*))))
 
+(defvar *last-communication-time* nil)
+(defvar *ping-sent* nil)
+(defvar *fd-handler* nil)
+(defvar *timer* nil)
+
+(defun start-handler (connection)
+  (flet ((select-handler (fd)
+           (declare (ignore fd))
+           (if (listen (network-stream connection))
+               (handler-bind
+                   ;; install sensible recovery: nobody can wrap the
+                   ;; handler...
+                   ((no-such-reply
+                      #'(lambda (c)
+                          (declare (ignore c))
+                          (invoke-restart 'continue))))
+                 (setf *last-communication-time* (get-universal-time))
+                 (read-message connection))
+               ;; select() returns with no
+               ;; available data if the stream
+               ;; has been closed on the other
+               ;; end (EPIPE)
+               (sb-sys:invalidate-descriptor
+                (sb-sys:fd-stream-fd
+                 (network-stream connection))))))
+    (sb-sys:add-fd-handler (sb-sys:fd-stream-fd
+                            (network-stream connection))
+                           :input #'select-handler)))
+
+(defun ping-hook (message)
+  (setf *ping-sent* nil)
+  (apply #'pong (connection message) (arguments message)))
+
+(defvar *ping-timeout* 30)
+
+(defun stop-specbot ()
+  (sb-sys:remove-fd-handler *fd-handler*)
+  (sb-ext:unschedule-timer *timer*)
+  (setf *fd-handler* nil
+        *timer* nil
+        *ping-sent* nil
+        *last-communication-time* nil)
+  (usocket:socket-close (irc::socket *connection*)))
+
+(defun restart-specbot ()
+  (stop-specbot)
+  (apply #'start-specbot
+         (nickname (user *connection*))
+         (server-name *connection*)
+         (alexandria:hash-table-keys (channels *connection*))))
+
+(defun connection-poller ()
+  (cond ((< (- (get-universal-time) *last-communication-time*) 30))
+        (*ping-sent*
+         (restart-specbot))
+        (t
+         (print "sending ping")
+         (ping *connection*  (server-name *connection*)))))
+
+(defun start-bot-loop (connection)
+  (setf *timer* (sb-ext:make-timer #'connection-poller :name "specbot poller")
+        *last-communication-time* (get-universal-time)
+        *ping-sent* nil
+        *fd-handler* (start-handler connection))
+  (sb-ext:schedule-timer *timer* 40 :repeat-interval 30))
+
 (defun start-specbot (nick server &rest channels)
   (spec-lookup:read-specifications)
   (add-simple-alist-lookup *754-file* 'ieee754 "ieee754" "Section numbers of IEEE 754")
@@ -207,13 +273,9 @@
   (setf *nickname* nick)
   (setf *connection* (connect :nickname *nickname* :server server))
   (mapcar #'(lambda (channel) (join *connection* channel)) channels)
-  (add-hook *connection* 'irc::irc-privmsg-message 'msg-hook)
-  #+(or sbcl
-        openmcl)
-  (start-background-message-handler *connection*)
-  #-(or sbcl
-        openmcl)
-  (read-message-loop *connection*))
+  (add-hook *connection* 'irc-privmsg-message 'msg-hook)
+  (add-hook *connection* 'irc-ping-message 'ping-hook)
+  (start-bot-loop *connection*))
 
 (defun shuffle-hooks ()
   (irc::remove-hooks *connection* 'irc::irc-privmsg-message)
