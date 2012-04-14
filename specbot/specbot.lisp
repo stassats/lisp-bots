@@ -198,8 +198,7 @@
 
 (defvar *last-communication-time* nil)
 (defvar *ping-sent* nil)
-(defvar *fd-handler* nil)
-(defvar *timer* nil)
+(defvar *thread* nil)
 
 (defun start-handler (connection)
   (flet ((select-handler (fd)
@@ -225,20 +224,11 @@
                             (network-stream connection))
                            :input #'select-handler)))
 
-(defun ping-hook (message)
-  (setf *ping-sent* nil)
-  (apply #'pong (connection message) (arguments message)))
-
 (defvar *ping-timeout* 30)
 
 (defun stop-specbot ()
-  (sb-sys:remove-fd-handler *fd-handler*)
-  (sb-ext:unschedule-timer *timer*)
-  (setf *fd-handler* nil
-        *timer* nil
-        *ping-sent* nil
-        *last-communication-time* nil)
-  (usocket:socket-close (irc::socket *connection*)))
+  (usocket:socket-close (irc::socket *connection*))
+  (bt:destroy-thread *thread*))
 
 (defun restart-specbot ()
   (stop-specbot)
@@ -247,20 +237,52 @@
          (server-name *connection*)
          (alexandria:hash-table-keys (channels *connection*))))
 
-(defun connection-poller ()
-  (cond ((< (- (get-universal-time) *last-communication-time*) 30))
-        (*ping-sent*
-         (restart-specbot))
-        (t
-         (print "sending ping")
-         (ping *connection*  (server-name *connection*)))))
+(defun read-messages (connection)
+  (if (listen (network-stream connection))
+      (handler-bind
+          ;; install sensible recovery: nobody can wrap the
+          ;; handler...
+          ((no-such-reply
+             #'(lambda (c)
+                 (declare (ignore c))
+                 (invoke-restart 'continue))))
+        (setf *last-communication-time* (get-universal-time))
+        (read-message connection))
+      ;; select() returns with no
+      ;; available data if the stream
+      ;; has been closed on the other
+      ;; end (EPIPE)
+      (throw 'connection :restart)))
 
 (defun start-bot-loop (connection)
-  (setf *timer* (sb-ext:make-timer #'connection-poller :name "specbot poller")
-        *last-communication-time* (get-universal-time)
-        *ping-sent* nil
-        *fd-handler* (start-handler connection))
-  (sb-ext:schedule-timer *timer* 40 :repeat-interval 30))
+  (let ((last-communication (get-universal-time))
+        (fd (sb-sys:fd-stream-fd
+             (network-stream connection)))
+        ping-sent)
+    (loop for usable = (sb-sys:wait-until-fd-usable fd :input *ping-timeout*)
+          for time = (get-universal-time)
+          do (cond (usable
+                    (setf last-communication time
+                          ping-sent nil)
+                    (read-messages connection))
+                   ((< (- time last-communication) 30))
+                   (ping-sent
+                    (throw 'connection :restart))
+                   (t
+                    (setf ping-sent t)
+                    (print "sending ping")
+                    (ping connection (server-name connection)))))))
+
+(defun setup-connection (nick server channels)
+  (setf *nickname* nick)
+  (loop always
+        (eql :restart
+             (catch 'connection
+               (setf *connection* (connect :nickname *nickname* :server server))
+               (mapcar (lambda (channel) (join *connection* channel)) channels)
+               (add-hook *connection* 'irc-privmsg-message 'msg-hook)
+               (start-bot-loop *connection*)))
+        do (usocket:socket-close (irc::socket *connection*))))
 
 (defun start-specbot (nick server &rest channels)
   (spec-lookup:read-specifications)
@@ -270,12 +292,9 @@
   (add-simple-alist-lookup *man-file* 'man "man" "Mac OS X Man Pages")
   (add-simple-alist-lookup *cltl2-file* 'cltl2 "cltl2" "Common Lisp, The Language (2nd Edition)")
   (add-simple-alist-lookup *cltl2-sections-file* 'cltl2-sections "cltl2-section" "Common Lisp, The Language (2nd Edition) Sections")
-  (setf *nickname* nick)
-  (setf *connection* (connect :nickname *nickname* :server server))
-  (mapcar #'(lambda (channel) (join *connection* channel)) channels)
-  (add-hook *connection* 'irc-privmsg-message 'msg-hook)
-  (add-hook *connection* 'irc-ping-message 'ping-hook)
-  (start-bot-loop *connection*))
+  (bt:make-thread (lambda ()
+                    (setup-connection nick server channels))
+                  :name "specbot"))
 
 (defun shuffle-hooks ()
   (irc::remove-hooks *connection* 'irc::irc-privmsg-message)
