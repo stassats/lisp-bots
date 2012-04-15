@@ -116,14 +116,17 @@
                 (return-from strip-address (subseq string it))))
   (and (not final) string))
 
+(defun message-body (message)
+  (car (last (arguments message))))
+
 (defun msg-hook (message)
   (let ((destination (if (string-equal (first (arguments message)) *nickname*)
                          (source message)
                          (first (arguments message))))
-        (to-lookup (strip-address (trailing-argument message))))
+        (to-lookup (strip-address (message-body message))))
     (if (and (or
               (string-equal (first (arguments message)) *nickname*)
-              (not (string= to-lookup (trailing-argument message))))
+              (not (string= to-lookup (message-body message))))
              (member to-lookup '("help" "help?") :test #'string-equal))
         (progn
           (privmsg *connection* destination
@@ -293,7 +296,7 @@
 (defun notice-hook (message)
   (when (and (string-equal (source message) "NickServ")
              (search "nickname is registered"
-                     (trailing-argument message)))
+                     (message-body message)))
     (identify (connection message))))
 
 (defun ghost (connection)
