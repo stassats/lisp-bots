@@ -21,6 +21,7 @@
 
 (defvar *connection*)
 (defvar *nickname* "")
+(defvar *channels* nil)
 
 (defun shut-up ()
   (setf (irc:client-stream *connection*) (make-broadcast-stream)))
@@ -196,35 +197,8 @@
                     (pathname-directory
                      *base-path*))))
 
-(defvar *last-communication-time* nil)
-(defvar *ping-sent* nil)
 (defvar *thread* nil)
-
-(defun start-handler (connection)
-  (flet ((select-handler (fd)
-           (declare (ignore fd))
-           (if (listen (network-stream connection))
-               (handler-bind
-                   ;; install sensible recovery: nobody can wrap the
-                   ;; handler...
-                   ((no-such-reply
-                      #'(lambda (c)
-                          (declare (ignore c))
-                          (invoke-restart 'continue))))
-                 (setf *last-communication-time* (get-universal-time))
-                 (read-message connection))
-               ;; select() returns with no
-               ;; available data if the stream
-               ;; has been closed on the other
-               ;; end (EPIPE)
-               (sb-sys:invalidate-descriptor
-                (sb-sys:fd-stream-fd
-                 (network-stream connection))))))
-    (sb-sys:add-fd-handler (sb-sys:fd-stream-fd
-                            (network-stream connection))
-                           :input #'select-handler)))
-
-(defvar *ping-timeout* 30)
+(defvar *ping-timeout* 45)
 
 (defun stop-specbot ()
   (usocket:socket-close (irc::socket *connection*))
@@ -290,18 +264,21 @@
               (sleep 5))))
 
 (defun setup-connection (nick server channels)
-  (setf *nickname* nick)
+  (setf *nickname* nick
+        *channels* channels)
   (loop always
         (eql :restart
              (catch 'connection
                (setf *nick-retry-count* 0)
                (try-connecting nick server)
-               (mapcar (lambda (channel) (join *connection* channel)) channels)
                (add-hook *connection* 'irc-privmsg-message 'msg-hook)
                (add-hook *connection* 'irc-notice-message 'notice-hook)
                (add-hook *connection* 'irc-err_nicknameinuse-message 'in-use-hook)
+               (add-hook *connection* 'irc-pong-message 'pong-hook)
                (start-bot-loop *connection*)))
-        do (usocket:socket-close (irc::socket *connection*))))
+        do
+        (usocket:socket-close (irc::socket *connection*))
+        (setf *channels* (alexandria:hash-table-keys (channels *connection*)))))
 
 (defvar *password* "l1sp")
 (defvar *nick-retry-count* 0)
@@ -309,7 +286,9 @@
 (defun identify (connection)
   (nick connection *nickname*)
   (privmsg connection "NickServ"
-           (format nil "IDENTIFY ~A" *password*)))
+           (format nil "IDENTIFY ~A" *password*))
+  (mapcar (lambda (channel) (join connection channel))
+          *channels*))
 
 (defun notice-hook (message)
   (when (and (string-equal (source message) "NickServ")
@@ -322,13 +301,17 @@
            (format nil "GHOST ~a ~a"
                    (nickname (user connection))
                    *password*))
-  (identify connection))
+  (nick connection (nickname (user connection))))
 
 (defun in-use-hook (message)
   (nick (connection message)
         (format nil "~a~a" *nickname*
                 (incf *nick-retry-count*)))
   (ghost (connection message)))
+
+(defun pong-hook (message)
+  (declare (ignore message))
+  (write-line "pong"))
 
 (defun start-specbot (nick server &rest channels)
   (spec-lookup:read-specifications)
