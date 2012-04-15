@@ -259,30 +259,76 @@
         (fd (sb-sys:fd-stream-fd
              (network-stream connection)))
         ping-sent)
-    (loop for usable = (sb-sys:wait-until-fd-usable fd :input *ping-timeout*)
+    (loop for usable = (iolib.multiplex:wait-until-fd-ready
+                        fd :input *ping-timeout*)
           for time = (get-universal-time)
           do (cond (usable
                     (setf last-communication time
                           ping-sent nil)
                     (read-messages connection))
-                   ((< (- time last-communication) 30))
+                   ((< (- time last-communication) *ping-timeout*))
                    (ping-sent
+                    (print "restarting connection")
+                    (finish-output)
                     (throw 'connection :restart))
                    (t
                     (setf ping-sent t)
                     (print "sending ping")
+                    (finish-output)
                     (ping connection (server-name connection)))))))
+
+(defun try-connecting (nick server)
+  (setf *connection*
+        (loop thereis
+              (handler-case (connect :nickname nick :server server)
+                ((or usocket:socket-condition
+                  usocket:ns-condition) (c)
+                  (princ c)
+                  (terpri)
+                  nil))
+              do
+              (sleep 5))))
 
 (defun setup-connection (nick server channels)
   (setf *nickname* nick)
   (loop always
         (eql :restart
              (catch 'connection
-               (setf *connection* (connect :nickname *nickname* :server server))
+               (setf *nick-retry-count* 0)
+               (try-connecting nick server)
                (mapcar (lambda (channel) (join *connection* channel)) channels)
                (add-hook *connection* 'irc-privmsg-message 'msg-hook)
+               (add-hook *connection* 'irc-notice-message 'notice-hook)
+               (add-hook *connection* 'irc-err_nicknameinuse-message 'in-use-hook)
                (start-bot-loop *connection*)))
         do (usocket:socket-close (irc::socket *connection*))))
+
+(defvar *password* "l1sp")
+(defvar *nick-retry-count* 0)
+
+(defun identify (connection)
+  (nick connection *nickname*)
+  (privmsg connection "NickServ"
+           (format nil "IDENTIFY ~A" *password*)))
+
+(defun notice-hook (message)
+  (when (and (string-equal (source message) "NickServ")
+             (search "nickname is registered"
+                     (trailing-argument message)))
+    (identify (connection message))))
+
+(defun ghost (connection)
+  (privmsg connection "NickServ"
+           (format nil "GHOST ~a ~a"
+                   (nickname (user connection))
+                   *password*))
+  (identify connection))
+
+(defun in-use-hook (message)
+  (nick (connection message)
+        (format nil "~a~a" *nickname*
+                (incf *nick-retry-count*)))
+  (ghost (connection message)))
 
 (defun start-specbot (nick server &rest channels)
   (spec-lookup:read-specifications)
@@ -292,9 +338,10 @@
   (add-simple-alist-lookup *man-file* 'man "man" "Mac OS X Man Pages")
   (add-simple-alist-lookup *cltl2-file* 'cltl2 "cltl2" "Common Lisp, The Language (2nd Edition)")
   (add-simple-alist-lookup *cltl2-sections-file* 'cltl2-sections "cltl2-section" "Common Lisp, The Language (2nd Edition) Sections")
-  (bt:make-thread (lambda ()
-                    (setup-connection nick server channels))
-                  :name "specbot"))
+  (setf *thread*
+        (bt:make-thread (lambda ()
+                          (setup-connection nick server channels))
+                        :name "specbot")))
 
 (defun shuffle-hooks ()
   (irc::remove-hooks *connection* 'irc::irc-privmsg-message)
