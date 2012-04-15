@@ -21,6 +21,11 @@
 
 (defvar *connection*)
 (defvar *nickname* "")
+(defvar *password* "l1sp")
+(defvar *nick-retry-count* 0)
+(defvar *debug* t)
+(defvar *thread* nil)
+(defvar *ping-timeout* 45)
 (defvar *channels* nil)
 
 (defun shut-up ()
@@ -156,7 +161,8 @@
                               (not looked-up))
                          (setf looked-up (format nil "Sorry, I couldn't find anything for ~A."  it)))
                      (and looked-up
-                          (privmsg *connection* destination looked-up))))))))
+                          (privmsg *connection* destination looked-up))))))
+    t))
 
 (defparameter *754-file*
   (merge-pathnames "754.lisp-expr"
@@ -200,19 +206,9 @@
                     (pathname-directory
                      *base-path*))))
 
-(defvar *thread* nil)
-(defvar *ping-timeout* 45)
-
 (defun stop-specbot ()
   (usocket:socket-close (irc::socket *connection*))
   (bt:destroy-thread *thread*))
-
-(defun restart-specbot ()
-  (stop-specbot)
-  (apply #'start-specbot
-         (nickname (user *connection*))
-         (server-name *connection*)
-         (alexandria:hash-table-keys (channels *connection*))))
 
 (defun read-messages (connection)
   (if (listen (network-stream connection))
@@ -223,7 +219,6 @@
              #'(lambda (c)
                  (declare (ignore c))
                  (invoke-restart 'continue))))
-        (setf *last-communication-time* (get-universal-time))
         (read-message connection))
       ;; select() returns with no
       ;; available data if the stream
@@ -245,12 +240,13 @@
                     (read-messages connection))
                    ((< (- time last-communication) *ping-timeout*))
                    (ping-sent
-                    (print "restarting connection")
+                    (write-line "restarting specbot")
                     (finish-output)
                     (throw 'connection :restart))
                    (t
                     (setf ping-sent t)
-                    (print "sending ping")
+                    (when *debug*
+                     (write-line "specbot ping"))
                     (finish-output)
                     (ping connection (server-name connection)))))))
 
@@ -283,9 +279,6 @@
         (usocket:socket-close (irc::socket *connection*))
         (setf *channels* (alexandria:hash-table-keys (channels *connection*)))))
 
-(defvar *password* "l1sp")
-(defvar *nick-retry-count* 0)
-
 (defun identify (connection)
   (nick connection *nickname*)
   (privmsg connection "NickServ"
@@ -314,7 +307,8 @@
 
 (defun pong-hook (message)
   (declare (ignore message))
-  (write-line "pong"))
+  (when *debug*
+   (write-line "specbot pong")))
 
 (defun start-specbot (nick server &rest channels)
   (spec-lookup:read-specifications)
