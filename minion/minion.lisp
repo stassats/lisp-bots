@@ -863,6 +863,7 @@
 (defun start-minion (nick server &rest channels)
   (read-small-definitions)
   (setf *nickname* nick)
+  (setf *minion-attention-prefix* (make-minion-attention-prefix nick))
   (setf *thread*
         (bt:make-thread (lambda ()
                           (setup-connection nick server channels))
