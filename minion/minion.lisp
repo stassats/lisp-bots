@@ -5,6 +5,10 @@
 
 (in-package :minion)
 
+(defclass minion (irc-bot:bot)
+  ()
+  (:default-initargs :name "minion"))
+
 (defvar *small-definitions* nil)
 
 (defvar *aliases* nil)
@@ -14,16 +18,6 @@
 
 (defparameter *advice-file*
   (asdf:system-relative-pathname :minion "minion/advice"))
-
-(defvar *password* "l1sp")
-(defvar *nick-retry-count* 0)
-(defvar *debug* t)
-(defvar *thread* nil)
-(defvar *ping-timeout* 45)
-(defvar *channels* nil)
-
-(defun message-body (message)
-  (car (last (arguments message))))
 
 (defun forget (term-or-alias)
   (setf *small-definitions* (remove term-or-alias *small-definitions* :test #'string-equal :key #'car))
@@ -140,19 +134,22 @@
       (string-equal orig (without-non-alphanumeric (car candidate)))
       (string-equal orig (without-non-alphanumeric (cdr candidate)))))
 
-(defun take-care-of-memos (channel user &key (original-user user) (no-alias nil))
+(defun take-care-of-memos (bot channel user &key (original-user user) (no-alias nil))
   (let ((found (find (without-non-alphanumeric user) *pending-memos* :test #'string-equal :key #'memo-to :from-end t)))
     (if found
         (progn
           (setf *pending-memos* (remove found *pending-memos*))
-          (privmsg *connection* channel (format nil "~A, memo from ~A: ~A" original-user (memo-from found) (memo-contents found)))
-          (take-care-of-memos channel user :original-user original-user))
+          (irc-bot:send-message bot channel
+                                (format nil "~A, memo from ~A: ~A"
+                                        original-user (memo-from found) (memo-contents found)))
+          (take-care-of-memos bot channel user :original-user original-user))
         (if (not no-alias)
             (let ((alias (find (without-non-alphanumeric user)
                                *aliases*
                                :test #'memo-alias-test)))
               (if alias
-                  (take-care-of-memos channel (cdr alias) :original-user original-user :no-alias t)))))))
+                  (take-care-of-memos bot channel (cdr alias)
+                                      :original-user original-user :no-alias t)))))))
   
 (defun add-memo (from to contents)
   (push (make-instance 'memo :from from
@@ -349,22 +346,6 @@
           (if stream (close stream))))
     (condition (c)
       (return-from shorten (regex-replace-all "\\n" (format nil "An error was encountered in shorten: ~A." c) " ")))))
-
-(defvar *connection*)
-(defvar *nickname*)
-
-(defun shut-up ()
-  (setf (irc:client-stream *connection*) (make-broadcast-stream)))
-
-(defun un-shut-up ()
-  (setf (irc:client-stream *connection*) *trace-output*))
-
-
-
-(defun make-minion-attention-prefix (nick)
-  (format nil "^(?i)~A[,:]\\s+" nick))
-
-(defvar *minion-attention-prefix* "")
 
 (defparameter *help-text*
   `(("lookups" . ,(lambda (nick)
@@ -707,164 +688,31 @@
                        ;;(generate-text (+ 20 (random 6)))
                        (progn
                          (setf should-send-cant-find nil)
-                         (do-eliza first-pass))
-                       )
+                         (do-eliza first-pass)))
                    (when should-send-cant-find
 		     (signal 'lookup-failure)
-                     (format nil "Sorry, I couldn't find anything in the database for ``~A''.~A" first-pass (if (scan " " first-pass) " Maybe you meant to end with punctuation?" "")))
-                   ))))))))
+                     (format nil "Sorry, I couldn't find anything in the database for ``~A''.~A"
+                             first-pass
+                             (if (scan " " first-pass)
+                                 " Maybe you meant to end with punctuation?"
+                                 "")))))))))))
 
+(defmethod irc-bot:process-all-messages :after ((bot minion) channel sender for text full-text)
+  (declare (ignore for text))
+  (scan-for-more full-text)
+  (take-care-of-memos bot channel sender))
 
+(defmethod irc-bot:process-message-for-bot
+    ((bot minion) channel sender text full-text)
+  (let ((response (minion-lookup text :sender sender :channel channel)))
+    (when response
+      (irc-bot:send-message bot channel response))))
 
-(defun valid-minion-message (message)
-  (scan *minion-attention-prefix* (message-body message)))
+(defmethod irc-bot:process-private-message
+    ((bot minion) sender text full-text)
+  (let ((response (minion-lookup text :sender sender)))
+    (when response
+      (irc-bot:send-message bot sender response))))
 
-(defvar *respond-to-general-hellos* nil)
-
-(defun anybody-here (string)
-  (if *respond-to-general-hellos*
-      (or (scan "(?i)(anybody|aynbody|any body|anyone|aynone|any one|ne1|any1|n e 1|ne 1) (here|awake|there|home|know).*\\?*" string)
-	  (scan "^(?i)\\s*(hello|hi|yo)\\s*(channel|room|people|ppl|all|peeps|)\\s*$" string))))
-
-(defun msg-hook (message)
-  (handler-bind
-      ((serious-condition (lambda (c)
-                            (format *trace-output* "Caught error: ~A~%" c)
-                            #+nil (sb-debug:backtrace 10 *trace-output*)
-                            (format *trace-output* "~A~%"
-                                    (nthcdr 10 (sb-debug:backtrace-as-list)))
-                            (return-from msg-hook))))
-    (scan-for-more (message-body message))
-    (let ((respond-to (if (string-equal (first (arguments message)) *nickname*) (source message) (first (arguments message)))))
-      (if (valid-minion-message message)
-          (let ((response (minion-lookup (regex-replace *minion-attention-prefix* (message-body message) "") :sender (source message) :channel (first (irc:arguments message)))))
-            (and response (privmsg *connection* respond-to response)))
-          (if (string-equal (first (arguments message)) *nickname*)
-              (aif (minion-lookup (message-body message) :sender (source message))
-                  (privmsg *connection* respond-to it))
-              (if (anybody-here (message-body message))
-                  (privmsg *connection* (first (arguments message)) (format nil "~A: hello." (source message))))))
-      (take-care-of-memos respond-to (source message))))
-  t)
-
-(defun rename-minion (new-nick)
-  (setf *nickname* new-nick)
-  (nick *connection* new-nick)
-  (setf *minion-attention-prefix* (make-minion-attention-prefix new-nick)))
-
-(defun shuffle-hooks ()
-  (irc::remove-hooks *connection* 'irc::irc-privmsg-message)
-  (add-hook *connection* 'irc::irc-privmsg-message 'msg-hook))
-
-(defun stop-specbot ()
-  (usocket:socket-close (irc::socket *connection*))
-  (bt:destroy-thread *thread*))
-
-(defun read-messages (connection)
-  (if (listen (network-stream connection))
-      (handler-bind
-          ;; install sensible recovery: nobody can wrap the
-          ;; handler...
-          ((no-such-reply
-             #'(lambda (c)
-                 (declare (ignore c))
-                 (invoke-restart 'continue))))
-        (read-message connection))
-      ;; select() returns with no
-      ;; available data if the stream
-      ;; has been closed on the other
-      ;; end (EPIPE)
-      (throw 'connection :restart)))
-
-(defun start-bot-loop (connection)
-  (let ((last-communication (get-universal-time))
-        (fd (sb-sys:fd-stream-fd
-             (network-stream connection)))
-        ping-sent)
-    (loop for usable = (iolib.multiplex:wait-until-fd-ready
-                        fd :input *ping-timeout*)
-          for time = (get-universal-time)
-          do (cond (usable
-                    (setf last-communication time
-                          ping-sent nil)
-                    (read-messages connection))
-                   ((< (- time last-communication) *ping-timeout*))
-                   (ping-sent
-                    (write-line "restarting minion")
-                    (finish-output)
-                    (throw 'connection :restart))
-                   (t
-                    (setf ping-sent t)
-                    (when *debug*
-                      (print "minion ping"))
-                    (finish-output)
-                    (ping connection (server-name connection)))))))
-
-(defun try-connecting (nick server)
-  (setf *connection*
-        (loop thereis
-              (handler-case (connect :nickname nick :server server)
-                ((or usocket:socket-condition
-                  usocket:ns-condition) (c)
-                  (princ c)
-                  (terpri)
-                  nil))
-              do
-              (sleep 5))))
-
-(defun setup-connection (nick server channels)
-  (setf *nickname* nick
-        *channels* channels)
-  (loop always
-        (eql :restart
-             (catch 'connection
-               (setf *nick-retry-count* 0)
-               (try-connecting nick server)
-               (add-hook *connection* 'irc-privmsg-message 'msg-hook)
-               (add-hook *connection* 'irc-notice-message 'notice-hook)
-               (add-hook *connection* 'irc-err_nicknameinuse-message 'in-use-hook)
-               (add-hook *connection* 'irc-pong-message 'pong-hook)
-               (start-bot-loop *connection*)))
-        do
-        (usocket:socket-close (irc::socket *connection*))
-        (setf *channels* (alexandria:hash-table-keys (channels *connection*)))))
-
-(defun identify (connection)
-  (nick connection *nickname*)
-  (privmsg connection "NickServ"
-           (format nil "IDENTIFY ~A" *password*))
-  (mapcar (lambda (channel) (join connection channel))
-          *channels*))
-
-(defun notice-hook (message)
-  (when (and (string-equal (source message) "NickServ")
-             (search "nickname is registered"
-                     (message-body message)))
-    (identify (connection message))))
-
-(defun ghost (connection)
-  (privmsg connection "NickServ"
-           (format nil "GHOST ~a ~a"
-                   (nickname (user connection))
-                   *password*))
-  (nick connection (nickname (user connection))))
-
-(defun in-use-hook (message)
-  (nick (connection message)
-        (format nil "~a~a" *nickname*
-                (incf *nick-retry-count*)))
-  (ghost (connection message)))
-
-(defun pong-hook (message)
-  (declare (ignore message))
-  (when *debug*
-   (write-line "minion pong")))
-
-(defun start-minion (nick server &rest channels)
-  (read-small-definitions)
-  (setf *nickname* nick)
-  (setf *minion-attention-prefix* (make-minion-attention-prefix nick))
-  (setf *thread*
-        (bt:make-thread (lambda ()
-                          (setup-connection nick server channels))
-                        :name "minion")))
+(defmethod irc-bot:start :before ((bot minion))
+  (read-small-definitions))

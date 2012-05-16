@@ -14,7 +14,8 @@ located."
     :depends-on (hunchentoot puri
                  #-lisppaste-no-irc cl-irc
                  split-sequence s-xml s-xml-rpc cl-ppcre
-                 html-encode webutils split-sequence)
+                 html-encode webutils split-sequence
+                 :cl-who)
     :components ((:file "package")
 		 (:file "utility" :depends-on ("package"))
                  (:file "variable"

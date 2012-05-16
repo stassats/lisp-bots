@@ -585,6 +585,7 @@
 (:SD "lol" . "Land of Lisp - http://landoflisp.com")
 (:SD "get-emacs"
  . "emacs is five minutes away with: wget ftp://ftp.gnu.org/gnu/emacs/emacs-23.2.tar.gz && tar zxvf emacs-23.2.tar.gz && cd emacs-23.2 && configure && make && make install")
+(:SD "ailab" . "http://www.cs.cmu.edu/afs/cs/project/ai-repository/ai/")
 (:ALIAS "according to..." . "according to")
 (:ALIAS "sbcli" . "sbcl-internals")
 (:ALIAS "books" . "Lisp Books")
@@ -624,7 +625,6 @@
 (:ALIAS "clsql" . "cl-sql")
 (:ALIAS "Xophe" . "Xof")
 (:ALIAS "Xof" . "Xophe")
-(:ALIAS "FAQ" . "Frequently Asked Questions")
 (:ALIAS "\"cargo culting\"" . "\"cargo cult\"")
 (:ALIAS "\"cargo cult science\"" . "\"cargo cult\"")
 (:ALIAS "\"cargo cult programming\"" . "\"cargo cult\"")
@@ -662,4 +662,6 @@
 (:ALIAS "10 years" . "21 days")
 (:ALIAS "sources" . "minion-sources")
 (:ALIAS "lisppaste" . "lisp-paste")
-(:SD "ailab" . "http://www.cs.cmu.edu/afs/cs/project/ai-repository/ai/")
+(:ALIAS "faq" . "\"Nikodemus' CL FAQ\"")
+(:SD "faq"
+ . "Nikodemus' CL FAQ: http://random-state.net/files/nikodemus-cl-faq.html")

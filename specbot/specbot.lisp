@@ -226,13 +226,19 @@
       ;; end (EPIPE)
       (throw 'connection :restart)))
 
+(defun wait-on-fd (fd)
+  (handler-case (iomux:wait-until-fd-ready
+                 fd :input *ping-timeout*)
+    (iomux:poll-error (c)
+      (princ c)
+      (terpri))))
+
 (defun start-bot-loop (connection)
   (let ((last-communication (get-universal-time))
         (fd (sb-sys:fd-stream-fd
              (network-stream connection)))
         ping-sent)
-    (loop for usable = (iolib.multiplex:wait-until-fd-ready
-                        fd :input *ping-timeout*)
+    (loop for usable = (wait-on-fd fd)
           for time = (get-universal-time)
           do (cond (usable
                     (setf last-communication time
@@ -246,7 +252,7 @@
                    (t
                     (setf ping-sent t)
                     (when *debug*
-                     (write-line "specbot ping"))
+                      (write-line "specbot ping"))
                     (finish-output)
                     (ping connection (server-name connection)))))))
 
