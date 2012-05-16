@@ -176,7 +176,7 @@ and term is the desired lookup. "      ;The available databases are:
                     (pathname-directory
                      *base-path*))))
 
-(defmethod irc-bot:start :before ((bot specbot))
+(defmethod irc-bot:start :before ((bot specbot) &key)
   (spec-lookup:read-specifications)
   (add-simple-alist-lookup *754-file* 'ieee754 "ieee754" "Section numbers of IEEE 754")
   (add-simple-alist-lookup *ppc-file* 'ppc "ppc" "PowerPC assembly mnemonics")

@@ -714,5 +714,5 @@
     (when response
       (irc-bot:send-message bot sender response))))
 
-(defmethod irc-bot:start :before ((bot minion))
+(defmethod irc-bot:start :before ((bot minion) &key)
   (read-small-definitions))

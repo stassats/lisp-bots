@@ -3,7 +3,8 @@
   (:export
    :start-specbot
    :shut-up
-   :un-shut-up))
+   :un-shut-up
+   :specbot))
 
 (defpackage :clim-lookup
   (:use :cl :split-sequence)

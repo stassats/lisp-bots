@@ -5,7 +5,8 @@
    :*minion-nickserv-password*
    :*respond-to-general-hellos*
    :shut-up
-   :un-shut-up))
+   :un-shut-up
+   :minion))
 
 (defpackage :eliza
   (:use :cl)

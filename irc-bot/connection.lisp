@@ -151,13 +151,18 @@
   (when *debug*
    (write-line "minion pong")))
 
-(defmethod start (bot)
+(defmethod start (bot &key initialize)
+  (when initialize
+    (initialize-bot-from-config bot))
   (pushnew bot *bots*)
   (setf (thread bot)
         (bt:make-thread (lambda ()
                           (let ((*bot* bot))
                             (setup-connection bot)))
-                        :name "minion")))
+                        :name (name bot))))
+
+(defmethod start ((bot symbol) &key)
+  (start (make-instance bot) :initialize t))
 
 (defun split-message (text)
   (ppcre:register-groups-bind (for message) ("^(?:(\\w+)[,:]\\s+)?(.*)" text)
