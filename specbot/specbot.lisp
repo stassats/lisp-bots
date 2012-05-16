@@ -16,23 +16,13 @@
 
 (in-package :specbot)
 
+(defclass specbot (irc-bot:bot)
+  ()
+  (:default-initargs :name "specbot"))
+
 (defvar *base-path*
   (asdf:system-relative-pathname :specbot "specbot/"))
 
-(defvar *connection*)
-(defvar *nickname* "")
-(defvar *password* "l1sp")
-(defvar *nick-retry-count* 0)
-(defvar *debug* t)
-(defvar *thread* nil)
-(defvar *ping-timeout* 45)
-(defvar *channels* nil)
-
-(defun shut-up ()
-  (setf (irc:client-stream *connection*) (make-broadcast-stream)))
-
-(defun un-shut-up ()
-  (setf (irc:client-stream *connection*) *trace-output*))
 
 (defmacro aif (test conseq &optional (else nil))
   `(let ((it ,test))
@@ -105,64 +95,44 @@
   (let ((alist (cdr (assoc designator *alists*))))
     (cdr (assoc string alist :test #'equalp))))
 
-(defun valid-message (string prefix &key space-allowed)
-  (if (eql (search prefix string :test #'char-equal) 0)
-      (and (or space-allowed
-               (not (find #\space string :start (length prefix))))
-           (length prefix))
-      nil))
+(defun help-message (bot destination)
+  (irc-bot:send-message bot destination
+                        (format nil "To use the ~A bot, say something~
+ like \"database term\",~
+where database is one of (~{~S~^, ~}) ~
+and term is the desired lookup. "      ;The available databases are:
+                                (nickname bot)
+                                (mapcar #'second *spec-providers*)))
+  ;; (loop for i from 1 for j in *spec-providers*
+  ;;       with elts = nil
+  ;;       do (push j elts)
+  ;;       if (zerop (mod i 4))
+  ;;       do
+  ;;       (irc-bot:send-message bot destination
+  ;;                             (format nil "~{~{~*~S, ~A~}~^; ~}"
+  ;;                                     (nreverse elts)))
+  ;;       (setf elts nil))
+  )
 
-(defun strip-address (string &key (address *nickname*) (final nil))
-  (loop for i in (list (format nil "~A " address)
-                       (format nil "~A: " address)
-                       (format nil "~A:" address)
-                       (format nil "~A, " address))
-        do (aif (valid-message string i :space-allowed t)
-                (return-from strip-address (subseq string it))))
-  (and (not final) string))
+(defun lookup-term (message)
+  (loop for (handler name description) in *spec-providers*
+        for term = (nth-value 1 (alexandria:starts-with-subseq (format nil "~a " name) message
+                                                               :return-suffix t))
+        when term
+        return (or (funcall handler (string-trim " " term))
+                   (format nil "Sorry, I couldn't find anything for ~A." term))))
 
-(defun message-body (message)
-  (car (last (arguments message))))
+(defmethod irc-bot:process-message ((bot specbot) channel sender for-nick text full-text)
+  (irc-bot:send-message bot channel (lookup-term full-text)))
 
-(defun msg-hook (message)
-  (let ((destination (if (string-equal (first (arguments message)) *nickname*)
-                         (source message)
-                         (first (arguments message))))
-        (to-lookup (strip-address (message-body message))))
-    (if (and (or
-              (string-equal (first (arguments message)) *nickname*)
-              (not (string= to-lookup (message-body message))))
-             (member to-lookup '("help" "help?") :test #'string-equal))
-        (progn
-          (privmsg *connection* destination
-                   (format nil "To use the ~A bot, say something like \"database term\", where database is one of (~{~S~^, ~}) and term is the desired lookup. The available databases are:"
-                           *nickname*
-                           (mapcar #'second *spec-providers*)))
-          (loop for i from 1 for j in *spec-providers*
-                with elts = nil
-                do (push j elts)
-                if (zerop (mod i 4))
-                do (progn
-                     (privmsg *connection* destination
-                              (format nil "~{~{~*~S, ~A~}~^; ~}"
-                                      (nreverse elts)))
-                     (setf elts nil)))
-	  )
-        (loop for type in *spec-providers*
-              for actual-fun = (if (typep (first type) 'symbol)
-                                   (first type)
-                                   (lambda (lookup) (destructuring-bind (fun first-arg) (first type)
-                                                      (funcall fun first-arg lookup))))
-              do
-              (aif (strip-address to-lookup :address (second type) :final t)
-                   (let ((looked-up (funcall actual-fun it)))
-                     (if (and (<= 0 (count #\space it)
-				  (if (member (first type) *spaces-allowed* :test #'equal) 1 0) 1)
-                              (not looked-up))
-                         (setf looked-up (format nil "Sorry, I couldn't find anything for ~A."  it)))
-                     (and looked-up
-                          (privmsg *connection* destination looked-up))))))
-    t))
+(defmethod irc-bot:process-private-message ((bot specbot) sender text full-text)
+  (if (member full-text '("help" "help?") :test #'equalp)
+      (help-message bot sender)
+      (irc-bot:send-message bot sender (lookup-term text))))
+
+(defmethod irc-bot:process-message-for-bot ((bot specbot) channel sender text full-text)
+  (when (member text '("help" "help?") :test #'equalp)
+    (help-message bot channel)))
 
 (defparameter *754-file*
   (merge-pathnames "754.lisp-expr"
@@ -206,129 +176,11 @@
                     (pathname-directory
                      *base-path*))))
 
-(defun stop-specbot ()
-  (usocket:socket-close (irc::socket *connection*))
-  (bt:destroy-thread *thread*))
-
-(defun read-messages (connection)
-  (if (listen (network-stream connection))
-      (handler-bind
-          ;; install sensible recovery: nobody can wrap the
-          ;; handler...
-          ((no-such-reply
-             #'(lambda (c)
-                 (declare (ignore c))
-                 (invoke-restart 'continue))))
-        (read-message connection))
-      ;; select() returns with no
-      ;; available data if the stream
-      ;; has been closed on the other
-      ;; end (EPIPE)
-      (throw 'connection :restart)))
-
-(defun wait-on-fd (fd)
-  (handler-case (iomux:wait-until-fd-ready
-                 fd :input *ping-timeout*)
-    (iomux:poll-error (c)
-      (princ c)
-      (terpri))))
-
-(defun start-bot-loop (connection)
-  (let ((last-communication (get-universal-time))
-        (fd (sb-sys:fd-stream-fd
-             (network-stream connection)))
-        ping-sent)
-    (loop for usable = (wait-on-fd fd)
-          for time = (get-universal-time)
-          do (cond (usable
-                    (setf last-communication time
-                          ping-sent nil)
-                    (read-messages connection))
-                   ((< (- time last-communication) *ping-timeout*))
-                   (ping-sent
-                    (write-line "restarting specbot")
-                    (finish-output)
-                    (throw 'connection :restart))
-                   (t
-                    (setf ping-sent t)
-                    (when *debug*
-                      (write-line "specbot ping"))
-                    (finish-output)
-                    (ping connection (server-name connection)))))))
-
-(defun try-connecting (nick server)
-  (setf *connection*
-        (loop thereis
-              (handler-case (connect :nickname nick :server server)
-                ((or usocket:socket-condition
-                  usocket:ns-condition) (c)
-                  (princ c)
-                  (terpri)
-                  nil))
-              do
-              (sleep 5))))
-
-(defun setup-connection (nick server channels)
-  (setf *nickname* nick
-        *channels* channels)
-  (loop always
-        (eql :restart
-             (catch 'connection
-               (setf *nick-retry-count* 0)
-               (try-connecting nick server)
-               (add-hook *connection* 'irc-privmsg-message 'msg-hook)
-               (add-hook *connection* 'irc-notice-message 'notice-hook)
-               (add-hook *connection* 'irc-err_nicknameinuse-message 'in-use-hook)
-               (add-hook *connection* 'irc-pong-message 'pong-hook)
-               (start-bot-loop *connection*)))
-        do
-        (usocket:socket-close (irc::socket *connection*))
-        (setf *channels* (alexandria:hash-table-keys (channels *connection*)))))
-
-(defun identify (connection)
-  (nick connection *nickname*)
-  (privmsg connection "NickServ"
-           (format nil "IDENTIFY ~A" *password*))
-  (mapcar (lambda (channel) (join connection channel))
-          *channels*))
-
-(defun notice-hook (message)
-  (when (and (string-equal (source message) "NickServ")
-             (search "nickname is registered"
-                     (message-body message)))
-    (identify (connection message))))
-
-(defun ghost (connection)
-  (privmsg connection "NickServ"
-           (format nil "GHOST ~a ~a"
-                   (nickname (user connection))
-                   *password*))
-  (nick connection (nickname (user connection))))
-
-(defun in-use-hook (message)
-  (nick (connection message)
-        (format nil "~a~a" *nickname*
-                (incf *nick-retry-count*)))
-  (ghost (connection message)))
-
-(defun pong-hook (message)
-  (declare (ignore message))
-  (when *debug*
-   (write-line "specbot pong")))
-
-(defun start-specbot (nick server &rest channels)
+(defmethod irc-bot:start :before ((bot specbot))
   (spec-lookup:read-specifications)
   (add-simple-alist-lookup *754-file* 'ieee754 "ieee754" "Section numbers of IEEE 754")
   (add-simple-alist-lookup *ppc-file* 'ppc "ppc" "PowerPC assembly mnemonics")
   (add-simple-alist-lookup *sus-file* 'sus "posix" "Single UNIX Specification")
   (add-simple-alist-lookup *man-file* 'man "man" "Mac OS X Man Pages")
   (add-simple-alist-lookup *cltl2-file* 'cltl2 "cltl2" "Common Lisp, The Language (2nd Edition)")
-  (add-simple-alist-lookup *cltl2-sections-file* 'cltl2-sections "cltl2-section" "Common Lisp, The Language (2nd Edition) Sections")
-  (setf *thread*
-        (bt:make-thread (lambda ()
-                          (setup-connection nick server channels))
-                        :name "specbot")))
-
-(defun shuffle-hooks ()
-  (irc::remove-hooks *connection* 'irc::irc-privmsg-message)
-  (add-hook *connection* 'irc::irc-privmsg-message 'msg-hook))
+  (add-simple-alist-lookup *cltl2-sections-file* 'cltl2-sections "cltl2-section" "Common Lisp, The Language (2nd Edition) Sections"))

@@ -1,6 +1,3 @@
-;;;; $Id$
-;;;; $Source$
-
 ;;;; See the LICENSE file for licensing information.
 
 (defsystem specbot
@@ -10,8 +7,8 @@
   :licence "MIT"
   :description "IRC bot for SBCL"
   :depends-on
-  (:cl-irc :cl-ppcre :split-sequence :trivial-http
-   :spec-lookup :iolib.multiplex)
+  (cl-irc cl-ppcre split-sequence trivial-http
+   spec-lookup irc-bot)
   :properties ((#:author-email . "cl-irc-devel@common-lisp.net")
                (#:date . "$Date: 2005/10/13 18:22:38 $")
                ((#:albert #:output-dir) . "doc/api-doc/")

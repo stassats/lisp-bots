@@ -12,7 +12,7 @@
              :accessor password)
    (server :initarg :server
            :initform nil
-           :accessor server) 
+           :accessor server)
    (channels :initarg :channels
              :initform nil
              :accessor channels)
@@ -180,7 +180,8 @@
 (defgeneric send-message (bot destination text))
 
 (defmethod send-message (bot destination text)
-  (privmsg (connection bot) destination text))
+  (when text
+    (privmsg (connection bot) destination text)))
 
 (defgeneric process-all-messages (bot channel sender for-nick text full-text))
 (defgeneric process-message-for-bot (bot channel sender text full-text))
