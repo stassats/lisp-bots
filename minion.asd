@@ -7,8 +7,8 @@
   :licence "MIT"
   :description "IRC bot for SBCL"
   :depends-on
-  (:cl-irc :cl-ppcre :split-sequence :trivial-http
-   :irc-bot)
+  (:cl-irc :cl-ppcre :split-sequence 
+   :irc-bot drakma)
   :properties ((#:author-email . "cl-irc-devel@common-lisp.net")
                (#:date . "$Date: 2005/10/13 18:22:38 $")
                ((#:albert #:output-dir) . "doc/api-doc/")

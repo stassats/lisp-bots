@@ -116,10 +116,16 @@ and term is the desired lookup. "      ;The available databases are:
 
 (defun lookup-term (message)
   (loop for (handler name description) in *spec-providers*
+        for handler-function = (if (consp handler)
+                                   (lambda (term)
+                                     (funcall (car handler)
+                                              (cadr handler)
+                                              term))
+                                   handler)
         for term = (nth-value 1 (alexandria:starts-with-subseq (format nil "~a " name) message
                                                                :return-suffix t))
         when term
-        return (or (funcall handler (string-trim " " term))
+        return (or (funcall handler-function (string-trim " " term))
                    (format nil "Sorry, I couldn't find anything for ~A." term))))
 
 (defmethod irc-bot:process-message ((bot specbot) channel sender for-nick text full-text)

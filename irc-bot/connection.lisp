@@ -60,7 +60,8 @@
                  fd :input *ping-timeout*)
     (iomux:poll-error (c)
       (princ c)
-      (terpri))))
+      (terpri)
+      (throw 'connection :restart))))
 
 (defun start-bot-loop (connection)
   (let ((last-communication (get-universal-time))
@@ -149,7 +150,8 @@
 (defun pong-hook (message)
   (declare (ignore message))
   (when *debug*
-   (write-line "minion pong")))
+   (write-line "pong"))
+  t)
 
 (defmethod start (bot &key initialize)
   (when initialize

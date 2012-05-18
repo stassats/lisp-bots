@@ -266,15 +266,8 @@
       (if interrupt-thread
           (ccl:process-kill interrupt-thread)))))
 
-(defun http-get-recursively (url)
-  (destructuring-bind (status headers stream)
-      (trivial-http:http-get url)
-    (if (and (eql status 302)
-	     (assoc :location headers))
-	(progn
-	  (close stream)
-	  (http-get-recursively (cdr (assoc :location headers))))
-	(list status headers stream))))
+(defun http-get (url)
+  (drakma:http-request url))
 
 (define-condition lookup-failure (condition) ())
 
@@ -286,43 +279,40 @@
       (handler-case
           (host-with-timeout
               5
-	    (destructuring-bind (status headers stream)
-		(http-get-recursively url)
-              (declare (ignore headers))
-              ;; Please don't hack on this when tired; it's easy to make it leak fds.
-              (unwind-protect
-                   (if (or (not (eql status 200)) (not stream))
-                       nil
-                       ;;(format nil "The term ~A was not found in CLiki." term)
-                       (let ((first-line ""))
-                         (loop for i from 1 to 5 do ;; scan the first 5 lines
-			       (progn
-				 (let ((next-line (read-line stream nil)))
-				   (if next-line
-				       (setf first-line (concatenate 'string first-line (string #\newline) next-line))
-				       (return-from cliki-return
-                                         (format nil "The end of the page was reached before a definition was found in ~A" cliki-url))))
-				 (setf first-line (regex-replace-all "\\r" first-line " "))
-				 (setf first-line (regex-replace-all "\\n" first-line " "))
-				 (setf first-line (regex-replace-all "_\\(([^)]*)\\)" first-line "\\1"))
-				 (setf first-line (regex-replace-all "#H\\(([^)]*)\\)" first-line "\\1"))
-				 (setf first-line (regex-replace-all "\\*\\(([^)]*)\\)" first-line "\\1"))
-				 (setf first-line (regex-replace-all "<[^>]+>" first-line ""))
-				 (setf first-line (regex-replace-all "^(([^.]|\\.\\S)+)\\.\\s+.*$" first-line "\\1."))
-				 (setf first-line (regex-replace-all "(\\s)\\s+" first-line "\\1"))
-				 (setf first-line (regex-replace-all "^\\s*(.+\\S)\\s*$" first-line "\\1"))
-				 (when (scan "^([^.]|\\.\\S)+[.?!]$" first-line)
-				   (setf first-line (concatenate 'string first-line " " cliki-url))
-				   (return-from cliki-return first-line))))
-                         (progn
-                           (signal 'lookup-failure)
-                           (format nil "No definition was found in the first 5 lines of ~A" cliki-url))))
-                (if stream (close stream)))))
+	    (multiple-value-bind  (text status) (http-get url)
+              (if (not (eql status 200))
+                  nil
+                  ;;(format nil "The term ~A was not found in CLiki." term)
+
+                  (with-input-from-string (stream text)
+                    (let ((first-line ""))
+                      (loop for i from 1 to 5 do ;; scan the first 5 lines
+                            (progn
+                              (let ((next-line (read-line stream nil)))
+                                (if next-line
+                                    (setf first-line (concatenate 'string first-line (string #\newline) next-line))
+                                    (return-from cliki-return
+                                      (format nil "The end of the page was reached before a definition was found in ~A" cliki-url))))
+                              (setf first-line (regex-replace-all "\\r" first-line " "))
+                              (setf first-line (regex-replace-all "\\n" first-line " "))
+                              (setf first-line (regex-replace-all "_\\(([^)]*)\\)" first-line "\\1"))
+                              (setf first-line (regex-replace-all "#H\\(([^)]*)\\)" first-line "\\1"))
+                              (setf first-line (regex-replace-all "\\*\\(([^)]*)\\)" first-line "\\1"))
+                              (setf first-line (regex-replace-all "<[^>]+>" first-line ""))
+                              (setf first-line (regex-replace-all "^(([^.]|\\.\\S)+)\\.\\s+.*$" first-line "\\1."))
+                              (setf first-line (regex-replace-all "(\\s)\\s+" first-line "\\1"))
+                              (setf first-line (regex-replace-all "^\\s*(.+\\S)\\s*$" first-line "\\1"))
+                              (when (scan "^([^.]|\\.\\S)+[.?!]$" first-line)
+                                (setf first-line (concatenate 'string first-line " " cliki-url))
+                                (return-from cliki-return first-line))))
+                      (progn
+                        (signal 'lookup-failure)
+                        (format nil "No definition was found in the first 5 lines of ~A" cliki-url)))))))
         #+sbcl
         (sb-ext:timeout ()
           (return-from cliki-return (progn (signal 'lookup-failure)
                                            "I can't be expected to work when CLiki doesn't respond to me, can I?")))
-        (trivial-sockets:socket-error ()
+        ((or usocket:ns-error usocket:socket-error)  ()
           (return-from cliki-return (progn (signal 'lookup-failure)
                                            "I can't be expected to work when CLiki doesn't respond to me, can I?")))
         (serious-condition (c)
@@ -330,22 +320,22 @@
             (progn (signal 'lookup-failure)
                    (regex-replace-all "\\n" (format nil "An error was encountered in lookup: ~A." c) " "))))))))
 
-(defun shorten (url)
-  (handler-case
-      (let ((stream (trivial-http:http-get (format nil "http://shorl.com/create.php?url=~A" url))))
-        (finish-output t)
-        (unwind-protect
-             (when stream
-               (prog1
-                   (loop for line = (read-line stream nil nil)
-                         while line
-                         if (scan "http://shorl\\.com/[a-z]+" line)
-                         return (regex-replace-all "^.*(http://shorl\\.com/[a-z]+).*$" line "\\1"))
-                 (close stream)
-                 (setf stream nil)))
-          (if stream (close stream))))
-    (condition (c)
-      (return-from shorten (regex-replace-all "\\n" (format nil "An error was encountered in shorten: ~A." c) " ")))))
+;; (defun shorten (url)
+;;   (handler-case
+;;       (let ((stream (trivial-http:http-get (format nil "http://shorl.com/create.php?url=~A" url))))
+;;         (finish-output t)
+;;         (unwind-protect
+;;              (when stream
+;;                (prog1
+;;                    (loop for line = (read-line stream nil nil)
+;;                          while line
+;;                          if (scan "http://shorl\\.com/[a-z]+" line)
+;;                          return (regex-replace-all "^.*(http://shorl\\.com/[a-z]+).*$" line "\\1"))
+;;                  (close stream)
+;;                  (setf stream nil)))
+;;           (if stream (close stream))))
+;;     (condition (c)
+;;       (return-from shorten (regex-replace-all "\\n" (format nil "An error was encountered in shorten: ~A." c) " ")))))
 
 (defparameter *help-text*
   `(("lookups" . ,(lambda (nick)
@@ -397,7 +387,7 @@
   (and (> (length string) 0)
        (let ((resp-generator (cdr (assoc string *help-text* :test #'string-equal))))
          (if resp-generator
-             (funcall resp-generator *nickname*)
+             (funcall resp-generator (nickname irc-bot:*bot*))
              (if (not (char-equal (elt string (1- (length string))) #\s))
                  (minion-find-help (concatenate 'string string
                                                (string #\s))))))))
@@ -528,7 +518,7 @@
                        (if (should-do-lookup first-pass (or channel sender ""))
                            (progn
                              (did-lookup first-pass (or channel sender ""))
-                             (minion-bot-help *nickname*))
+                             (minion-bot-help (nickname irc-bot:*bot*)))
                            (setf should-send-cant-find nil)))
                    (let ((strings (nth-value 1 (scan-to-strings "^(?i)help\\s+(on|about|to|describing|)\\s*\"*([^\"]+)\"*$" first-pass))))
                      (if strings
@@ -543,7 +533,7 @@
                        (if (string-equal (without-non-alphanumeric
                                           (elt strings 2))
                                          (without-non-alphanumeric
-                                          *nickname*))
+                                             (nickname irc-bot:*bot*)))
                            "Buzz off."
                            (progn
                              (add-memo
@@ -669,9 +659,9 @@
 					   (string-equal (subseq letters (- (length letters) 2)) "cl"))
 				      (steel-bazooka:steel-whatever :letters (string-downcase (subseq letters 0 (- (length letters) 2))))
 				      (steel-bazooka:steel-whatever :letters (string-downcase letters) :suffix nil)))))))
-		   (let ((str (nth-value 1 (scan-to-strings "^(?i)shorten\\s+(\\w+://.+\\S)\\s*$" term-with-question))))
-                     (and str
-                          (shorten (elt str 0))))
+		   ;; (let ((str (nth-value 1 (scan-to-strings "^(?i)shorten\\s+(\\w+://.+\\S)\\s*$" term-with-question))))
+                   ;;   (and str
+                   ;;        (shorten (elt str 0))))
                    (if (should-do-lookup first-pass (or channel sender ""))
                        (aif (or (small-definition-lookup first-pass)
                                 (cliki-first-sentence first-pass)
