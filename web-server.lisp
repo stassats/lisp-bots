@@ -604,7 +604,7 @@ with your favorite RSS reader."
 (defun handle-rss-request (&key full)
   (setf (content-type*) "application/rss+xml")
   (let* ((channel (single-get-parameter)))
-    (who:with-html-output-to-string (*standard-output*)
+    (with-html-output-to-string (*standard-output*)
       (format t "<?xml version=\"1.0\" encoding=\"UTF-8\"?>~C~C" #\Return #\Linefeed)
       (:rss :version "2.0"
             (:channel
@@ -818,8 +818,8 @@ with your favorite RSS reader."
       (when (> (length channel) 1)
         (push (format nil "USERNAME=~A; path=/"
                       (or username "")) cookies))
-      (when correct
-        (push (make-authorization-token :extra :captcha) cookies))
+      ;; (when correct
+      ;;   (push (make-authorization-token :extra :captcha) cookies))
       ;; (if cookies
       ;;     (request-send-headers request :expires 0
       ;;                        :content-type "text/html; charset=utf-8"
@@ -1159,11 +1159,7 @@ with your favorite RSS reader."
            (format nil "<span class=\"paste\">~4D: </span>"
                    (incf n)))
          (encode (str)
-           (encode-for-pre (remove #\return str)
-                          :with-line-numbers
-                          (if line-numbers
-                              #'line-number)
-                          )))
+           (encode-for-pre (remove #\return str))))
       (<div>
        (<table class="paste-header">
                (<tr>
