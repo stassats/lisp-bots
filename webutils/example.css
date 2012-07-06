@@ -1,0 +1,99 @@
+table.webutils-form th {
+    text-align: left;
+    padding-right: 1ex;
+}
+
+table.webutils-form td {
+    padding-top: .5ex;
+    padding-bottom: .5ex;
+}
+
+table.webutils-form tr.alternate {
+    background-color: #eef;
+}
+
+table.webutils-form tr.offending {
+    background-color: #fcc;
+}
+
+span.form-error {
+    font-weight: bold;
+    color: red;
+    font-style: italic;
+}
+
+@media print {
+table.webutils-form {
+     display: none;
+}
+}
+
+table.webutils-table td {
+    padding-right: 1em;
+    margin: 0pt;
+    border: 1px solid black;
+    padding-left: .25ex;
+    font-family: monospace;
+}
+
+table.webutils-table th {
+    padding-right: .5em;
+    margin: 0pt;
+    border: 1px solid black;
+    white-space: nowrap;
+    text-align: left;
+}
+
+table.webutils-table tr {
+    margin: 0pt;
+    padding: 0pt;
+}
+
+table.webutils-table tr.alternate {
+    background-color: #eef;
+}
+
+table.webutils-table {
+    margin: 0pt;
+    padding: 0pt;
+    border-collapse: collapse;
+}
+
+table.webutils-extended-table {
+    margin: 0pt;
+    padding: 0pt;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+table.webutils-extended-table tr {
+    margin: 0pt;
+    padding: 0pt;
+}
+
+table.webutils-extended-table td {
+    padding-right: 1em;
+    margin: 0pt;
+    border: 1px solid black;
+    text-align: left;
+    font-family: monospace;
+    padding-left: .25ex;
+}
+
+table.webutils-extended-table th {
+    padding-right: 1em;
+    margin: 0pt;
+    border: 1px solid black;
+    text-align: left;
+    white-space: nowrap;
+    background-color: #eef;
+    font-weight: bold;
+}
+
+table.webutils-extended-table th.group-header {
+    background-color: white;
+    text-align: left;
+    font-weight: bold;
+    font-style: italic;
+    padding-top: .5em;
+}

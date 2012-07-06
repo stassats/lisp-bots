@@ -1,0 +1,5 @@
+4
+codec.bdf -cannam-codec-medium-r-normal--15-144-75-75-p-50-iso8859-1
+codec-terminal-narrow.bdf -cannam-codec terminal narrow-medium-r-normal--15-144-75-75-m-48-iso8859-1
+codec-terminal.bdf -cannam-codec terminal-medium-r-normal--15-144-75-75-m-56-iso8859-1
+codec-text.bdf -cannam-codec terminal text-medium-r-normal--15-144-75-75-m-56-iso8859-1

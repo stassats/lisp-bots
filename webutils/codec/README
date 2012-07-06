@@ -1,0 +1,31 @@
+
+This is Codec, a sans-serif font in a single height in BDF format for
+use with the X Window System.  This font is expressly designed for
+reading and editing program source code, rather than for text, and it
+has some slightly unusual quirks arising from this design -- for
+example the full-stop is centred vertically (looks nice for structure
+selection in C/C++ and for decimal points; looks rubbish in text), and
+the underscore rests on, rather than under, the baseline.
+
+The font has a 15-pixel height and uses the ISO-8859-1 Western Europe
+encoding.  This archive contains proportional (codec), monospaced
+(codec-terminal) and monospaced-condensed (codec-terminal-narrow)
+variants, and a version of codec-terminal with the traditional
+uncentred full-stop (codec-text).  Apart from codec-text, all variants
+have identical glyphs; only the spacing differs.  Suitable XLFD names
+for your fonts.dir configuration are given in the BDF files and a
+sample fonts.dir is included.
+
+These fonts are copyright 1998 Chris Cannam.  You may copy, edit and
+redistribute Codec, provided that the complete archive including this
+README file is made available with each distribution, that the
+original copyright is preserved, and that any alterations are
+documented in this file.
+
+For the original or latest distribution of Codec, see
+
+	http://www.all-day-breakfast.com/cannam/codec.html
+
+
+Chris Cannam, November 1998
+cannam@all-day-breakfast.com
