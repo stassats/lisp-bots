@@ -992,51 +992,51 @@ with your favorite RSS reader."
         (setf (gethash key *memoize-hash*)
               (funcall fn)))))
 
-(define-template-form-field hidden-paste-field hidden-form-field
-  :string-acceptor (lambda (string)
-                     (unless (and (> (length string) 0)
-                                  (every #'digit-char-p string))
-                       (fail-check "Please enter an integer."))
-                     (unless (find-paste (quick-parse-junk-integer string))
-                       (fail-check "No paste by this number!")))
-  :string-to-value-translator (lambda (string)
-                                (find-paste (quick-parse-junk-integer string)))
-  :value-to-string-translator (lambda (paste)
-                                (prin1-to-string (paste-number paste))))
+;; (define-template-form-field hidden-paste-field hidden-form-field
+;;   :string-acceptor (lambda (string)
+;;                      (unless (and (> (length string) 0)
+;;                                   (every #'digit-char-p string))
+;;                        (fail-check "Please enter an integer."))
+;;                      (unless (find-paste (quick-parse-junk-integer string))
+;;                        (fail-check "No paste by this number!")))
+;;   :string-to-value-translator (lambda (string)
+;;                                 (find-paste (quick-parse-junk-integer string)))
+;;   :value-to-string-translator (lambda (paste)
+;;                                 (prin1-to-string (paste-number paste))))
 
-(define-form mark-as-spam ()
-    (paste)
-  (:submit-text t "Mark as Spam"))
+;; (define-form mark-as-spam ()
+;;     (paste)
+;;   (:submit-text t "Mark as Spam"))
 
-(define-form-field (mark-as-spam paste) hidden-paste-field)
+;; (define-form-field (mark-as-spam paste) hidden-paste-field)
 
-(define-form request-deletion ()
-  (paste)
-  (:submit-text t "Request Deletion"))
+;; (define-form request-deletion ()
+;;   (paste)
+;;   (:submit-text t "Request Deletion"))
 
-(define-form-field (request-deletion paste) hidden-paste-field)
+;; (define-form-field (request-deletion paste) hidden-paste-field)
 
-(define-form request-deletion-with-reason (request-deletion)
-  (reason email)
-  (:submit-text t "Request Deletion"))
+;; (define-form request-deletion-with-reason (request-deletion)
+;;   (reason email)
+;;   (:submit-text t "Request Deletion"))
 
-(define-form-field (request-deletion-with-reason reason) textarea-form-field
-  :string-acceptor (lambda (string)
-                     (when (zerop (length string))
-                       (fail-check "Please enter a reason."))))
+;; (define-form-field (request-deletion-with-reason reason) textarea-form-field
+;;   :string-acceptor (lambda (string)
+;;                      (when (zerop (length string))
+;;                        (fail-check "Please enter a reason."))))
 
-(define-form-field (request-deletion-with-reason email) form-field
-  :string-acceptor (lambda (string)
-                     ;; This definition of what an email address is is
-                     ;; very loose. Oh well.
-                     (unless (cl-ppcre:scan "^[^@ ]+@[^ ]+\\.\.+$" string)
-                       (fail-check "Please enter a vaild email address."))))
+;; (define-form-field (request-deletion-with-reason email) form-field
+;;   :string-acceptor (lambda (string)
+;;                      ;; This definition of what an email address is is
+;;                      ;; very loose. Oh well.
+;;                      (unless (cl-ppcre:scan "^[^@ ]+@[^ ]+\\.\.+$" string)
+;;                        (fail-check "Please enter a vaild email address."))))
 
-(define-form mark-as-wrong-channel ()
-    (paste)
-  (:submit-text t "Wrong Channel"))
+;; (define-form mark-as-wrong-channel ()
+;;     (paste)
+;;   (:submit-text t "Wrong Channel"))
 
-(define-form-field (mark-as-wrong-channel paste) hidden-paste-field)
+;; (define-form-field (mark-as-wrong-channel paste) hidden-paste-field)
 
 (defparameter *untablify-translator* (make-translator))
 

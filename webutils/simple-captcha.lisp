@@ -221,8 +221,4 @@ CAPTCHA-ENTERED-CORRECTLY-P."
                                       <p/>
                                       (<tt> encrypted))))))))
 
-(eval-when (:load-toplevel :execute)
-  (parse-bdf-file (merge-pathnames (make-pathname :directory '(:relative "codec")
-                                                  :name "codec-text"
-                                                  :type "bdf")
-                                   (asdf:component-pathname (asdf:find-system :webutils)))))
+(parse-bdf-file (asdf:system-relative-pathname :webutils "webutils/codec/codec-text.bdf"))
