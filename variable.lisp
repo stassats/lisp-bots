@@ -25,8 +25,8 @@
 (defparameter *external-http-port* 80
   "Port lisppaste's araneida will listen on for requests from remote clients.")
 
-(defparameter *paste-site-name* ;; "paste.lisp.org"
-  "localhost:8080"
+(defparameter *paste-site-name*  "paste.lisp.org"
+  ;; "localhost:8080"
   "Website we are running on (used for creating links).")
 
 (defclass lisppaste-acceptor (easy-acceptor)

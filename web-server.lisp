@@ -1237,7 +1237,7 @@ with your favorite RSS reader."
   (let* ((paste-number (parse-paste-number (script-name*)))
          (raw (ends-with (script-name*) "/raw"))
          (xml (ends-with (script-name*) "/xml"))
-         (content-type (:dbg (or type "text/plain")))
+         (content-type (or type "text/plain"))
          (paste (find-paste paste-number))
          (expired (find-expired-paste paste-number))
          (linenumbers (equalp linenumbers
