@@ -1231,6 +1231,10 @@ with your favorite RSS reader."
 (define-easy-handler (display :uri (match-prefix *display-paste-url*))
     (colorize linenumbers type)
   (let* ((paste-number (parse-paste-number (script-name*)))
+         (paste-number (if (= paste-number 132002)
+                           (progn (setf (return-code*) +http-not-found+)
+                                  (return-from display ""))
+                           paste-number))
          (raw (ends-with (script-name*) "/raw"))
          (xml (ends-with (script-name*) "/xml"))
          (content-type (or type "text/plain"))
@@ -1268,12 +1272,12 @@ with your favorite RSS reader."
                               (paste-contents theann)
                               :test #'char=)))))
                (raw (setf (content-type*) content-type)
-                      (remove #\return
-                              (paste-contents paste)
-                              :test #'char=))
+                    (remove #\return
+                            (paste-contents paste)
+                            :test #'char=))
                (t (setf (content-type*) "text/xml")
-                      (with-output-to-string (stream)
-                        (paste-write-xml paste stream))))))
+                  (with-output-to-string (stream)
+                    (paste-write-xml paste stream))))))
       (paste
        (let ((annotate-html
                (<table class="controls">
