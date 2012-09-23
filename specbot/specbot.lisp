@@ -75,7 +75,7 @@
     (r5rs-lookup "r5rs" "The Revised 5th Ed. Report on the Algorithmic Language Scheme")
     (cocoa-lookup "cocoa" "Classes in the Cocoa Foundation and Application kits")
     (elisp-lookup "elisp" "GNU Emacs Lisp Reference Manual")
-    (clim-lookup "clim" "Common Lisp Interface Manager II Specification")
+    ;; (clim-lookup "clim" "Common Lisp Interface Manager II Specification")
     (launchpad-lookup "lp" "Bugs tracked on Launchpad")))
 
 (defvar *spaces-allowed*

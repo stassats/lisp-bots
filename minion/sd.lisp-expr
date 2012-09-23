@@ -665,3 +665,5 @@
 (:ALIAS "faq" . "\"Nikodemus' CL FAQ\"")
 (:SD "faq"
  . "Nikodemus' CL FAQ: http://random-state.net/files/nikodemus-cl-faq.html")
+(:SD "AMOP"
+ . "The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO. See the sepcification of MOP at http://www.alu.org/mop/")
