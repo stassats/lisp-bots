@@ -230,9 +230,7 @@
       (declare (ignore type))
       (let* ((colon (position #\: s :from-end t :test #'char=))
              (to-lookup (if colon (subseq s (1+ colon)) s))
-             (result (if (find-package :clhs-lookup)
-                         (funcall (symbol-function (intern "SYMBOL-LOOKUP" :clhs-lookup))
-                                  to-lookup))))
+             (result (spec-lookup:lookup "clhs" to-lookup)))
         (if result
             (format nil "<a href=\"~A\" class=\"symbol\">~A</a>"
                     result (call-parent-formatter))
