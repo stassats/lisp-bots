@@ -1233,7 +1233,7 @@ with your favorite RSS reader."
   (let* ((paste-number (parse-paste-number (script-name*)))
          (paste-number (if (= paste-number 132002)
                            (progn (setf (return-code*) +http-not-found+)
-                                  (sleep 2)
+                                  (sleep 120)
                                   (return-from display ""))
                            paste-number))
          (raw (ends-with (script-name*) "/raw"))
