@@ -36,7 +36,9 @@
   nil)
 
 (defvar *acceptor* (make-instance 'lisppaste-acceptor
-                                  :port *internal-http-port*))
+                                  :port *internal-http-port*
+                                  :access-log-destination (merge-pathnames "lisppaste.log"
+                                                                           (user-homedir-pathname))))
 
 (defparameter *paste-external-url*
   (format nil "http://~a/" *paste-site-name*))
