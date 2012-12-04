@@ -664,8 +664,8 @@
                    ;;        (shorten (elt str 0))))
                    (if (should-do-lookup first-pass (or channel sender ""))
                        (aif (or (small-definition-lookup first-pass)
-                                (cliki-first-sentence first-pass)
-                                (alias-lookup first-pass))
+                                (alias-lookup first-pass)
+                                (cliki-first-sentence first-pass))
                             (prog1
                                 (concatenate 'string first-pass ": " it)
                               (did-lookup first-pass (or channel sender ""))))
