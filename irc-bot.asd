@@ -1,7 +1,7 @@
 (defsystem irc-bot
   :depends-on (cl-irc cl-ppcre
                bordeaux-threads
-               iolib.multiplex
+               iolib/multiplex
                usocket)
   :components ((:module "irc-bot"
                 :serial t
