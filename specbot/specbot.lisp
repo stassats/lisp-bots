@@ -148,7 +148,7 @@ and term is the desired lookup. "      ;The available databases are:
       (irc-bot:send-message bot destination result))))
 
 (defmethod irc-bot:process-message ((bot specbot) channel sender for-nick text full-text)
-  (process-query bot channel full-text))
+  (process-query bot full-text channel))
 
 (defmethod irc-bot:process-private-message ((bot specbot) sender text full-text)
   (if (member full-text '("help" "help?") :test #'equalp)
