@@ -25,7 +25,7 @@
                 :accessor description)
    (url-prefix :initarg :url-prefix
                :initform nil
-               :accessor url-prefix) 
+               :accessor url-prefix)
    (terms :initarg :terms
           :initform nil
           :accessor terms)))
@@ -57,7 +57,9 @@
             force)
     (setf *specs*
           (loop for directory in *spec-directories*
-                nconc (mapcar #'read-specification (directory (merge-pathnames "*.lisp" directory))))))
+                nconc
+                (mapcar #'read-specification
+                        (directory (merge-pathnames "*.lisp" directory))))))
   (values))
 
 (defun wrapped-p (term char-set)
@@ -82,7 +84,7 @@
                 wrap)))))
 
 (defun parse-terms (terms &key abbreviate)
-  (let ((hash-table (make-hash-table :test #'equal)))
+  (let ((hash-table (make-hash-table :test #'equalp)))
     (loop for term in terms
           do
           (destructuring-bind (key url &key type title) term
@@ -95,7 +97,13 @@
                                      (abbrev key))))
               (setf (gethash key hash-table) term)
               (when abbreviation
-                (setf (gethash abbreviation hash-table) term)))))
+                (let ((existing (gethash abbreviation hash-table)))
+                  (setf (gethash abbreviation hash-table)
+                   (etypecase existing
+                     (cons (cons term existing))
+                     (null term)
+                     (term (sort (list term existing)
+                                 #'string> :key #'key)))))))))
     hash-table))
 
 (defun read-data (file)
@@ -121,9 +129,12 @@
   (gethash key (terms spec)))
 
 (defun format-url (spec term)
-  (format nil "~@[~a~]~a"
-          (url-prefix spec)
-          (url term)))
+  (if (consp term)
+      (format nil "Matches: ~{~a~^, ~}."
+              (mapcar #'key term))
+      (format nil "~@[~a~]~a"
+              (url-prefix spec)
+              (url term))))
 
 (defun lookup (spec term &key type)
   (let* ((spec (find-spec spec))
