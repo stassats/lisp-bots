@@ -34,10 +34,12 @@
   (multiple-value-bind (url term)
       (spec-lookup:lookup "clhs" str)
     (when url
-      (let ((full-term (unless (equal str (spec-lookup:key term))
-                         (spec-lookup:key term))))
-        (format nil "~@[~a: ~]~@[~a: ~]~a"
-                full-term (spec-lookup:title term) url)))))
+      (if (consp term)
+          url
+          (let ((full-term (unless (equal str (spec-lookup:key term))
+                             (spec-lookup:key term))))
+            (format nil "~@[~a: ~]~@[~a: ~]~a"
+                    full-term (spec-lookup:title term) url))))))
 
 (defun r5rs-lookup (str)
   (and (find-package :r5rs-lookup)
