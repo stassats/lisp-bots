@@ -83,28 +83,39 @@
                           (elt e 0)) split)
                 wrap)))))
 
+(defun join-key-to-hash-table (key value hash-table)
+  (let ((existing (gethash key hash-table)))
+    (setf (gethash key hash-table)
+          (etypecase existing
+            (cons (sort (cons value existing)
+                        #'string< :key #'key))
+            (null value)
+            (term (sort (list value existing)
+                        #'string< :key #'key))))))
+
+(defun add-abbreviated-forms (key term hash-table)
+  (let ((abbreviation (abbrev key)))
+    (when abbreviation
+      (join-key-to-hash-table abbreviation term hash-table))))
+
 (defun parse-terms (terms &key abbreviate)
   (let ((hash-table (make-hash-table :test #'equalp)))
     (loop for term in terms
           do
           (destructuring-bind (key url &key type title) term
-            (let ((term (make-instance 'term
-                                       :key key
-                                       :url url
-                                       :type type
-                                       :title title))
-                  (abbreviation (and abbreviate
-                                     (abbrev key))))
-              (setf (gethash key hash-table) term)
-              (when abbreviation
-                (let ((existing (gethash abbreviation hash-table)))
-                  (setf (gethash abbreviation hash-table)
-                   (etypecase existing
-                     (cons (sort (cons term existing)
-                                 #'string< :key #'key))
-                     (null term)
-                     (term (sort (list term existing)
-                                 #'string< :key #'key)))))))))
+            (let* ((typed (if type
+                              (format nil "~a/~(~a~)" key type)
+                              key))
+                   (term (make-instance 'term
+                                        :key typed
+                                        :url url
+                                        :type type
+                                        :title title)))
+              (join-key-to-hash-table key term hash-table)
+              (when type
+                (setf (gethash typed hash-table) term))
+              (when abbreviate
+                (add-abbreviated-forms key term hash-table)))))
     hash-table))
 
 (defun read-data (file)

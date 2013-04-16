@@ -1762,7 +1762,7 @@
  ("~:" "22_c.htm")
  ("~;" "22_cia.htm")
  ("~<" "22_ceb.htm" :type logical-block)
- ("~<" "22_ceb.htm" :type justification)
+ ("~<" "22_cfb.htm" :type justification)
  ("~=" "22_c.htm")
  ("~>" "22_cfc.htm")
  ("~?" "22_cgf.htm")
