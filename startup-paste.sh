@@ -1,12 +1,11 @@
 #!/bin/sh
-ulimit -t 86400
-ulimit -l 1572864 # 86400s and 1572864kB
 
-export SBCL_HOME=~/sbcl-new/contrib/
+export SBCL_HOME=~/sbcl/contrib/
 
-while ! sh ~/sbcl-new/run-sbcl.sh --dynamic-space-size 1024  \
+while ! sh ~/sbcl/run-sbcl.sh --dynamic-space-size 1024  \
     --lose-on-corruption \
     --disable-ldb \
+    --no-sysinit \
     --userinit ~/ql-sbclrc \
     --disable-debugger \
     --load "start-paste.lisp"
