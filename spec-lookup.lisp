@@ -28,7 +28,10 @@
                :accessor url-prefix)
    (terms :initarg :terms
           :initform nil
-          :accessor terms)))
+          :accessor terms)
+   (validator :initarg :validator
+              :initform (constantly t)
+              :accessor validator)))
 
 (defmethod print-object ((specification specification) stream)
   (print-unreadable-object (specification stream :type t :identity t)
@@ -125,13 +128,17 @@
 
 (defun read-specification (file)
   (destructuring-bind ((&key name description url-prefix
-                             abbreviate)
+                             abbreviate
+                             validator)
                        &rest terms)
       (read-data file)
     (make-instance 'specification
                    :name name
                    :description description
                    :url-prefix url-prefix
+                   :validator (if validator
+                                  (compile nil validator)
+                                  (constantly t))
                    :terms (parse-terms terms :abbreviate abbreviate))))
 
 (defun find-spec (name)
@@ -148,12 +155,12 @@
               (url-prefix spec)
               (url term))))
 
-(defun lookup (spec term &key type)
+(defun lookup (spec term)
   (let* ((spec (find-spec spec))
-         (term (progn
-                 (assert spec)
-                 (find-term term spec))))
-    (when term
-      (values
-       (format-url spec term)
-       term))))
+         (valid (progn (assert spec)
+                       (funcall (validator spec) term)))
+         (term (and valid
+                    (find-term term spec))))
+    (if term
+        (values (format-url spec term) term)
+        (values nil valid))))

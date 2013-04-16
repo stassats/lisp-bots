@@ -33,13 +33,16 @@
 (defun clhs-lookup (str)
   (multiple-value-bind (url term)
       (spec-lookup:lookup "clhs" str)
-    (when url
-      (if (consp term)
-          url
-          (let ((full-term (unless (equal str (spec-lookup:key term))
-                             (spec-lookup:key term))))
-            (format nil "~@[~a: ~]~@[~a: ~]~a"
-                    full-term (spec-lookup:title term) url))))))
+    (cond (url
+           (if (consp term)
+               url
+               (let ((full-term (unless (equal str (spec-lookup:key term))
+                                  (spec-lookup:key term))))
+                 (format nil "~@[~a: ~]~@[~a: ~]~a"
+                         full-term (spec-lookup:title term) url))))
+          (t
+           ;; skip the term if it's not valid
+           (values nil (not term))))))
 
 (defun r5rs-lookup (str)
   (and (find-package :r5rs-lookup)
@@ -127,16 +130,30 @@ and term is the desired lookup. "      ;The available databases are:
         for term = (nth-value 1 (alexandria:starts-with-subseq (format nil "~a " name) message
                                                                :return-suffix t))
         when term
-        return (or (funcall handler-function (string-trim " " term))
-                   (format nil "Sorry, I couldn't find anything for ~A." term))))
+        return
+        (multiple-value-bind (result skip)
+            (funcall handler-function (string-trim " " term))
+          (cond (skip
+                 (values nil t))
+                (result
+                 result)
+                (t
+                 (format nil "Sorry, I couldn't find anything for ~A."
+                         term))))))
+
+(defun process-query (bot term destination)
+  (multiple-value-bind (result skip)
+      (lookup-term term)
+    (unless skip
+      (irc-bot:send-message bot destination result))))
 
 (defmethod irc-bot:process-message ((bot specbot) channel sender for-nick text full-text)
-  (irc-bot:send-message bot channel (lookup-term full-text)))
+  (process-query bot channel full-text))
 
 (defmethod irc-bot:process-private-message ((bot specbot) sender text full-text)
   (if (member full-text '("help" "help?") :test #'equalp)
       (help-message bot sender)
-      (irc-bot:send-message bot sender (lookup-term text))))
+      (process-query bot text sender)))
 
 (defmethod irc-bot:process-message-for-bot ((bot specbot) channel sender text full-text)
   (when (member text '("help" "help?") :test #'equalp)

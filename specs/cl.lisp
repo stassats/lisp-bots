@@ -1,7 +1,12 @@
 ((:name "clhs"
   :description "Common Lisp HyperSpec"
   :url-prefix "http://www.lispworks.com/reference/HyperSpec/Body/"
-  :abbreviate t)
+  :abbreviate t
+  :validator
+   (lambda (string)
+     (or (eql (search "glossary/" string :test #'char-equal)
+              0)
+         (not (find #\Space string)))))
  ("&allow-other-keys" "03_da.htm")
  ("&aux" "03_da.htm")
  ("&body" "03_dd.htm")
