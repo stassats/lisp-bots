@@ -100,10 +100,11 @@
                 (let ((existing (gethash abbreviation hash-table)))
                   (setf (gethash abbreviation hash-table)
                    (etypecase existing
-                     (cons (cons term existing))
+                     (cons (sort (cons term existing)
+                                 #'string< :key #'key))
                      (null term)
                      (term (sort (list term existing)
-                                 #'string> :key #'key)))))))))
+                                 #'string< :key #'key)))))))))
     hash-table))
 
 (defun read-data (file)
