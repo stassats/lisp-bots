@@ -1,10 +1,7 @@
 ((:name "mop"
   :description "Metaobject Protocol"
   :url-prefix "http://metamodular.com/CLOS-MOP/"
-  :abbreviate t
-  :validator
-   (lambda (string)
-     (not (find #\Space string))))
+  :abbreviate t)
  ("add-dependent" "add-dependent.html")
  ("add-direct-method" "add-direct-method.html")
  ("add-direct-subclass" "add-direct-subclass")

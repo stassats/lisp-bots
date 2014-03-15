@@ -7,7 +7,15 @@
            :key
            :url
            :term-type
-           :title))
+           :title
+           :*specs*
+           :specification
+           :name
+           :description
+           :url-prefix
+           :terms
+           :validator
+           :processor))
 
 (in-package :spec-lookup)
 
@@ -30,8 +38,13 @@
           :initform nil
           :accessor terms)
    (validator :initarg :validator
-              :initform (constantly t)
-              :accessor validator)))
+              :initform
+              (lambda (string)
+                (not (find #\Space string)))
+              :accessor validator)
+   (processor :initarg :processor
+              :initform nil
+              :accessor processor)))
 
 (defmethod print-object ((specification specification) stream)
   (print-unreadable-object (specification stream :type t :identity t)
@@ -129,7 +142,8 @@
 (defun read-specification (file)
   (destructuring-bind ((&key name description url-prefix
                              abbreviate
-                             validator)
+                             validator
+                             processor)
                        &rest terms)
       (read-data file)
     (make-instance 'specification
@@ -139,13 +153,17 @@
                    :validator (if validator
                                   (compile nil validator)
                                   (constantly t))
+                   :processor (and processor
+                                   (coerce processor 'function))
                    :terms (parse-terms terms :abbreviate abbreviate))))
 
 (defun find-spec (name)
   (find name *specs* :key #'name :test #'equal))
 
 (defun find-term (key spec)
-  (gethash key (terms spec)))
+  (if (processor spec)
+      (funcall (processor spec) key)
+      (gethash key (terms spec))))
 
 (defun format-url (spec term)
   (if (consp term)
@@ -153,10 +171,14 @@
               (mapcar #'key term))
       (format nil "~@[~a~]~a"
               (url-prefix spec)
-              (url term))))
+              (if (stringp term)
+                  term
+                  (url term)))))
 
-(defun lookup (spec term)
-  (let* ((spec (find-spec spec))
+(defun lookup (spec-designator term)
+  (let* ((spec (if (typep spec-designator 'specification)
+                   spec-designator
+                   (find-spec spec-designator)))
          (valid (progn (assert spec)
                        (funcall (validator spec) term)))
          (term (and valid
