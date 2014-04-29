@@ -5,7 +5,7 @@
  ("accessor-method-slot-definition" "accessor-method-slot-definition.html")
  ("add-dependent" "add-dependent.html")
  ("add-direct-method" "add-direct-method.html")
- ("add-direct-subclass" "add-direct-subclass")
+ ("add-direct-subclass" "add-direct-subclass.html")
  ("add-method" "add-method.html")
  ("allocate-instance" "allocate-instance.html")
  ("built-in-class" "class-built-in-class.html")
