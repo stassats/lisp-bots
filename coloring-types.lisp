@@ -683,7 +683,7 @@
      (set-mode :decorator
 	       :until (scan-any *non-constituent*)
 	       :advancing nil))
-    ((scan "def")
+    ((scan "def ")
      (set-mode :def
 	       :until (scan-any '(#\: #\())
 	       :advancing nil))
