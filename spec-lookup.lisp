@@ -142,20 +142,22 @@
 (defun read-specification (file)
   (destructuring-bind ((&key name description url-prefix
                              abbreviate
-                             validator
+                             (validator nil validator-p)
                              processor)
                        &rest terms)
       (read-data file)
-    (make-instance 'specification
-                   :name name
-                   :description description
-                   :url-prefix url-prefix
-                   :validator (if validator
-                                  (compile nil validator)
-                                  (constantly t))
-                   :processor (and processor
-                                   (coerce processor 'function))
-                   :terms (parse-terms terms :abbreviate abbreviate))))
+    (apply #'make-instance 'specification
+           :name name
+           :description description
+           :url-prefix url-prefix
+           :processor (and processor
+                           (coerce processor 'function))
+           :terms (parse-terms terms :abbreviate abbreviate)
+           (if validator-p
+               (list :validator
+                     (if validator
+                         (compile nil validator)
+                         (constantly t)))))))
 
 (defun find-spec (name)
   (find name *specs* :key #'name :test #'equal))
