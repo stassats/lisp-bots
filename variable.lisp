@@ -20,7 +20,7 @@
 
 (in-package :lisppaste)
 
-(defparameter *internal-http-port* 8080
+(defparameter *internal-http-port* 8081
   "Port lisppaste's araneida will listen on for requests from Apache.")
 (defparameter *external-http-port* 80
   "Port lisppaste's araneida will listen on for requests from remote clients.")
@@ -36,6 +36,7 @@
   nil)
 
 (defvar *acceptor* (make-instance 'lisppaste-acceptor
+                                  :address "localhost"
                                   :port *internal-http-port*
                                   :access-log-destination (merge-pathnames "lisppaste.log"
                                                                            (user-homedir-pathname))))
