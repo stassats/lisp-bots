@@ -1156,10 +1156,18 @@ with your favorite RSS reader."
   (let ((n 0) (next-first-char-nbsp t))
     (labels
         ((line-number ()
-           (format nil "<span class=\"paste\">~4D: </span>"
-                   (incf n)))
+           (format nil "<span class=\"paste\">~A&nbsp;</span>"
+                   (encode-for-tt (format nil "~4D:" (incf n))
+                                  :first-char-nbsp t)))
          (encode (str)
-           (encode-for-pre (remove #\return str))))
+           (if line-numbers
+               (multiple-value-bind (encoded last)
+                   (encode-for-tt (remove #\return str)
+                                  :with-line-numbers #'line-number
+                                  :first-char-nbsp next-first-char-nbsp)
+                 (prog1 encoded
+                   (setf next-first-char-nbsp last)))
+               (encode-for-pre (remove #\return str)))))
       (<div>
        (<table class="paste-header">
                (<tr>
@@ -1335,9 +1343,7 @@ with your favorite RSS reader."
             (<table width="100%">
                     (<tr>
                      (<td align="left">
-                          (<form method="post" action=?(merge-url
-                                                        *display-paste-url*
-                                                        "dsf")>
+                          (<form method="post" action=?(request-uri*) >
                                  (<table class="controls">
                                          (<tr>
                                           (<td>
