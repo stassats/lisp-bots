@@ -1335,9 +1335,7 @@ with your favorite RSS reader."
             (<table width="100%">
                     (<tr>
                      (<td align="left">
-                          (<form method="post" action=?(merge-url
-                                                        *display-paste-url*
-                                                        "dsf")>
+                          (<form method="post" action=?(request-uri*) >
                                  (<table class="controls">
                                          (<tr>
                                           (<td>
