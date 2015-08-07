@@ -29,7 +29,6 @@
  ("compute-effective-slot-definition" "compute-effective-slot-definition.html")
  ("compute-slots" "compute-slots.html")
  ("direct-slot-definition" "class-direct-slot-definition.html")
- ("direct-slot-definition" "class-direct-slot-definition.html")
  ("direct-slot-definition-class" "direct-slot-definition-class.html")
  ("effective-slot-definition" "class-effective-slot-definition.html")
  ("effective-slot-definition-class" "effective-slot-definition-class.html")
