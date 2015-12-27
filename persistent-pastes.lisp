@@ -248,21 +248,24 @@ channel, sorted by number of pastes."
 
 (defun add-paste-to-index (paste)
   "Add existing paste PASTE to the paste index."
-  (setf *paste-counter* (max (paste-number paste) *paste-counter*))
-  (push paste *pastes*))
+  (with-paste-lock
+    (setf *paste-counter* (max (paste-number paste) *paste-counter*))
+    (push paste *pastes*)))
 
 (defun remove-paste-from-index (paste)
   "Remove PASTE from the paste index."
-  (setf *pastes* (remove paste *pastes*)))
+  (with-paste-lock
+   (setf *pastes* (remove paste *pastes*))))
 
 (defun add-new-paste-to-index (paste)
   "Add a new paste, PASTE, to the paste index, setting its
 paste-number, incrementing the paste-counter, writing the paste to
 disk, etc."
-  (setf (paste-number paste) (incf *paste-counter*))
-  (push paste *pastes*)
-  (paste-write-xml-to-file paste)
-  (weaken-paste-contents paste))
+  (with-paste-lock
+    (setf (paste-number paste) *paste-counter*)
+    (push paste *pastes*)
+    (paste-write-xml-to-file paste)
+    (weaken-paste-contents paste)))
 
 ;; ANNOTATE-PASTE is roughly analogous to ADD-NEW-PASTE-TO-INDEX in
 ;; intent, and has a parallel structure, but operates in terms of a
@@ -271,10 +274,11 @@ disk, etc."
   "Add a new annotation, ANNOTATION, to ROOT-PASTE, setting the
 annotation's paste-number, incrementing ROOT-PASTE's annotation
 counter, writing the annotation to disk, etc."
-  (setf (paste-number annotation)
-	(incf (paste-annotation-counter root-paste)))
-  (setf (paste-parent-paste annotation) root-paste)
-  (push annotation (paste-annotations root-paste))
+  (with-paste-lock
+    (setf (paste-number annotation)
+          (incf (paste-annotation-counter root-paste)))
+    (setf (paste-parent-paste annotation) root-paste)
+    (push annotation (paste-annotations root-paste)))
   (write-new-annotation root-paste annotation)
   (weaken-paste-contents annotation))
 
@@ -367,31 +371,35 @@ file."
                   s)))
 
 (defun read-paste-xml-from-file (file)
-  (with-open-file (s file :direction :input)
-    (let ((paste (lxml-paste (s-xml:parse-xml-dom s :lxml))))
-      (if (paste-number paste)
-	  (progn
-	    (add-paste-to-index paste)
-	    (setf (paste-annotation-counter paste) 0)
-	    (loop for ann-lxml = (s-xml:parse-xml-dom s :lxml)
-		  while ann-lxml
-		  do (let ((ann (lxml-paste ann-lxml)))
-		       (push ann (paste-annotations paste))
-		       (setf (paste-parent-paste ann) paste)
-		       (setf (paste-annotation-counter paste)
-			     (max (paste-annotation-counter paste)
-				  (paste-number ann))))))
-	  (progn
-	    (warn "Paste file ~A is malformed." file))))))
+  (handler-bind ((error (lambda (c)
+                          (warn "Error reading paste ~S:~%~A"
+                                file c)
+                          (return-from read-paste-xml-from-file))))
+    (with-open-file (s file :direction :input)
+      (let ((paste (lxml-paste (s-xml:parse-xml-dom s :lxml))))
+        (cond ((paste-number paste)
+               (add-paste-to-index paste)
+               (setf (paste-annotation-counter paste) 0)
+               (loop for ann-lxml = (s-xml:parse-xml-dom s :lxml)
+                     while ann-lxml
+                     do (let ((ann (lxml-paste ann-lxml)))
+                          (push ann (paste-annotations paste))
+                          (setf (paste-parent-paste ann) paste)
+                          (setf (paste-annotation-counter paste)
+                                (max (paste-annotation-counter paste)
+                                     (paste-number ann))))))
+              (t
+               (warn "Paste file ~A is malformed." file)))))))
 
 (defun read-xml-pastes ()
-  (reset-paste-index)
-  (mapc #'read-paste-xml-from-file
-        (sort (directory (make-pathname :name :wild
-                                        :type "xml"
-                                        :defaults *paste-path*))
-              #'< :key #'(lambda (e)
-                           (parse-integer (pathname-name e) :junk-allowed t)))))
+  (with-paste-lock
+    (reset-paste-index)
+    (mapc #'read-paste-xml-from-file
+          (sort (directory (make-pathname :name :wild
+                                          :type "xml"
+                                          :defaults *paste-path*))
+                #'< :key #'(lambda (e)
+                             (parse-integer (pathname-name e) :junk-allowed t))))))
 
 ;; This function occasionally comes in handy when changing the paste
 ;; format on the live server (usually in recovering from a mistake).

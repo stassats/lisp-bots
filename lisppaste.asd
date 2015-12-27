@@ -15,7 +15,7 @@ located."
                  #-lisppaste-no-irc cl-irc
                  split-sequence s-xml s-xml-rpc cl-ppcre
                  html-encode webutils split-sequence
-                 :cl-who spec-lookup)
+                 cl-who spec-lookup bordeaux-threads)
     :components ((:file "package")
 		 (:file "utility" :depends-on ("package"))
                  (:file "variable"

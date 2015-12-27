@@ -211,7 +211,12 @@
 
 (defvar *pastes* nil)
 (defvar *paste-counter* 0)
+(defvar *paste-lock* (bt:make-recursive-lock "paste lock"))
 (defvar *channels* '("None"))
+
+(defmacro with-paste-lock (&body body)
+  `(bt:with-recursive-lock-held (*paste-lock*)
+     ,@body))
 
 (defvar *paste-file*
   (merge-pathnames "pastes.lisp-expr"
