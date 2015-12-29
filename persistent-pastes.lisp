@@ -262,7 +262,7 @@ channel, sorted by number of pastes."
 paste-number, incrementing the paste-counter, writing the paste to
 disk, etc."
   (with-paste-lock
-    (setf (paste-number paste) *paste-counter*)
+    (setf (paste-number paste) (incf *paste-counter*))
     (push paste *pastes*)
     (paste-write-xml-to-file paste)
     (weaken-paste-contents paste)))
