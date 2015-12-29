@@ -812,6 +812,9 @@ IRC."
    (format nil "New paste from IP ~A: number ~A, annotation of ~A, title ~S.~%"
            ip number annotation title)))
 
+(defun check (string)
+  (ppcre:scan "http://.+?\\.php\\?" string))
+
 (define-easy-handler (submit-paste :uri *submit-paste-url*)
     (username title text colorize expiration annotate channel captcha captchaid)
   (with-paste-lock
@@ -832,6 +835,15 @@ IRC."
         )
       (expire-used-captchas)
       (cond
+        ((or (check text)
+             (check username)
+             (check title))
+         (new-paste-form :message "Bad content"
+                         :default-channel channel
+                         :annotate annotate-paste
+                         :default-user username
+                         :default-title title
+                         :default-contents text))
         ((and (> (length captchaid) 0) (captcha-used captchaid))
          (new-paste-form :message "This captcha has been used already. Did you use the back button?"
                          :default-channel channel
