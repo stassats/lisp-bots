@@ -278,9 +278,9 @@ counter, writing the annotation to disk, etc."
     (setf (paste-number annotation)
           (incf (paste-annotation-counter root-paste)))
     (setf (paste-parent-paste annotation) root-paste)
-    (push annotation (paste-annotations root-paste)))
-  (write-new-annotation root-paste annotation)
-  (weaken-paste-contents annotation))
+    (push annotation (paste-annotations root-paste))
+    (write-new-annotation root-paste annotation)
+    (weaken-paste-contents annotation)))
 
 
 ;;; Serialization / deserialization of pastes
