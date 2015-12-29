@@ -245,9 +245,7 @@ IRC."
                   (<td valign="top" align="right">
                        (<form method="post" action=? *submit-paste-url*>
                               (generate-new-paste-form :width 60 :default-user (get-default-user)))
-                       <p/>
-                       *ohloh*
-                       (<div class="ads-text"> *ads*)))))))
+                       <p/>))))))
 
 (defun ban-log (user request)
   (log-event
@@ -986,8 +984,7 @@ IRC."
                             (<span class="small-header">
                                    "Don't make more pastes; annotate this one!")
                             <br/>
-                            <input type="submit" value="Annotate this paste" />))
-                    *ohloh*)))))))))
+                            <input type="submit" value="Annotate this paste" />)))))))))))
 
 (defun ends-with (str end)
   (let ((l1 (length str))
@@ -1405,10 +1402,7 @@ IRC."
                      ;;          (<form method="post" action=?*new-paste-url*>
                      ;;              annotate-html)))))
                      ))
-            <p/>
-            (<center>
-             *ohloh*
-             (<div class="ads-text"> *ads*)))))))
+            <p/>)))))
       (expired
        (setf (return-code*)
              +http-not-found+)

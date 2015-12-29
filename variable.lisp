@@ -58,19 +58,7 @@
                                         ; be ignored when not running
                                         ; with an IRC connection
 
-(defparameter *owner-email* "lisppaste-requests@common-lisp.net") ; the owner of this lisppaste
-
-(defparameter *ads*
-  (<div>
-   (<ul>
-    (<li> "Follow lisppaste's author: " (<a href= "http://twitter.com/bmastenbrook"> "Twitter") " | " (<a href= "http://www.ohloh.net/accounts/bmastenbrook"> "Ohloh"))
-    (<li> (<a href="http://planet.lisp.org/"> "Planet Lisp"))
-    (<li> (<a href="http://www.gigamonkeys.com/book/">
-	      "Practical Common Lisp - learn Lisp!"))))) ; gratuitous promotions
-
-(defparameter *ohloh*
-  (<div class= "ohloh">
-	(<script type= "text/javascript" src= "http://www.ohloh.net/projects/26110/widgets/project_users">)))
+(defparameter *owner-email* "lisppaste-requests@common-lisp.net")
 
 (defparameter *allowed-content-types*
   '("text/plain" "image/svg+xml" "text/html" "application/xhtml+xml"))
