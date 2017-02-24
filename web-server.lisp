@@ -159,9 +159,9 @@ table.webutils-form th { text-align: left; }
                        " | "
                        ;; (<a href=?*list-paste-url*> "List all pastes")
                        ;; " | "
-                       (<a href=?*syndication-url*> "Syndication")
-                       " | "
-                       (<a href="http://common-lisp.net/project/lisppaste/xml-rpc.html"> "XML-RPC")
+                       ;; (<a href=?*syndication-url*> "Syndication")
+                       ;; " | "
+                       ;; (<a href="http://common-lisp.net/project/lisppaste/xml-rpc.html"> "XML-RPC")
                        (when *serve-source*
                          (list " | "
                                (<a href=?(merge-url *show-component-url* "lisppaste")>
