@@ -272,9 +272,9 @@
 (define-condition lookup-failure (condition) ())
 
 (defun cliki-first-sentence (term)
-  (let* ((cliki-url (format nil "http://www.cliki.net/~A"
-			     (encode-for-url term)))
-	  (url (concatenate 'string cliki-url "?source")))
+  (let* ((cliki-url (format nil "https://www.cliki.net/~A"
+                            (encode-for-url term)))
+         (url (concatenate 'string cliki-url "?source")))
     (block cliki-return
       (handler-case
           (host-with-timeout
@@ -292,7 +292,7 @@
                                 (if next-line
                                     (setf first-line (concatenate 'string first-line (string #\newline) next-line))
                                     (return-from cliki-return
-                                      (format nil "The end of the page was reached before a definition was found in ~A" cliki-url))))
+                                      cliki-url)))
                               (setf first-line (regex-replace-all "\\r" first-line " "))
                               (setf first-line (regex-replace-all "\\n" first-line " "))
                               (setf first-line (regex-replace-all "_\\(([^)]*)\\)" first-line "\\1"))
@@ -307,7 +307,7 @@
                                 (return-from cliki-return first-line))))
                       (progn
                         (signal 'lookup-failure)
-                        (format nil "No definition was found in the first 5 lines of ~A" cliki-url)))))))
+                        cliki-url))))))
         #+sbcl
         (sb-ext:timeout ()
           (return-from cliki-return (progn (signal 'lookup-failure)
