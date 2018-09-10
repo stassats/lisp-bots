@@ -123,16 +123,19 @@
                password) bot
     (nick connection nickname)
     (when password
-     (privmsg connection "NickServ"
-              (format nil "IDENTIFY ~A" password)))
-    (mapcar (lambda (channel) (join connection channel))
-            channels)))
+      (privmsg connection "NickServ"
+               (format nil "IDENTIFY ~A" password)))))
 
 (defun notice-hook (message)
-  (when (and (equal (source message) "NickServ")
-             (search "nickname is registered"
-                     (message-body message)))
-    (identify *bot*)))
+  (cond ((not (equal (source message) "NickServ"))
+         nil)
+        ((search "nickname is registered"
+                 (message-body message))
+         (identify *bot*))
+        ((search "You are now identified for"
+                 (message-body message))
+         (mapcar (lambda (channel) (join (connection *bot*) channel))
+                 (channels *bot*)))))
 
 (defun ghost (bot)
   (with-slots (connection nickname password) bot
