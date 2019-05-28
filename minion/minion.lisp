@@ -13,7 +13,7 @@
 
 (defvar *aliases* nil)
 
-(defparameter *registration-secret* #P"/tmp/.registration.secret")
+(defparameter *registration-secret* #P"/var/tmp/.registration.secret")
 
 (defparameter *sd-file*
   (asdf:system-relative-pathname :minion "minion/sd.lisp-expr"))
