@@ -613,10 +613,10 @@
                                (setf should-send-cant-find nil)))))
                    (if (scan "^(?i)\\s*registration\\s*,\\s*please\\b" first-pass) 
                      (with-open-file (s *registration-secret*)
-                       (let ((until-line (read-line s))
-                             ;; These characters can be removed... we only want HH:MM+TZ to be kept
-                             (until (string-trim "# " until-line))
-                             (secret-url (read s)))
+                       (let* ((until-line (read-line s))
+                              ;; These characters can be removed... we only want HH:MM+TZ to be kept
+                              (until (string-trim "# " until-line))
+                              (secret-url (read s)))
                          (format nil "The URL ~s will be ~a." secret-url until))))
                    (if (scan "^(?i)hello(\\s|$)*" first-pass) "what's up?")
                    (if (scan "^(?i)hi(\\s|$)*" first-pass) "what's up?")
