@@ -616,7 +616,9 @@
                        (let* ((until-line (read-line s))
                               ;; These characters can be removed... we only want HH:MM+TZ to be kept
                               (until (string-trim "# " until-line))
-                              (secret-url (read s)))
+                              (url-line (read-line s))
+                              (matches (nth-value 1 (scan-to-strings "^(\\S+)" url-line)))
+                              (secret-url (aref matches 0)))
                          (format nil "The URL ~s will be ~a." secret-url until))))
                    (if (scan "^(?i)hello(\\s|$)*" first-pass) "what's up?")
                    (if (scan "^(?i)hi(\\s|$)*" first-pass) "what's up?")
@@ -631,7 +633,7 @@
                    (if (scan "^(?i)(?i)do my bidding!*$" first-pass) "Yes, my master.")
                    (if (scan "^(?i)chant(\\s|!|\\?|\\.|$)*" first-pass)
                        (format nil "MORE ~A" *more*))
-                   (let ((str (nth-value 1 (scan-to-strings "^(?i)apropos\\s+(.+\\S)\\s*$" first-pass))))
+                   (let ((str (nth-value 1 (scan-to-strings  "^(?i)apropos\\s+(.+\\S)\\s*$" first-pass))))
                      (and str
                           (minion-apropos (elt str 0))))
                    (if (scan "^(?i)advice$" first-pass)
