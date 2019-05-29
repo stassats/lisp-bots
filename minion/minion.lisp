@@ -611,7 +611,7 @@
 					   about)
 				   about)
                                (setf should-send-cant-find nil)))))
-                   (if (scan "^(?i)\\s*registration\\s*,\\s*please\\b" first-pass) 
+                   (if (scan "^(?i)\\s*registration" first-pass) 
                      (with-open-file (s *registration-secret*)
                        (let* ((until-line (read-line s))
                               ;; These characters can be removed... we only want HH:MM+TZ to be kept
