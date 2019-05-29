@@ -617,7 +617,7 @@
                               ;; These characters can be removed... we only want HH:MM+TZ to be kept
                               (until (string-trim "# " until-line))
                               (url-line (read-line s))
-                              (matches (nth-value 1 (scan-to-strings "^(\\S+)" url-line)))
+                              (matches (nth-value 1 (scan-to-strings "^.(http\\S+)" url-line)))
                               (secret-url (aref matches 0)))
                          (format nil "The URL ~s will be ~a." secret-url until))))
                    (if (scan "^(?i)hello(\\s|$)*" first-pass) "what's up?")
