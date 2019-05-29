@@ -619,7 +619,7 @@
                               (url-line (read-line s))
                               (matches (nth-value 1 (scan-to-strings "^.(http\\S+)" url-line)))
                               (secret-url (aref matches 0)))
-                         (format nil "The URL ~s will be ~a." secret-url until))))
+                         (format nil "The URL ~a will be ~a." secret-url until))))
                    (if (scan "^(?i)hello(\\s|$)*" first-pass) "what's up?")
                    (if (scan "^(?i)hi(\\s|$)*" first-pass) "what's up?")
                    (if (scan "^(?i)yo(\\s|$)*" first-pass) "what's up?")
