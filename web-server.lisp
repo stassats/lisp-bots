@@ -293,35 +293,40 @@ IRC."
 
 (define-easy-handler (new-paste :uri (match-prefix *new-paste-url*))
     (annotate channel)
-  (let* ((annotate-number (if annotate (quick-parse-junk-integer annotate)))
-         (annotate-paste (if annotate-number (find-paste annotate-number)))
-         (default-channel
-           (or (and annotate-paste (paste-channel annotate-paste))
-               (if (ends-with (script-name*) "/none")
-                   "None")
-               (or channel
-                   (parse-new-paste-channel))
-               (and *no-channel-pastes*
-                    "None"))))
-    (cond
-      ((and default-channel (or (and *no-channel-pastes*
-                                     (string-equal default-channel "None"))
-                                (find default-channel *channels* :test #'string-equal)))
-       (new-paste-form :annotate annotate-paste :default-channel default-channel))
-      (t
-         (xml-to-string
-          (lisppaste-wrap-page
-           "Select a channel"
-           (<form method="post" action=?*new-paste-url*>
-                  (<div class="controls">
-                        <input type="hidden" name="annotate" value=?annotate />
-                        "Please select a channel to lisppaste to: "
-                        (<select name="channel">
-                                 (<option value=""> "")
-                                 (mapcar (lambda (e)
-                                           (<option value=?e> e))
-                                         *channels*))
-                        <input type="submit" value="Submit"/>))))))))
+  (xml-to-string
+   (lisppaste-wrap-page
+    "Submit"
+    (<table>
+     (<th> "Due to continued abuse, this service has been discontinued")))))
+;;  (let* ((annotate-number (if annotate (quick-parse-junk-integer annotate)))
+;;         (annotate-paste (if annotate-number (find-paste annotate-number)))
+;;         (default-channel
+;;           (or (and annotate-paste (paste-channel annotate-paste))
+;;               (if (ends-with (script-name*) "/none")
+;;                   "None")
+;;               (or channel
+;;                   (parse-new-paste-channel))
+;;               (and *no-channel-pastes*
+;;                    "None"))))
+;;    (cond
+;;      ((and default-channel (or (and *no-channel-pastes*
+;;                                     (string-equal default-channel "None"))
+;;                                (find default-channel *channels* :test #'string-equal)))
+;;       (new-paste-form :annotate annotate-paste :default-channel default-channel))
+;;      (t
+;;         (xml-to-string
+;;          (lisppaste-wrap-page
+;;           "Select a channel"
+;;           (<form method="post" action=?*new-paste-url*>
+;;                  (<div class="controls">
+;;                        <input type="hidden" name="annotate" value=?annotate />
+;;                        "Please select a channel to lisppaste to: "
+;;                        (<select name="channel">
+;;                                 (<option value=""> "")
+;;                                 (mapcar (lambda (e)
+;;                                           (<option value=?e> e))
+;;                                         *channels*))
+;;                        <input type="submit" value="Submit"/>))))))))
 
 (defun time-delta (time &key (level 2) (ago-p t) (origin (get-universal-time)) (inverse nil))
   (let ((delta (if inverse
@@ -500,21 +505,22 @@ IRC."
     channel))
 
 (define-easy-handler (list-all-pastes :uri (match-prefix *list-paste-url*)) (channel)
-  (let* ((discriminate-channel (or channel (parse-list-channel)))
-         (discriminate-channel
-           (unless (equalp discriminate-channel "allchannels")
-             discriminate-channel))
-         (page-parameter (single-get-parameter))
-         (page (or (and page-parameter
-                        (parse-integer page-parameter :junk-allowed t))
-                   0))
-         (discriminated-pastes
-           (list-pastes :in-channel (if (equal discriminate-channel "Some")
-                                        t
-                                        discriminate-channel)))
-         (highest-page (floor (/ (- (length discriminated-pastes) 1)
-                                 *pastes-per-page*)))
-         (page-links (page-links-for-paste-list page highest-page discriminate-channel)))
+  (redirect (full-url "")))
+  ;; (let* ((discriminate-channel (or channel (parse-list-channel)))
+  ;;        (discriminate-channel
+  ;;          (unless (equalp discriminate-channel "allchannels")
+  ;;            discriminate-channel))
+  ;;        (page-parameter (single-get-parameter))
+  ;;        (page (or (and page-parameter
+  ;;                       (parse-integer page-parameter :junk-allowed t))
+  ;;                  0))
+  ;;        (discriminated-pastes
+  ;;          (list-pastes :in-channel (if (equal discriminate-channel "Some")
+  ;;                                       t
+  ;;                                       discriminate-channel)))
+  ;;        (highest-page (floor (/ (- (length discriminated-pastes) 1)
+  ;;                                *pastes-per-page*)))
+  ;;        (page-links (page-links-for-paste-list page highest-page discriminate-channel)))
     ;; (xml-to-string
     ;;  (lisppaste-wrap-page
     ;;   (if discriminate-channel
@@ -598,7 +604,7 @@ IRC."
     ;;   (<center>
     ;;    (<table class="controls">
     ;;            (<tr> (<td> "Page: " page-links))))))
-    ))
+;;    ))
 
 (defun single-get-parameter ()
   (ppcre:scan-to-strings "(?<=\\?).+$" (request-uri*)))
@@ -660,79 +666,84 @@ IRC."
                                      (default-contents "")
                                      (width 80))
   (<table class="new-paste-form">
-          (unless annotate
-            (<tr>
-             (<th align="left" width="0%" nowrap="nowrap">
-                  "Select a channel:")
-             (<td> (if (or (equal default-channel "")
-                           (equal default-channel "None"))
-                       (list
-                        (<input type="hidden" name="channel" value="None"> "None ")
-                        (<a href=?*channel-select-url*> "(Choose)"))
-                       (list
-                        (<select name="channel">
-                                 (<option value=?default-channel selected="selected">
-                                          default-channel)
-                                 (when *no-channel-pastes*
-                                   (<option value="None"> "None")))
-                        <br/>
-                        (format nil "To paste to a different IRC channel on the network ~A, select a channel from the " *irc-network-name*)
-                        (<a href=?*channel-select-url*> "channel list")
-                        ".")))))
-          (<tr>
-           (<th align="left" width="0%" nowrap="nowrap"> "Enter your username:")
-           (<td> <input type="text" name="username" value=?default-user />))
-          (<tr>
-           (<th align="left" width="0%" nowrap="nowrap"> "Enter a title:")
-           (<td> <input type="text" name="title" value=?default-title onfocus="if (this.value == 'untitled') { this.value = ''; this.onfocus = ''; }" />))
-          (when *show-captcha*
-            (<tr>
-             (<th align="left" width="0%" nowrap="nowrap"> "Captcha:")
-             (<td>
-              (let* ((number1 (+ 32 (random 68)))
-                     (number2 (+ 32 (random 68))))
-                (multiple-value-bind (captcha captchaid)
-                   (make-captcha 4 :string (format nil "~4,'0D" (* number1 number2)))
-                 (list
-                  (<div style= "display: table-cell;">
-                        captcha)
-                  <input type="text" name="captcha" />
-                  <input type="hidden" name="captchaid" value=?captchaid />))))))
-          (unless annotate
+     (<tr>
+        (<th align="center" width="0%" nowrap="nowrap">
+             "Due to continued abuse, this service has been disabled"))))
 
-            (list
-             (<tr>
-              (<th align="left" width="0%" nowrap="nowrap">
-                   "Colorize as: ")
-              (<td> (let ((default (gethash default-channel *coloring-type-defaults*)))
-                      (<select name="colorize">
-                               (<option value="None" $(unless default
-                                                        '("selected" "SELECTED"))> "None")
-                               (loop for pair in (colorize:coloring-types)
-                                     collect (<option value=?(cdr pair) $(if (eq (car pair) default)
-                                                                             '("selected" "SELECTED"))>
-                                                                             (cdr pair)))))))
-             (<tr>
-              (<th align="left" width="0%" nowrap="nowrap">
-                   "Expires in: ")
-              (<td> (<select name="expiration">
-                             (loop for pair in *expiration-options*
-                                   for first = t then nil
-                                   collect (<option value=?(car pair) $(if first '("selected" "SELECTED"))>
-                                                    (car pair))))))))
-          (<tr>
-           (<th align="left" valign="top" width="0%" nowrap="nowrap">
-                "Enter your paste:")
-           (<td>))
-          (<tr>
-           (<td colspan="2">
-                (<textarea rows="24" cols=?(prin1-to-string width) name="text">
-                           default-contents)))
-          (<tr>
-           (<th align="left" width="0%" nowrap="nowrap"> "Submit your paste:")
-           (<td> <input type="submit" value="Submit paste" />
-                 " "
-                 <input type="reset" value="Clear paste" />))))
+;;  (<table class="new-paste-form">
+;;          (unless annotate
+;;            (<tr>
+;;             (<th align="left" width="0%" nowrap="nowrap">
+;;                  "Select a channel:")
+;;             (<td> (if (or (equal default-channel "")
+;;                           (equal default-channel "None"))
+;;                       (list
+;;                        (<input type="hidden" name="channel" value="None"> "None ")
+;;                        (<a href=?*channel-select-url*> "(Choose)"))
+;;                       (list
+;;                        (<select name="channel">
+;;                                 (<option value=?default-channel selected="selected">
+;;                                          default-channel)
+;;                                 (when *no-channel-pastes*
+;;                                   (<option value="None"> "None")))
+;;                        <br/>
+;;                        (format nil "To paste to a different IRC channel on the network ~A, select a channel from the " *irc-network-name*)
+;;                        (<a href=?*channel-select-url*> "channel list")
+;;                        ".")))))
+;;          (<tr>
+;;           (<th align="left" width="0%" nowrap="nowrap"> "Enter your username:")
+;;           (<td> <input type="text" name="username" value=?default-user />))
+;;          (<tr>
+;;           (<th align="left" width="0%" nowrap="nowrap"> "Enter a title:")
+;;           (<td> <input type="text" name="title" value=?default-title onfocus="if (this.value == 'untitled') { this.value = ''; this.onfocus = ''; }" />))
+;;          (when *show-captcha*
+;;            (<tr>
+;;             (<th align="left" width="0%" nowrap="nowrap"> "Captcha:")
+;;             (<td>
+;;              (let* ((number1 (+ 32 (random 68)))
+;;                     (number2 (+ 32 (random 68))))
+;;                (multiple-value-bind (captcha captchaid)
+;;                   (make-captcha 4 :string (format nil "~4,'0D" (* number1 number2)))
+;;                 (list
+;;                  (<div style= "display: table-cell;">
+;;                        captcha)
+;;                  <input type="text" name="captcha" />
+;;                  <input type="hidden" name="captchaid" value=?captchaid />))))))
+;;          (unless annotate
+
+;;            (list
+;;             (<tr>
+;;              (<th align="left" width="0%" nowrap="nowrap">
+;;                   "Colorize as: ")
+;;              (<td> (let ((default (gethash default-channel *coloring-type-defaults*)))
+;;                      (<select name="colorize">
+;;                               (<option value="None" $(unless default
+;;                                                        '("selected" "SELECTED"))> "None")
+;;                               (loop for pair in (colorize:coloring-types)
+;;                                     collect (<option value=?(cdr pair) $(if (eq (car pair) default)
+;;                                                                             '("selected" "SELECTED"))>
+;;                                                                             (cdr pair)))))))
+;;             (<tr>
+;;              (<th align="left" width="0%" nowrap="nowrap">
+;;                   "Expires in: ")
+;;              (<td> (<select name="expiration">
+;;                             (loop for pair in *expiration-options*
+;;                                   for first = t then nil
+;;                                   collect (<option value=?(car pair) $(if first '("selected" "SELECTED"))>
+;;                                                    (car pair))))))))
+;;          (<tr>
+;;           (<th align="left" valign="top" width="0%" nowrap="nowrap">
+;;                "Enter your paste:")
+;;           (<td>))
+;;          (<tr>
+;;           (<td colspan="2">
+;;                (<textarea rows="24" cols=?(prin1-to-string width) name="text">
+;;                           default-contents)))
+;;          (<tr>
+;;           (<th align="left" width="0%" nowrap="nowrap"> "Submit your paste:")
+;;           (<td> <input type="submit" value="Submit paste" />
+;;                 " "
+;;                 <input type="reset" value="Clear paste" />))))
 
 (defun get-default-user ()
   (or (cookie-in "USERNAME")
@@ -815,176 +826,181 @@ IRC."
 
 (define-easy-handler (submit-paste :uri *submit-paste-url*)
     (username title text colorize expiration annotate channel captcha captchaid)
-  (with-paste-lock
-    (let* ((annotate-number (if annotate (quick-parse-junk-integer annotate)))
-           (annotate-paste (if annotate-number (find-paste annotate-number)))
-           (correct (and captcha captchaid (captcha-entered-correctly-p captcha 4 captchaid))))
-      (let ((cookies nil))
-        (when (> (length channel) 1)
-          (push (format nil "USERNAME=~A; path=/"
-                        (or username "")) cookies))
-        ;; (when correct
-        ;;   (push (make-authorization-token :extra :captcha) cookies))
-        ;; (if cookies
-        ;;     (request-send-headers request :expires 0
-        ;;                        :content-type "text/html; charset=utf-8"
-        ;;                           :set-cookie cookies)
-        ;;     )
-        )
-      (expire-used-captchas)
-      (cond
-        ((or (check text)
-             (check username)
-             (check title))
-         (new-paste-form :message "Bad content"
-                         :default-channel channel
-                         :annotate annotate-paste
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((and (> (length captchaid) 0) (captcha-used captchaid))
-         (new-paste-form :message "This captcha has been used already. Did you use the back button?"
-                         :default-channel channel
-                         :annotate annotate-paste
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((and *show-captcha* (not correct))
-         (new-paste-form :message "You entered the captcha incorrectly."
-                         :default-channel channel
-                         :annotate annotate-paste
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((> (length text) *paste-maximum-size*)
-         (new-paste-form :message "Paste too large."
-                         :default-channel channel :annotate
-                         annotate-paste :default-user
-                         username :default-title title))
-        ((zerop (length channel))
-         (new-paste-form :message "Please select a channel."
-                         :default-channel channel
-                         :annotate annotate-paste
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((zerop (length username))
-         (new-paste-form :message "Please enter your username."
-                         :default-channel channel
-                         :annotate annotate-paste
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((zerop (length title))
-         (new-paste-form :message "Please enter a title."
-                         :default-channel channel
-                         :annotate annotate-paste
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((zerop (length text))
-         (new-paste-form :message "Please enter your paste."
-                         :default-channel channel
-                         :annotate annotate-paste
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((and (not annotate)
-              (not (assoc expiration *expiration-options* :test #'equal)))
-         (new-paste-form :message "Please choose a valid expiration option."
-                         :default-channel channel
-                         :annotate annotate-paste
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((and annotate (not annotate-paste))
-         (new-paste-form :message "Malformed annotation request."
-                         :default-channel channel
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((and annotate annotate-paste (paste-moldy annotate-paste))
-         (xml-to-string
-          (lisppaste-wrap-page
-           (format nil "Paste ~A too old!" (paste-number annotate-paste))
-           (format nil "I can't imagine why you'd want to annotate a paste that's ~A old."
-                   (time-delta (paste-universal-time annotate-paste) :ago-p nil)))))
-        ((not (member channel *channels* :test #'string-equal))
-         (new-paste-form :message "Whatever channel that is, I don't know about it."
-                         :default-channel channel
-                         :annotate annotate-paste
-                         :default-user username
-                         :default-title title
-                         :default-contents text))
-        ((or
-          (some (lambda (regexp)
-                  (or (cl-ppcre:scan regexp text)
-                      (cl-ppcre:scan regexp title))) *banned-content-regexps*)
-          (let ((user-agent (user-agent)))
-            (when user-agent
-              (some (lambda (regexp)
-                      (cl-ppcre:scan regexp user-agent))
-                    *banned-user-agent-regexps*)))
-          (member title *banned-paste-titles* :test #'equal)
-          (member username *banned-paste-users* :test #'equalp))
-                                        ;(ban-ip/request request)
-                                        ;(ban-log username request)
-         (xml-to-string
-          (lisppaste-wrap-page
-           "Disallowed!"
-           (<div class="info-text">
-                 *paste-site-name*
-                 " is a public service to the open source software community and is intended for sharing of code, debug output, and other software-related information. It is not a wiki or a forum and it cannot under any circumstances be made to link to any sites. It is also not a service to the torrent scene or to authors of erotic fiction. Please consider using another service such as "
-                 (<a href= "http://www.pastebin.ca"> "pastebin.ca")
-                 " for this content."
-                 <p/>
-                 "If you feel you have recieved this message in error, please "
-                 (<a href=?*email-redirect-url*> "contact us")
-                 " and include the contents of your paste. Thank you."))))
-        (t
-         (let* ((expiration-delta (unless annotate
-                                    (cdr (assoc expiration *expiration-options*
-                                                :test #'equal))))
-                (paste (make-new-paste
-                        annotate-paste
-                        :user username
-                        :title title
-                        :contents text
-                        :channel channel
-                        :colorization-mode (coerce colorize 'string)
-                        :expiration-time (if expiration-delta
-                                             (+ (get-universal-time)
-                                                expiration-delta))))
-                (url (paste-short-url paste))
-                (paste-number (or annotate-number (paste-number paste)))
-                (annotation-number (if annotate-paste (paste-number paste))))
-           (log-new-paste (remote-addr*)
-                          paste-number
-                          annotation-number
-                          title)
-           (xml-to-string
-            (lisppaste-wrap-page
-             (format nil "Paste number ~A pasted!" paste-number)
-             (<p>
-              (if annotate
-                  "Your annotation should be available at "
-                  "Your paste should be available at ")
-              (<b> (<a href=?url> (full-url url)))
-              (unless (and *no-channel-pastes*
-                           (string-equal channel "none"))
-                (list ", and was also sent to " channel " at " *irc-network-name*))
-              ".")
-             (<p>
-              (<b> (<a href=? (paste-tweet-url paste)>
-                       "Tweet this!")))
-             (<form method="post" action=?*new-paste-url*>
-                    <input type="hidden" name="annotate" value=?(prin1-to-string paste-number) />
-                    (<div>
-                     (<span class="controls">
-                            (<span class="small-header">
-                                   "Don't make more pastes; annotate this one!")
-                            <br/>
-                            <input type="submit" value="Annotate this paste" />)))))))))))
+  (xml-to-string
+    (lisppaste-wrap-page
+       "Disabled"
+       "Due to continued abuse, this service has been disabled")))
+
+;;  (with-paste-lock
+;;    (let* ((annotate-number (if annotate (quick-parse-junk-integer annotate)))
+;;           (annotate-paste (if annotate-number (find-paste annotate-number)))
+;;           (correct (and captcha captchaid (captcha-entered-correctly-p captcha 4 captchaid))))
+;;      (let ((cookies nil))
+;;        (when (> (length channel) 1)
+;;          (push (format nil "USERNAME=~A; path=/"
+;;                        (or username "")) cookies))
+;;        ;; (when correct
+;;        ;;   (push (make-authorization-token :extra :captcha) cookies))
+;;        ;; (if cookies
+;;        ;;     (request-send-headers request :expires 0
+;;        ;;                        :content-type "text/html; charset=utf-8"
+;;        ;;                           :set-cookie cookies)
+;;        ;;     )
+;;        )
+;;      (expire-used-captchas)
+;;      (cond
+;;        ((or (check text)
+;;             (check username)
+;;             (check title))
+;;         (new-paste-form :message "Bad content"
+;;                         :default-channel channel
+;;                         :annotate annotate-paste
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((and (> (length captchaid) 0) (captcha-used captchaid))
+;;         (new-paste-form :message "This captcha has been used already. Did you use the back button?"
+;;                         :default-channel channel
+;;                         :annotate annotate-paste
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((and *show-captcha* (not correct))
+;;         (new-paste-form :message "You entered the captcha incorrectly."
+;;                         :default-channel channel
+;;                         :annotate annotate-paste
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((> (length text) *paste-maximum-size*)
+;;         (new-paste-form :message "Paste too large."
+;;                         :default-channel channel :annotate
+;;                         annotate-paste :default-user
+;;                         username :default-title title))
+;;        ((zerop (length channel))
+;;         (new-paste-form :message "Please select a channel."
+;;                         :default-channel channel
+;;                         :annotate annotate-paste
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((zerop (length username))
+;;         (new-paste-form :message "Please enter your username."
+;;                         :default-channel channel
+;;                         :annotate annotate-paste
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((zerop (length title))
+;;         (new-paste-form :message "Please enter a title."
+;;                         :default-channel channel
+;;                         :annotate annotate-paste
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((zerop (length text))
+;;         (new-paste-form :message "Please enter your paste."
+;;                         :default-channel channel
+;;                        :annotate annotate-paste
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((and (not annotate)
+;;              (not (assoc expiration *expiration-options* :test #'equal)))
+;;         (new-paste-form :message "Please choose a valid expiration option."
+;;                         :default-channel channel
+;;                         :annotate annotate-paste
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((and annotate (not annotate-paste))
+;;         (new-paste-form :message "Malformed annotation request."
+;;                         :default-channel channel
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((and annotate annotate-paste (paste-moldy annotate-paste))
+;;         (xml-to-string
+;;          (lisppaste-wrap-page
+;;           (format nil "Paste ~A too old!" (paste-number annotate-paste))
+;;           (format nil "I can't imagine why you'd want to annotate a paste that's ~A old."
+;;                   (time-delta (paste-universal-time annotate-paste) :ago-p nil)))))
+;;        ((not (member channel *channels* :test #'string-equal))
+;;         (new-paste-form :message "Whatever channel that is, I don't know about it."
+;;                         :default-channel channel
+;;                         :annotate annotate-paste
+;;                         :default-user username
+;;                         :default-title title
+;;                         :default-contents text))
+;;        ((or
+;;          (some (lambda (regexp)
+;;                  (or (cl-ppcre:scan regexp text)
+;;                      (cl-ppcre:scan regexp title))) *banned-content-regexps*)
+;;          (let ((user-agent (user-agent)))
+;;            (when user-agent
+;;              (some (lambda (regexp)
+;;                      (cl-ppcre:scan regexp user-agent))
+;;                    *banned-user-agent-regexps*)))
+;;          (member title *banned-paste-titles* :test #'equal)
+;;          (member username *banned-paste-users* :test #'equalp))
+;;                                        ;(ban-ip/request request)
+;;                                        ;(ban-log username request)
+;;         (xml-to-string
+;;          (lisppaste-wrap-page
+;;           "Disallowed!"
+;;           (<div class="info-text">
+;;                 *paste-site-name*
+;;                 " is a public service to the open source software community and is intended for sharing of code, debug output, and other software-related information. It is not a wiki or a forum and it cannot under any circumstances be made to link to any sites. It is also not a service to the torrent scene or to authors of erotic fiction. Please consider using another service such as "
+;;                 (<a href= "http://www.pastebin.ca"> "pastebin.ca")
+;;                 " for this content."
+;;                 <p/>
+;;                 "If you feel you have recieved this message in error, please "
+;;                 (<a href=?*email-redirect-url*> "contact us")
+;;                 " and include the contents of your paste. Thank you."))))
+;;        (t
+;;         (let* ((expiration-delta (unless annotate
+;;                                    (cdr (assoc expiration *expiration-options*
+;;                                                :test #'equal))))
+;;                (paste (make-new-paste
+;;                        annotate-paste
+;;                        :user username
+;;                        :title title
+;;                        :contents text
+;;                        :channel channel
+;;                        :colorization-mode (coerce colorize 'string)
+;;                        :expiration-time (if expiration-delta
+;;                                             (+ (get-universal-time)
+;;                                                expiration-delta))))
+;;                (url (paste-short-url paste))
+;;                (paste-number (or annotate-number (paste-number paste)))
+;;                (annotation-number (if annotate-paste (paste-number paste))))
+;;           (log-new-paste (remote-addr*)
+;;                          paste-number
+;;                         annotation-number
+;;                          title)
+;;           (xml-to-string
+;;            (lisppaste-wrap-page
+;;             (format nil "Paste number ~A pasted!" paste-number)
+;;             (<p>
+;;              (if annotate
+;;                  "Your annotation should be available at "
+;;                  "Your paste should be available at ")
+;;              (<b> (<a href=?url> (full-url url)))
+;;              (unless (and *no-channel-pastes*
+;;                           (string-equal channel "none"))
+;;                (list ", and was also sent to " channel " at " *irc-network-name*))
+;;              ".")
+;;             (<p>
+;;              (<b> (<a href=? (paste-tweet-url paste)>
+;;                       "Tweet this!")))
+;;             (<form method="post" action=?*new-paste-url*>
+;;                    <input type="hidden" name="annotate" value=?(prin1-to-string paste-number) />
+;;                    (<div>
+;;                     (<span class="controls">
+;;                            (<span class="small-header">
+;;                                   "Don't make more pastes; annotate this one!")
+;;                            <br/>
+;;                            <input type="submit" value="Annotate this paste" />)))))))))))
 
 (defun ends-with (str end)
   (let ((l1 (length str))
@@ -1217,11 +1233,11 @@ IRC."
                 (<td align="left" valign="top" nowrap="nowrap"> "Paste contents:")
                 (when this-url
                   (<td width="100%">
-                       (<form method= "post" action=? (concatenate 'string this-url "/raw")>
-                              (<a href=?(concatenate 'string this-url "/raw")> "Raw Source")
+                       (<form method= "post" action=? (concatenate 'string (paste-display-url paste) "/raw")>
+                              (<a href=?(concatenate 'string (paste-display-url paste) "/raw")> "Raw Source")
                               (unless annotation
                                 (list " | "
-                                      (<a href=?(concatenate 'string this-url "/xml")> "XML")))
+                                      (<a href=?(concatenate 'string (paste-display-url paste) "/xml")> "XML")))
                               " | Display As "
                               (<select name= "type">
                                        (loop for type in *allowed-content-types*
@@ -1279,6 +1295,21 @@ IRC."
                            (gethash (paste-channel paste) *coloring-type-defaults*))))
          (colorize:*css-background-class* "paste"))
     (cond
+      ((find #\? (request-uri*))  ;; redirect when we have a query string; for some reason we're spammed with query strings...
+       (redirect (paste-display-url paste) :code +http-moved-permanently+))
+;;       (setf
+;;         (return-code*) +http-moved-permanently+
+;;         (headers-out*)
+;;          (list*
+;;           (list :location (paste-display-url paste))
+;;           '((:expires "Fri, 30 Oct 1998 14:19:41 GMT")
+;;             (:pragma "no-cache")
+;;             (:response-code 301)
+;;             (:response-text "Redirected")
+;;            (:content-type "text/plain"))))
+;;       (send-headers)
+;;       (write-string "Redirected!" (request-stream request)))
+
       ((not (find content-type *allowed-content-types* :test #'equal))
        (xml-to-string
         (lisppaste-wrap-page
