@@ -39,6 +39,8 @@
                                   :address "localhost"
                                   :port *internal-http-port*
                                   :access-log-destination (merge-pathnames "lisppaste.log"
+                                                                           (user-homedir-pathname))
+                                  :message-log-destination (merge-pathnames "lisppaste-error.log"
                                                                            (user-homedir-pathname))))
 
 (defparameter *paste-external-url*
