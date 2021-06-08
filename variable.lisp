@@ -195,7 +195,7 @@
 (defparameter *show-component-url* "/system-server/show/")
 
 (defvar *default-nickname* "devpaste")
-(defvar *default-irc-server* "chat.freenode.net")
+(defvar *default-irc-server* "irc.libera.chat")
 (defvar *default-irc-server-port* 6667)
 (defvar *default-channel* "#lisppaste")
 
