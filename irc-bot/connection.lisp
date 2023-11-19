@@ -44,7 +44,16 @@
       (handler-bind
           ;; install sensible recovery: nobody can wrap the
           ;; handler...
-          ((no-such-reply
+
+          ;;; BUG CL-IRC never throws NO-SUCH-REPLY but rather a SIMPLE-ERROR
+          ;;; c.f. [[file:~/quicklisp/dists/quicklisp/software/cl-irc-0.9.2/parse-message.lisp::(error "Ignore unknown reply."]]
+          ((simple-error
+             #'(lambda (c)
+                 (when (eql (first (simple-condition-format-arguments c))
+                            'no-such-reply)
+                   (continue))))
+           #+nil
+           (no-such-reply
              #'(lambda (c)
                  (declare (ignore c))
                  (invoke-restart 'continue))))
@@ -73,7 +82,8 @@
           do (cond (usable
                     (setf last-communication time
                           ping-sent nil)
-                    (read-messages connection))
+                    (with-simple-restart (continue "Ignore error reading message")
+                      (read-messages connection)))
                    ((< (- time last-communication) *ping-timeout*))
                    (ping-sent
                     (write-line "restarting minion")
