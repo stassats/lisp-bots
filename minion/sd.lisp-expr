@@ -383,8 +383,6 @@
  . "http://common-lisp.net/~loliveira/darcs/cl-opengl-thomas/ was a development branch of cl-opengl. It was merged into cl-opengl on 2008-2-19. See cl-opengl")
 (:SD "AGISC"
  . "Common Lisp: A Gentle Introduction to Symbolic Computation by David S. Touretzky available at http://www.cs.cmu.edu/~dst/LispBook")
-(:SD "els"
- . "1st European Lisp Symposium (ELS'08) in Bordeaux, France, May 22-23, 2008 LaBRI, Université Bordeaux 1. http://prog.vub.ac.be/~pcostanza/els08/index.html")
 (:SD "viper-mode" . "\"http://www.emacswiki.org/cgi-bin/wiki/ViperMode\"")
 (:SD "foof-loop"
  . "Taylor R. Campbell's extensible looping macros, at <http://mumble.net/~campbell/scheme/foof-loop.scm>, documented at <http://mumble.net/~campbell/scheme/foof-loop.txt>")
@@ -586,6 +584,111 @@
 (:SD "get-emacs"
  . "emacs is five minutes away with: wget ftp://ftp.gnu.org/gnu/emacs/emacs-23.2.tar.gz && tar zxvf emacs-23.2.tar.gz && cd emacs-23.2 && configure && make && make install")
 (:SD "ailab" . "http://www.cs.cmu.edu/afs/cs/project/ai-repository/ai/")
+(:SD "faq"
+ . "Nikodemus' CL FAQ: http://random-state.net/files/nikodemus-cl-faq.html")
+(:SD "AMOP"
+ . "The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO. See the sepcification of MOP at http://www.alu.org/mop/")
+(:SD "SICL"
+ . "SICL is a (perhaps futile) attempt to re-implement Common Lisp from scratch, hopefully using improved programming and bootstrapping techniques. See https://github.com/robert-strandh/SICL")
+(:SD "cl-features"
+ . "Features of Common Lisp. It is not one single feature that makes Common Lisp so great, but a combination of many of them. See: http://random-state.net/features-of-common-lisp.html")
+(:SD "climatis"
+ . "CLIMatis is an implementation of CLIM3, an updated version of CLIM II. See https://github.com/robert-strandh/CLIMatis")
+(:SD "Cleavir"
+ . "A project to create an implementation-independent compilation framework for Common Lisp. Currently Cleavir is part of SICL, but that might change in the future")
+(:SD "Clasp"
+ . "An implementation of Common Lisp that interoperates smoothly with C++ and uses LLVM to generate native code")
+(:SD "clqr"
+ . "The Common Lisp Quick Reference is a booklet with short descriptions of the symbols defined in the ANSI standard: http://clqr.boundp.org/")
+(:SD "ParaSICL"
+ . "A SICL system running inside a host Common Lisp system. It uses host data, and it passes the High-level Intermediate Representation (HIR) output from the SICL compiler to the host compiler for native code generation")
+(:SD "paip" . "Paradigms of Artificial Intelligence Programming")
+(:SD "other channels"
+ . "#lispcafe for off-topic, ##lisp for any lisp (not just CL), #lispgames for writing games, #lispweb for web dev")
+(:SD "irc channels"
+ . "see http://www.cliki.net/IRC for a list of lisp related channels")
+(:SD "cl-recipes as: New"
+ . "PDF (2 Jan 2016) \"Common Lisp Recipes\" from Edi Weitz, author of Hunchentoot, cl-who, and others. Not for beginners (They start with Peter Seibels \"Practical Common Lisp\"). But good choice for the second book.")
+(:SD
+ "cl-recipe as: Edi Weitz \"Common Lisp Recipes\" available as PDF from Apress.com. Recommended"
+ . "second book after \"Practical Common Lisp\"")
+(:SD "\"cl-recipes\" as:\"Common Lisp Recipes\" by Edi Weitz available"
+ . "PDF from http://www.apress.com/programming/lisp. Recommended after working through \"Practical Common Lisp\"")
+(:SD "\"cl-recipes\" as:\"Common Lisp Recipes\" by Edi Weitz available"
+ . "PDF from http://www.apress.com/programming/lisp. Recommended after working through \"Practical Common Lisp\"")
+(:SD "foo" . "bar")
+(:SD "clus"
+ . "CLUS is the Common Lisp UlstraSpec, a modern and corrected specification of the Common Lisp language and related material. See http://phoe.tymoon.eu/clus for the current state of the project")
+(:SD "clarifications"
+ . "http://www.cliki.net/Proposed%20ANSI%20Revisions%20and%20Clarifications")
+(:SD "portacle"
+ . "Portacle is a complete IDE for Common Lisp that you can take with you on a USB stick https://shinmera.github.io/portacle/")
+(:SD "guild"
+ . "Lisp Guild, a place for exchanging tasks to be done: https://github.com/Lisp-Guild/lisp-todo/projects")
+(:SD "amop"
+ . "amop: The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO.")
+(:SD "amop"
+ . "amop: The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO. <http://www.alu.org/mop/>")
+(:SD "amop"
+ . "amop: The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO. See <http://metamodular.com/CLOS-MOP>")
+(:SD "amop"
+ . "AMOP: The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO. See <http://metamodular.com/CLOS-MOP>")
+(:SD "CLOS-object"
+ . "There is no definition of the term \"CLOS object\" in the Common Lisp HyperSpec. If there were, it would probably be \"any Common Lisp datum\", because every Common Lisp datum is an instance of a class. Perhaps when you say \"CLOS object\" you really mean \"standard object\", i.e. the kind of object you usually get when you instantiate a class defined by DEFCLASS")
+(:SD "boole"
+ . "BOOLE is the crowning jewel perched precariously upon the perfect peak of programmer prowess, casting its limitless limpid light over the lands of those who scuff and wallow in the dreary dust of digital depravity and unbounded wilful ignorance of the testament of Our Lord God as channeled through the X3J13 committee")
+(:SD "progv"
+ . "PROGV is a testament to the success of synthetic methamphetamines in the rearing and education of the inveterately brain-damaged contributors to the X3J13 standardisation proceedings")
+(:SD "R2RS"
+ . "Data and procedures and the values they amass, / Higher-order functions to combine and mix and match, / Objects with their local state, the messages they pass, / A property, a package, the control point for a catch-- / In the Lambda Order they are all first-class. / One Thing to name them all, One Thing to define them, / One Thing to place them in environments and bind them, / In the Lambda order they are all first-class")
+(:SD "PAIP"
+ . "PAIP: Paradigms of Artificial Intelligence Programming. More Common Lisp than AI. Now freely available at https://github.com/norvig/paip-lisp")
+(:SD "PAIP"
+ . "Paradigms of Artificial Intelligence Programming. More Common Lisp than AI. Now freely available at https://github.com/norvig/paip-lisp")
+(:SD "PAIP"
+ . "Paradigms of Artificial Intelligence Programming. More about Common Lisp than Artificial Intelligence. Now freely available at https://github.com/norvig/paip-lisp")
+(:SD "PAIP"
+ . "Paradigms of Artificial Intelligence Programming. More about Common Lisp than Artificial Intelligence. Now freely available at https://github.com/norvig/paip-lisp")
+(:SD "universal greeting time"
+ . "It is always morning when a person enters a channel, and late night when they leave. You may want to read http://www.total-knowledge.com/~ilya/mips/ugt.html for further information")
+(:SD "copying" . "http://www.nhplace.com/kent/PS/EQUAL.html")
+(:SD "popularity"
+ . "http://www.winestockwebdesign.com/Essays/Lisp_Curse.html and http://www.marktarver.com/bipolar.html and https://news.ycombinator.com/item?id=153812 and https://www.quora.com/Why-is-Lisp-not-as-popular-as-Python and https://softwareengineering.stackexchange.com/questions/60012/why-isnt-lisp-more-widespread")
+(:SD "the Unix Hater's Handbook"
+ . "The best of the UNIX-HATERS online mailing list reveals why Un*x must die, accessible at <http://simson.net/ref/ugh.pdf> sans barf bag")
+(:SD "parens"
+ . "https://nl.movim.eu/?blog/phoe%40movim.eu/cd3577f6-fb1d-45f5-b881-7b9a68ee822e")
+(:SD "indentation"
+ . "https://nl.movim.eu/?blog/phoe%40movim.eu/cd3577f6-fb1d-45f5-b881-7b9a68ee822e")
+(:SD "koans" . "Lisp Koans from Google: https://github.com/google/lisp-koans")
+(:SD "*macroexpand-hook*"
+ . "please do not use it in production code, even when pfdietz advertises it to you")
+(:SD "eclector"
+ . "A portable, customizable implementation of the Common Lisp reader")
+(:SD "olm"
+ . "Online Lisp Meetings: mailgroup at https://mailman.common-lisp.net/pipermail/online-lisp-meets/ and videos at https://www.youtube.com/playlist?list=PLgq_B39Y_kKD9_sdCeE5SufaeAtbYPv80")
+(:SD "tclcs"
+ . "The Common Lisp Condition System, https://www.apress.com/us/book/9781484261330")
+(:SD "baker"
+ . "https://web.archive.org/web/20200212080133/http://home.pipeline.com/~hbaker1/")
+(:SD "yourself"
+ . "\"I am a Lisp bot, see https://github.com/stassats/lisp-bots/ for my source code.\"")
+(:SD "semantics"
+ . "For a concise definition of the Common Lisp semantics of assignments and function calls, please see http://metamodular.com/common-lisp-semantics.html")
+(:SD "brucio"
+ . "A prolific blogger and Lisp user, who now uses Arc: https://web.archive.org/web/20080722232746/http://brucio.blogspot.com/")
+(:SD "brucio"
+ . "Was a prolific blogger and Lisp user, who moved on to Arc. Sadly only in the Wayback machine now: https://web.archive.org/web/20080722232746/http://brucio.blogspot.com/")
+(:SD "Updating the Common Lisp standard"
+ . "See http://metamodular.com/Common-Lisp/updating-the-standard.html for an explanation why it is not likely that there will be a revised Common Lisp standard, why a revised standard is most often not needed, and sometimes not even desirable.")
+(:SD "wscl as \"Well-Specified Common Lisp. Pronounce it"
+ . "\"whistle\". A project to revise the Common Lisp standard in a non-controversial way. See https://github.com/s-expressionists/wscl\"")
+(:SD "wscl as \"Well-Specified Common Lisp. Pronounce it"
+ . "\"whistle\". A project to revise the Common Lisp standard in a non-controversial way. See https://github.com/s-expressionists/wscl\"")
+(:SD "wscl"
+ . "Well-Specified Common Lisp. Pronounce it as \"whistle\". A project to revise the Common Lisp standard in a non-controversial way. See https://github.com/s-expressionists/wscl")
+(:SD "LUV"
+ . "Tutorial on Good Lisp Programming Style: http://www.norvig.com/luv-slides.pdf")
 (:ALIAS "according to..." . "according to")
 (:ALIAS "sbcli" . "sbcl-internals")
 (:ALIAS "books" . "Lisp Books")
@@ -663,7 +766,8 @@
 (:ALIAS "sources" . "minion-sources")
 (:ALIAS "lisppaste" . "lisp-paste")
 (:ALIAS "faq" . "\"Nikodemus' CL FAQ\"")
-(:SD "faq"
- . "Nikodemus' CL FAQ: http://random-state.net/files/nikodemus-cl-faq.html")
-(:SD "AMOP"
- . "The Art of the Metaobject Protocol, an essential book for understanding the implementation of CLOS and advanced OO. See the sepcification of MOP at http://www.alu.org/mop/")
+(:SD "ELS"
+ . "European Lisp Symposium: https://www.european-lisp-symposium.org/")
+(:SD "CLOG" . "The Common Lisp Omnificent GUI")
+(:SD "oh" . "oh")
+(:SD "oh" . "oh my cat is nice")
