@@ -144,7 +144,11 @@
          (identify *bot*))
         ((search "You are now identified for"
                  (message-body message))
-         (mapcar (lambda (channel) (join (connection *bot*) channel))
+         (mapcar (lambda (channel)
+		   (join (connection *bot*) channel)
+		   ;;; Connecting with many channels without a slight
+		   ;;; pause causes libera.chat to detect a flood
+		   (sleep .2))
                  (channels *bot*)))))
 
 (defun ghost (bot)
