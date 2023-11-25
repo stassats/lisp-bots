@@ -116,7 +116,7 @@
                 (add-hook connection 'irc-pong-message 'pong-hook)
                 (start-bot-loop connection)))
          do
-         (usocket:socket-close (irc::socket connection)))))
+         (close (irc:network-stream connection)))))
 
 (defun identify (bot)
   (with-slots (connection nickname channels
